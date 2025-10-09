@@ -1,0 +1,7 @@
+{
+  "name": "Seafood Restaurant Feedback",
+  "description": "A mobile-first web application for customers to provide detailed feedback for a seafood restaurant. The feedback is then analyzed by Gemini to provide a quick summary.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
