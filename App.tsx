@@ -339,7 +339,7 @@ const App: React.FC = () => {
           )}
         </div>
         <footer className="text-center py-6 text-stone-500 text-xs">
-          <p>&copy; {new Date().getFullYear()} The Salty Pearl. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Goldone Restaurant. All Rights Reserved.</p>
         </footer>
       </main>
       <style>{`
