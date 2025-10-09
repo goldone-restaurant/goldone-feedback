@@ -11,8 +11,7 @@ const Header: React.FC = () => {
       <div className="relative h-full flex items-center justify-start text-white px-4 sm:px-6">
         <img src="/logo.png" alt="Gold One Logo" className="w-14 h-14 flex-shrink-0" />
         <div className="ml-4">
-            <h1 className="text-3xl font-extrabold tracking-tight" style={textShadowStyle}>GOLDONE</h1>
-            <p className="mt-1 text-md font-medium text-stone-200" style={textShadowStyle}>Tinh Túy Tận Tâm</p>
+            <img src="/banghieu.png" alt="Gold One Logo" className="w-24 h-24" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }} />
         </div>
       </div>
     </header>
