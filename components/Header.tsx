@@ -9,7 +9,7 @@ const Header: React.FC = () => {
                  style={{backgroundImage: "url('https://picsum.photos/1200/400?image=1060')"}}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/30"></div>
             <div className="relative h-full flex items-center justify-center text-white px-0 sm:px-0"
-                 style="user-select: auto;"><img alt="Gold One Logo" className="h-14" src="/banghieu.png"
+                 style="user-select: auto;"><img alt="Gold One Logo" className="h-20" src="/banghieu.png"
                                                  style="user-select: auto;"/>
             </div>
         </header>);
