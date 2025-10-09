@@ -304,7 +304,7 @@ const App: React.FC = () => {
 
                             <FormField label="Phòng số (Tùy chọn)">
                                 <input
-                                    type="number"
+                                    type="text"
                                     name="roomNumber"
                                     value={formData.roomNumber}
                                     onChange={handleInputChange}
