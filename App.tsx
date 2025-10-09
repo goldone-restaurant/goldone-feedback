@@ -309,7 +309,7 @@ const App: React.FC = () => {
                                     value={formData.roomNumber}
                                     onChange={handleInputChange}
                                     placeholder="Phòng bạn ngồi"
-                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                    className="w-full p-3 border mt-2 border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
                                 />
                             </FormField>
                         </div>
