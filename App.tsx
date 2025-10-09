@@ -209,7 +209,7 @@ const App: React.FC = () => {
                             Gửi Trực Tiếp Đến Ban Quản Lý & Chủ Nhà Hàng
                          </h2>
                          <p className="text-stone-300 mt-4 mb-8 max-w-sm">
-                            Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được <strong className="font-semibold text-yellow-400">niêm phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Gold One.
+                            Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được <strong className="font-semibold text-yellow-400">niêm phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Goldone.
                          </p>
                        </div>
  
@@ -417,7 +417,7 @@ const App: React.FC = () => {
           )}
         </div>
         <footer className="text-center py-6 text-stone-500 text-xs">
-          <p>&copy; {new Date().getFullYear()} Gold One. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Goldone. All Rights Reserved.</p>
         </footer>
       </main>
       <style>{`
