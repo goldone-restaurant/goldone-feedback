@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { FeedbackData, GeminiAnalysis } from './types';
 import { analyzeFeedback } from './services/geminiService';
 import Header from './components/Header';
@@ -6,7 +6,8 @@ import Rating from './components/Rating';
 import FormField from './components/FormField';
 import SubmitButton from './components/SubmitButton';
 import CameraCapture from './components/CameraCapture';
-import GoldOneLogo from './components/icons/GoldOneLogo';
+import TropicalFishIcon from './components/icons/TropicalFishIcon';
+import CrabIcon from './components/icons/CrabIcon';
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -29,6 +30,48 @@ const App: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const aquariumCreatures = useMemo(() => {
+    const creatures = [];
+    // Add 5 tropical fish
+    for (let i = 0; i < 5; i++) {
+        const size = 30 + Math.random() * 40; // Smaller size: 30px to 70px
+        creatures.push({
+            id: `fish-${i}`,
+            Component: TropicalFishIcon,
+            style: {
+                top: `${10 + Math.random() * 70}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                animationName: Math.random() > 0.5 ? 'swim' : 'swim-reverse',
+                animationDuration: `${20 + Math.random() * 20}s`,
+                animationDelay: `${3 + Math.random() * 27}s`, // Start after 3s
+                animationFillMode: 'backwards',
+                animationIterationCount: 'infinite',
+                opacity: 0.7 + Math.random() * 0.3,
+            }
+        });
+    }
+    // Add 2 crabs
+    for (let i = 0; i < 2; i++) {
+        const size = 40 + Math.random() * 30; // Smaller size: 40px to 70px
+        creatures.push({
+            id: `crab-${i}`,
+            Component: CrabIcon,
+            style: {
+                width: `${size}px`,
+                height: `${size}px`,
+                animationName: Math.random() > 0.5 ? 'scuttle' : 'scuttle-reverse',
+                animationDuration: `${25 + Math.random() * 20}s`,
+                animationDelay: `${3.5 + Math.random() * 21.5}s`, // Start after 3.5s
+                animationFillMode: 'backwards',
+                animationIterationCount: 'infinite',
+                opacity: 0.8 + Math.random() * 0.2,
+            }
+        });
+    }
+    return creatures;
+  }, []);
 
   const handleRatingChange = (category: keyof FeedbackData, value: number) => {
     setFormData((prev) => ({ ...prev, [category]: value }));
@@ -118,13 +161,6 @@ const App: React.FC = () => {
     </div>
   );
 
-  const Fish = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
-    <svg viewBox="0 0 120 60" className={`absolute ${className}`} style={style} fill="currentColor">
-      <path d="M118.3,29.3c0,0-12.3-3.8-21.2-3.8c-10.3,0-20.9,4.9-20.9,4.9s-9.3-5.2-20.9-4.9c-8.9,0-21.2,3.8-21.2,3.8c-1.9,0-1.9,3,0,3c0,0,12.3,3.8,21.2,3.8c10.3,0,20.9-4.9,20.9-4.9s9.3,5.2,20.9,4.9c8.9,0,21.2-3.8,21.2-3.8C120.2,32.3,120.2,29.3,118.3,29.3z"/>
-      <path d="M118.3,29.3c-2.4,0-4.8,0.2-7,0.5c-1.3-3-3.4-5.5-5.9-7.3c-5-3.6-11.7-5.5-19.1-5.5c-10.3,0-19,3.2-19,3.2s-8.6-3.2-19-3.2c-7.3,0-14.1,1.9-19.1,5.5c-2.5,1.8-4.6,4.3-5.9,7.3c-2.2-0.3-4.6-0.5-7-0.5c-1.9,0-1.9,3,0,3c2.4,0,4.8,0.2,7,0.5c1.3,3,3.4,5.5,5.9,7.3c5,3.6,11.7,5.5,19.1,5.5c10.3,0,19-3.2,19-3.2s8.6,3.2,19,3.2c7.3,0,14.1,1.9,19.1-5.5c2.5-1.8,4.6-4.3,5.9-7.3c2.2,0.3,4.6,0.5,7,0.5C120.2,32.3,120.2,29.3,118.3,29.3z M60,42.7c-12.1,0-22.3-4-22.3-4s-3.3,4-12.7,4c-9,0-16.3-4.4-16.3-4.4S4.9,39.3,4.9,32c0-2.5,0.4-5,1-7.3c0,0,7.8,4.4,18.7,4.4c9.4,0,12.7-4,12.7-4s10.1,4,22.7,4c12.1,0,22.3-4,22.3-4s3.3,4,12.7,4c9,0,16.3-4.4,16.3-4.4c3.8,1,3.8,7.9,3.8,7.9C114.9,39.3,114.9,42.7,60,42.7z"/>
-    </svg>
-  );
-
   return (
     <div className="min-h-screen bg-stone-100 font-sans">
       <Header />
@@ -140,12 +176,16 @@ const App: React.FC = () => {
             <>
               {currentStep === 0 && (
                  <div className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
-                    <div className="absolute inset-0 z-0 opacity-70">
-                      {/* Fish swimming in the background */}
-                      <Fish className="w-24 h-24 text-yellow-500/20" style={{ top: '20%', animation: 'swim 25s linear infinite' }} />
-                      <Fish className="w-32 h-32 text-yellow-500/30" style={{ top: '40%', animation: 'swim-reverse 30s linear infinite 5s' }} />
-                      <Fish className="w-20 h-20 text-yellow-500/20" style={{ top: '70%', animation: 'swim 20s linear infinite 8s' }} />
+                    <div className="absolute inset-0 z-0">
+                      {aquariumCreatures.map(creature => (
+                        <creature.Component
+                          key={creature.id}
+                          className="absolute"
+                          style={creature.style}
+                        />
+                      ))}
                     </div>
+
                     {/* Bubbles rising in the foreground */}
                     <div className="absolute inset-0 z-20 pointer-events-none">
                         {[...Array(15)].map((_, i) => (
@@ -161,7 +201,7 @@ const App: React.FC = () => {
 
                     <div className="relative z-10 flex flex-col items-center w-full">
                        <div className="w-40 h-40 rounded-full bg-yellow-500 flex items-center justify-center animate-stamp-in shadow-2xl" style={{ boxShadow: '0 0 25px rgba(250, 204, 21, 0.4), 0 0 10px rgba(0,0,0,0.5) inset' }}>
-                          <GoldOneLogo className="w-20 h-20 text-yellow-800" style={{ filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.4))' }} />
+                          <img src="/logo.png" alt="Gold One Logo" className="w-24 h-24" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }} />
                        </div>
                        
                        <div className="animate-fade-in animation-delay-500">
@@ -408,14 +448,26 @@ const App: React.FC = () => {
         .animation-delay-700 { animation-delay: 0.7s; }
 
         @keyframes swim {
-            0% { transform: translateX(-100%) translateY(20px) rotate(-5deg); }
-            50% { transform: translateX(50vw) translateY(-20px) rotate(5deg); }
-            100% { transform: translateX(110vw) translateY(20px) rotate(-5deg); }
+            0% { transform: translateX(-100px) translateY(20px) rotate(-5deg); }
+            50% { transform: translateX(225px) translateY(-20px) rotate(5deg); }
+            100% { transform: translateX(550px) translateY(20px) rotate(-5deg); }
         }
         @keyframes swim-reverse {
-            0% { transform: translateX(110vw) translateY(-20px) rotate(5deg) scaleX(-1); }
-            50% { transform: translateX(50vw) translateY(20px) rotate(-5deg) scaleX(-1); }
-            100% { transform: translateX(-100%) translateY(-20px) rotate(5deg) scaleX(-1); }
+            0% { transform: translateX(550px) translateY(-20px) rotate(5deg) scaleX(-1); }
+            50% { transform: translateX(225px) translateY(20px) rotate(-5deg) scaleX(-1); }
+            100% { transform: translateX(-100px) translateY(-20px) rotate(5deg) scaleX(-1); }
+        }
+        @keyframes scuttle {
+            0% { transform: translateX(-100px) scaleX(1); bottom: 5%; }
+            48% { transform: translateX(215px) scaleX(1); }
+            52% { transform: translateX(235px) scaleX(-1); }
+            100% { transform: translateX(550px) scaleX(-1); bottom: 5%; }
+        }
+        @keyframes scuttle-reverse {
+            0% { transform: translateX(550px) scaleX(-1); bottom: 2%; }
+            48% { transform: translateX(235px) scaleX(-1); }
+            52% { transform: translateX(215px) scaleX(1); }
+            100% { transform: translateX(-100px) scaleX(1); bottom: 2%; }
         }
         @keyframes bubble {
             0% { transform: translateY(0); opacity: 0; }
