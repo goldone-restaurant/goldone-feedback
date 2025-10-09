@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import StarIcon from './icons/StarIcon';
+import FishIcon from './icons/FishIcon';
 
 interface RatingProps {
   rating: number;
@@ -20,7 +20,7 @@ const Rating: React.FC<RatingProps> = ({ rating, onRatingChange }) => {
           onMouseLeave={() => setHoverRating(0)}
           className="focus:outline-none"
         >
-          <StarIcon
+          <FishIcon
             className={`w-8 h-8 transition-colors duration-200 ${
               (hoverRating || rating) >= star
                 ? 'text-amber-400'

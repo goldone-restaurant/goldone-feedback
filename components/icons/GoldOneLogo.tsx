@@ -1,0 +1,9 @@
+import React from 'react';
+
+const GoldOneLogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM12.2578 8.125C11.8427 7.69756 11.2312 7.5 10.625 7.5C9.28363 7.5 8.25 8.53363 8.25 9.875V14.125C8.25 15.4664 9.28363 16.5 10.625 16.5C11.6033 16.5 12.443 15.932 12.8719 15.125H10.875V13.625H14.625V14.125C14.625 16.5868 12.8368 18 10.625 18C8.41319 18 6.75 16.3368 6.75 14.125V9.875C6.75 7.66319 8.41319 6 10.625 6C11.7011 6 12.6547 6.43581 13.3421 7.15789L12.2578 8.125Z" />
+    </svg>
+);
+
+export default GoldOneLogo;
