@@ -26,7 +26,12 @@ jobs:
           cache: 'npm'
 
       - run: npm ci
-      - run: npm run build  # output mặc định Vite là dist/
+
+      # (A) Cách inject env trực tiếp vào tiến trình build:
+      - run: npm run build
+        env:
+          GEMINI_API_KEY: PLACEHOLDER_API_KEY
+          API_KEY: PLACEHOLDER_API_KEY
 
       # SPA fix: refresh không 404
       - run: cp dist/index.html dist/404.html
