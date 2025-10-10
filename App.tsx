@@ -314,22 +314,6 @@ const App: React.FC = () => {
                                 />
                             </FormField>
                         </div>
-                        
-                        <hr className="border-stone-200" />
-
-                        <div>
-                            <h3 className="text-lg font-semibold text-stone-800 mb-3">Mức độ hài lòng</h3>
-                             <FormField label="Bạn có giới thiệu nhà hàng cho bạn bè không?">
-                                <div className="flex gap-4">
-                                <button type="button" onClick={() => setFormData(prev => ({ ...prev, recommend: true }))} className={`flex-1 py-3 px-4 rounded-lg text-sm font-semibold transition ${formData.recommend === true ? 'bg-orange-600 text-white shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                                    <i className="fa-solid fa-thumbs-up mr-2"></i> Có
-                                </button>
-                                <button type="button" onClick={() => setFormData(prev => ({ ...prev, recommend: false }))} className={`flex-1 py-3 px-4 rounded-lg text-sm font-semibold transition ${formData.recommend === false ? 'bg-rose-600 text-white shadow-md' : 'bg-stone-100 text-stone-700 hover:bg-stone-200'}`}>
-                                    <i className="fa-solid fa-thumbs-down mr-2"></i> Không
-                                </button>
-                                </div>
-                            </FormField>
-                        </div>
 
                         <hr className="border-stone-200" />
                         
