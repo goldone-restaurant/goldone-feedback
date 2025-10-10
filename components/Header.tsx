@@ -9,7 +9,7 @@ const Header: React.FC = () => {
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/banghieu1.png'" }}></div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/30"></div>
       <div className="relative h-full flex items-center justify-center text-white px-0 sm:px-0">
-        <img src="/banghieu.png" alt="Gold One Logo" className="h-16 flex-shrink-0" />
+        <img src="/banghieu.png" alt="Gold One Logo" className="h-18 flex-shrink-0" />
       </div>
     </header>
   );
