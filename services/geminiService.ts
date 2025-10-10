@@ -43,8 +43,6 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
                     { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
                     { title: "Phòng", value: (form as any).roomNumber || "—", short: true },
                     { title: "SĐT", value: form.phoneNumber || "—", short: true },
-                    { title: "Giới thiệu bạn bè", value: form.recommend == null ? "Chưa trả lời" : (form.recommend ? "Có" : "Không"), short: true },
-
                     { title: "Món ăn", value: stars(form.foodQuality), short: true },
                     { title: "Phục vụ", value: stars(form.service), short: true },
                     { title: "Không gian", value: stars(form.ambiance), short: true },
@@ -52,7 +50,6 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
                     { title: "Cảm xúc AI phân tích", value: analysis?.sentiment ?? "—", short: true },
                     { title: "Từ khóa chính", value: keywords, short: false },
                     { title: "Tóm tắt AI", value: analysis?.summary ?? "—", short: false },
-                    { title: "Bình luận", value: (form.comments || "—").trim(), short: false },
 
                     ...(form.foodComplaint ? [{ title: "Phàn nàn món ăn", value: form.foodComplaint, short: false }] : []),
                     ...(form.serviceComplaint ? [{ title: "Phàn nàn phục vụ", value: form.serviceComplaint, short: false }] : []),
@@ -92,7 +89,7 @@ export const analyzeFeedback = async (feedback: FeedbackData): Promise<GeminiAna
     - Chất lượng phục vụ (1-5 sao): ${formatRating(feedback.service)}
     - Không gian nhà hàng (1-5 sao): ${formatRating(feedback.ambiance)}
     - Ngày ghé thăm: ${feedback.visitDate}
-    - Sẽ giới thiệu cho bạn bè: ${feedback.recommend === null ? 'Chưa trả lời' : feedback.recommend ? 'Có' : 'Không'}
+    - Phòng (nếu có): ${(feedback as any).roomNumber || 'Không cung cấp.'}
     - Số điện thoại: ${feedback.phoneNumber || 'Không cung cấp.'}`;
 
     if (feedback.foodComplaint) {
@@ -104,8 +101,6 @@ export const analyzeFeedback = async (feedback: FeedbackData): Promise<GeminiAna
     if (feedback.ambianceComplaint) {
         prompt += `\n- Phàn nàn cụ thể về không gian: "${feedback.ambianceComplaint}"`
     }
-
-    prompt += `\n- Bình luận chung: "${feedback.comments || 'Không có bình luận.'}"`;
 
     if (feedback.receiptImage) {
         prompt += `\n- Ghi chú: Khách hàng đã đính kèm hình ảnh hóa đơn. Hãy đề cập đến việc này trong bản tóm tắt nếu có liên quan.`;

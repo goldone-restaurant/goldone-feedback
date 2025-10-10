@@ -142,7 +142,6 @@ const App: React.FC = () => {
       service: 0,
       ambiance: 0,
       recommend: null,
-      comments: '',
       visitDate: new Date().toISOString().split('T')[0],
       phoneNumber: '',
       receiptImage: null,
