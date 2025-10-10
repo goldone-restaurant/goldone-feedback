@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { FeedbackData, GeminiAnalysis } from './types';
-import { analyzeFeedback } from './services/geminiService';
+import {analyzeFeedback, sendToChat} from './services/geminiService';
 import Header from './components/Header';
 import Rating from './components/Rating';
 import FormField from './components/FormField';
@@ -82,6 +82,8 @@ const App: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+
   
   const handleFileSelect = (file: File | null) => {
     if (!file) {
@@ -124,6 +126,7 @@ const App: React.FC = () => {
     try {
       const result = await analyzeFeedback(formData);
       setAnalysis(result);
+      sendToChat(formData, result).catch(console.error);
       setIsSubmitted(true);
     } catch (err) {
       setError('Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.');

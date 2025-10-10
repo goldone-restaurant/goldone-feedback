@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { FeedbackData, GeminiAnalysis } from '../types';
-
+import axios from "axios";
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
 // Helper function to convert a File object to a GoogleGenerativeAI.Part object.
@@ -13,6 +13,73 @@ async function fileToGenerativePart(file: File) {
   return {
     inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
   };
+}
+const MATTERMOST_WEBHOOK = "https://chat.goldone.vn/hooks/hjakns5xh3d3d8wnuqrgywck4o"; // Hoặc import.meta.env.VITE_MATTERMOST_WEBHOOK
+
+function stars(n?: number) {
+    if (!n || n <= 0) return "Không đánh giá";
+    const v = Math.max(1, Math.min(5, Math.round(n)));
+    return `${v}/5 ⭐`;
+}
+
+function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
+    const emoji =
+        analysis?.sentiment === "Tích cực" ? "🟢" :
+            analysis?.sentiment === "Tiêu cực" ? "🔴" : "🟡";
+
+    const keywords = Array.isArray(analysis?.keywords) && analysis.keywords.length
+        ? analysis.keywords.join(", ")
+        : "—";
+
+    return {
+        username: "test-automation",
+        text: `${emoji} *Feedback mới nhận!* @channel`,
+        attachments: [
+            {
+                color:
+                    analysis?.sentiment === "Tích cực" ? "#2ECC71" :
+                        analysis?.sentiment === "Tiêu cực" ? "#E74C3C" : "#F1C40F",
+                fields: [
+                    { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
+                    { title: "Phòng", value: (form as any).roomNumber || "—", short: true },
+                    { title: "SĐT", value: form.phoneNumber || "—", short: true },
+                    { title: "Giới thiệu bạn bè", value: form.recommend == null ? "Chưa trả lời" : (form.recommend ? "Có" : "Không"), short: true },
+
+                    { title: "Món ăn", value: stars(form.foodQuality), short: true },
+                    { title: "Phục vụ", value: stars(form.service), short: true },
+                    { title: "Không gian", value: stars(form.ambiance), short: true },
+
+                    { title: "Cảm xúc AI phân tích", value: analysis?.sentiment ?? "—", short: true },
+                    { title: "Từ khóa chính", value: keywords, short: false },
+                    { title: "Tóm tắt AI", value: analysis?.summary ?? "—", short: false },
+                    { title: "Bình luận", value: (form.comments || "—").trim(), short: false },
+
+                    ...(form.foodComplaint ? [{ title: "Phàn nàn món ăn", value: form.foodComplaint, short: false }] : []),
+                    ...(form.serviceComplaint ? [{ title: "Phàn nàn phục vụ", value: form.serviceComplaint, short: false }] : []),
+                    ...(form.ambianceComplaint ? [{ title: "Phàn nàn không gian", value: form.ambianceComplaint, short: false }] : []),
+                ],
+            },
+        ],
+    };
+}
+
+export async function sendToChat(form: FeedbackData, analysis: GeminiAnalysis) {
+    if (!MATTERMOST_WEBHOOK) {
+        console.error("❌ Thiếu MATTERMOST_WEBHOOK");
+        return;
+    }
+
+    const payload = buildPayload(form, analysis);
+
+    try {
+        await axios.post(MATTERMOST_WEBHOOK, payload, {
+            headers: { "Content-Type": "application/json" },
+            timeout: 8000,
+        });
+        console.log("✅ Đã gửi feedback lên Mattermost");
+    } catch (err: any) {
+        console.error("❌ Gửi webhook thất bại:", err?.response?.status, err?.message);
+    }
 }
 
 export const analyzeFeedback = async (feedback: FeedbackData): Promise<GeminiAnalysis> => {
