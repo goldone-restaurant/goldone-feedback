@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { FeedbackData, GeminiAnalysis } from './types';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {FeedbackData, GeminiAnalysis} from './types';
 import {analyzeFeedback, sendToChat} from './services/geminiService';
 import Header from './components/Header';
 import Rating from './components/Rating';
@@ -10,409 +10,393 @@ import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
 
 const App: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<FeedbackData>({
-    foodQuality: 0,
-    service: 0,
-    ambiance: 0,
-    recommend: null,
-    comments: '',
-    visitDate: new Date().toISOString().split('T')[0],
-    phoneNumber: '',
-    roomNumber: '',
-    receiptImage: null,
-    foodComplaint: '',
-    serviceComplaint: '',
-    ambianceComplaint: '',
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<GeminiAnalysis | null>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const aquariumCreatures = useMemo(() => {
-    const creatures = [];
-    // Add 5 tropical fish
-    for (let i = 0; i < 5; i++) {
-        const size = 30 + Math.random() * 40; // Smaller size: 30px to 70px
-        creatures.push({
-            id: `fish-${i}`,
-            Component: TropicalFishIcon,
-            style: {
-                top: `${10 + Math.random() * 70}%`,
-                width: `${size}px`,
-                height: `${size}px`,
-                animationName: Math.random() > 0.5 ? 'swim' : 'swim-reverse',
-                animationDuration: `${20 + Math.random() * 20}s`,
-                animationDelay: `${3 + Math.random() * 27}s`, // Start after 3s
-                animationFillMode: 'backwards',
-                animationIterationCount: 'infinite',
-                opacity: 0.7 + Math.random() * 0.3,
-            }
-        });
-    }
-    // Add 2 crabs
-    for (let i = 0; i < 2; i++) {
-        const size = 40 + Math.random() * 30; // Smaller size: 40px to 70px
-        creatures.push({
-            id: `crab-${i}`,
-            Component: CrabIcon,
-            style: {
-                width: `${size}px`,
-                height: `${size}px`,
-                animationName: Math.random() > 0.5 ? 'scuttle' : 'scuttle-reverse',
-                animationDuration: `${25 + Math.random() * 20}s`,
-                animationDelay: `${3.5 + Math.random() * 21.5}s`, // Start after 3.5s
-                animationFillMode: 'backwards',
-                animationIterationCount: 'infinite',
-                opacity: 0.8 + Math.random() * 0.2,
-            }
-        });
-    }
-    return creatures;
-  }, []);
-
-  const handleRatingChange = (category: keyof FeedbackData, value: number) => {
-    setFormData((prev) => ({ ...prev, [category]: value }));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-
-  
-  const handleFileSelect = (file: File | null) => {
-    if (!file) {
-      setFormData(prev => ({ ...prev, receiptImage: null }));
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      setError("Kích thước tệp không được vượt quá 5MB.");
-      return;
-    }
-    setError(null);
-    setFormData((prev) => ({...prev, receiptImage: file}));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFileSelect(e.target.files[0]);
-    }
-  };
-
-  const handlePhotoTaken = (file: File) => {
-    handleFileSelect(file);
-    setShowCamera(false);
-  };
-
-  const nextStep = () => {
-    setError(null);
-    setCurrentStep(prev => prev + 1);
-  };
-  
-  const prevStep = () => {
-    setCurrentStep(prev => prev - 1);
-  };
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const result = await analyzeFeedback(formData);
-      setAnalysis(result);
-      sendToChat(formData, result).catch(console.error);
-      setIsSubmitted(true);
-    } catch (err) {
-      setError('Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData]);
-
-  const resetForm = () => {
-    setFormData({
-      foodQuality: 0,
-      service: 0,
-      ambiance: 0,
-      recommend: null,
-      visitDate: new Date().toISOString().split('T')[0],
-      phoneNumber: '',
-      receiptImage: null,
-      foodComplaint: '',
-      serviceComplaint: '',
-      ambianceComplaint: '',
+    const [currentStep, setCurrentStep] = useState(0);
+    const [formData, setFormData] = useState<FeedbackData>({
+        foodQuality: 0,
+        service: 0,
+        ambiance: 0,
+        recommend: null,
+        comments: '',
+        visitDate: new Date().toISOString().split('T')[0],
+        phoneNumber: '',
+        roomNumber: '',
+        receiptImage: null,
+        foodComplaint: '',
+        serviceComplaint: '',
+        ambianceComplaint: '',
     });
-    setIsSubmitted(false);
-    setAnalysis(null);
-    setError(null);
-    setCurrentStep(0);
-  }
-  
-  const renderStepIndicator = () => (
-    <div className="mb-6">
-        <p className="text-center text-sm font-semibold text-orange-700">Bước {currentStep} / 2</p>
-        <div className="w-full bg-stone-200 rounded-full h-1.5 mt-1">
-            <div className="bg-orange-600 h-1.5 rounded-full" style={{ width: `${(currentStep / 2) * 100}%` }}></div>
-        </div>
-    </div>
-  );
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [analysis, setAnalysis] = useState<GeminiAnalysis | null>(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [showCamera, setShowCamera] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-  return (
-    <div className="min-h-screen bg-stone-100 font-sans">
-      <Header />
-       {showCamera && (
-          <CameraCapture
-              onCapture={handlePhotoTaken}
-              onClose={() => setShowCamera(false)}
-          />
-        )}
-      <main className="p-4 max-w-md mx-auto -mt-20">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
-          {!isSubmitted ? (
-            <>
-              {currentStep === 0 && (
-                 <div className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
-                    <div className="absolute inset-0 z-0">
-                      {aquariumCreatures.map(creature => (
-                        <creature.Component
-                          key={creature.id}
-                          className="absolute"
-                          style={creature.style}
-                        />
-                      ))}
-                    </div>
+    const aquariumCreatures = useMemo(() => {
+        const creatures = [];
+        // Add 5 tropical fish
+        for (let i = 0; i < 5; i++) {
+            const size = 30 + Math.random() * 40; // Smaller size: 30px to 70px
+            creatures.push({
+                id: `fish-${i}`, Component: TropicalFishIcon, style: {
+                    top: `${10 + Math.random() * 70}%`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    animationName: Math.random() > 0.5 ? 'swim' : 'swim-reverse',
+                    animationDuration: `${20 + Math.random() * 20}s`,
+                    animationDelay: `${3 + Math.random() * 27}s`, // Start after 3s
+                    animationFillMode: 'backwards',
+                    animationIterationCount: 'infinite',
+                    opacity: 0.7 + Math.random() * 0.3,
+                }
+            });
+        }
+        // Add 2 crabs
+        for (let i = 0; i < 2; i++) {
+            const size = 40 + Math.random() * 30; // Smaller size: 40px to 70px
+            creatures.push({
+                id: `crab-${i}`, Component: CrabIcon, style: {
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    animationName: Math.random() > 0.5 ? 'scuttle' : 'scuttle-reverse',
+                    animationDuration: `${25 + Math.random() * 20}s`,
+                    animationDelay: `${3.5 + Math.random() * 21.5}s`, // Start after 3.5s
+                    animationFillMode: 'backwards',
+                    animationIterationCount: 'infinite',
+                    opacity: 0.8 + Math.random() * 0.2,
+                }
+            });
+        }
+        return creatures;
+    }, []);
 
-                    {/* Bubbles rising in the foreground */}
-                    <div className="absolute inset-0 z-20 pointer-events-none">
-                        {[...Array(15)].map((_, i) => (
-                           <div key={i} className="absolute bottom-0 rounded-full bg-yellow-400/20" style={{
-                              left: `${Math.random() * 100}%`,
-                              width: `${2 + Math.random() * 4}px`,
-                              height: `${2 + Math.random() * 4}px`,
-                              animation: `bubble ${5 + Math.random() * 8}s linear infinite`,
-                              animationDelay: `${Math.random() * 10}s`
-                           }}></div>
-                        ))}
-                    </div>
+    const handleRatingChange = (category: keyof FeedbackData, value: number) => {
+        setFormData((prev) => ({...prev, [category]: value}));
+    };
 
-                    <div className="relative z-10 flex flex-col items-center w-full">
-                       <div className="w-40 h-40 rounded-full bg-yellow-500 flex items-center justify-center animate-stamp-in shadow-2xl" style={{ boxShadow: '0 0 25px rgba(250, 204, 21, 0.4), 0 0 10px rgba(0,0,0,0.5) inset' }}>
-                          <img src="/logo.png" alt="Gold One Logo" className="w-24 h-24" style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }} />
-                       </div>
-                       
-                       <div className="animate-fade-in animation-delay-500">
-                         <h2 className="text-3xl font-bold text-white mt-8" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7)'}}>
-                            Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng
-                         </h2>
-                         <p className="text-stone-300 mt-4 mb-8 max-w-sm">
-                            Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được <strong className="font-semibold text-yellow-400">niêm phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.
-                         </p>
-                       </div>
- 
-                       <button onClick={nextStep} className="w-full bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50">
-                           Niêm Phong & Gửi Ý Kiến
-                       </button>
-                    </div>
-                </div>
-              )}
-              {currentStep > 0 && (
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                  <h2 className="text-2xl font-bold text-stone-800 text-center">Chia sẻ trải nghiệm của bạn</h2>
-                  <p className="text-center text-stone-500 -mt-4">Phản hồi của bạn giúp chúng tôi phục vụ tốt hơn.</p>
-                  
-                  {renderStepIndicator()}
-                  
-                  {currentStep === 1 && (
-                    <div className="space-y-6 animate-form-item">
-                      <FormField label="Chất lượng món ăn">
-                        <Rating rating={formData.foodQuality} onRatingChange={(value) => handleRatingChange('foodQuality', value)} />
-                      </FormField>
-                      
-                      {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
-                        <div className="animate-form-item">
-                            <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
-                                <textarea
-                                name="foodComplaint"
-                                rows={3}
-                                value={formData.foodComplaint}
-                                onChange={handleInputChange}
-                                placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
-                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
-                        </div>
-                      )}
-                      
-                      <FormField label="Chất lượng phục vụ">
-                        <Rating rating={formData.service} onRatingChange={(value) => handleRatingChange('service', value)} />
-                      </FormField>
-                      
-                      {formData.service > 0 && formData.service <= 2 && (
-                        <div className="animate-form-item">
-                            <FormField label="Bạn không hài lòng về điều gì ở phục vụ?">
-                                <textarea
-                                name="serviceComplaint"
-                                rows={3}
-                                value={formData.serviceComplaint}
-                                onChange={handleInputChange}
-                                placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
-                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
-                        </div>
-                      )}
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = e.target;
+        setFormData((prev) => ({...prev, [name]: value}));
+    };
 
-                      <FormField label="Không gian nhà hàng">
-                        <Rating rating={formData.ambiance} onRatingChange={(value) => handleRatingChange('ambiance', value)} />
-                      </FormField>
 
-                      {formData.ambiance > 0 && formData.ambiance <= 2 && (
-                        <div className="animate-form-item">
-                            <FormField label="Bạn không hài lòng về điều gì ở không gian?">
-                                <textarea
-                                name="ambianceComplaint"
-                                rows={3}
-                                value={formData.ambianceComplaint}
-                                onChange={handleInputChange}
-                                placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
-                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
-                        </div>
-                      )}
-                    </div>
-                  )}
+    const handleFileSelect = (file: File | null) => {
+        if (!file) {
+            setFormData(prev => ({...prev, receiptImage: null}));
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            setError("Kích thước tệp không được vượt quá 5MB.");
+            return;
+        }
+        setError(null);
+        setFormData((prev) => ({...prev, receiptImage: file}));
+    };
 
-                  {currentStep === 2 && (
-                     <div className="space-y-6 animate-form-item">
-                        <div>
-                            <h3 className="text-lg font-semibold text-stone-800 mb-3">Thông tin chuyến thăm</h3>
-                            <FormField label="Ngày bạn ghé thăm *">
-                                <input
-                                type="date"
-                                name="visitDate"
-                                value={formData.visitDate}
-                                onChange={handleInputChange}
-                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            handleFileSelect(e.target.files[0]);
+        }
+    };
 
-                            <div className="mt-2"></div>
-                            <FormField label="Phòng số (Tùy chọn)">
-                                <input
-                                    type="text"
-                                    name="roomNumber"
-                                    value={formData.roomNumber}
-                                    onChange={handleInputChange}
-                                    placeholder="Phòng bạn ngồi"
-                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
-                        </div>
+    const handlePhotoTaken = (file: File) => {
+        handleFileSelect(file);
+        setShowCamera(false);
+    };
 
-                        <hr className="border-stone-200" />
-                        
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-stone-800">Thông tin bổ sung (Tùy chọn)</h3>
-                            <FormField label="Số điện thoại">
-                                <input
-                                type="tel"
-                                name="phoneNumber"
-                                value={formData.phoneNumber}
-                                onChange={handleInputChange}
-                                placeholder="Để chúng tôi có thể liên hệ lại"
-                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                />
-                            </FormField>
-                            
-                            <FormField label="Đính kèm hóa đơn">
-                                <div className="flex gap-4">
-                                    <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
-                                         <i className="fa-solid fa-upload"></i>
-                                        <span>Tải ảnh lên</span>
-                                    </button>
-                                     <button type="button" onClick={() => setShowCamera(true)} className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
-                                         <i className="fa-solid fa-camera"></i>
-                                        <span>Chụp ảnh</span>
-                                    </button>
-                                    <input ref={fileInputRef} id="receipt-upload" type="file" className="hidden" onChange={handleFileChange} accept="image/png, image/jpeg" />
-                                </div>
-                                 <p className="text-xs text-stone-500 mt-2 text-center">PNG, JPG (TỐI ĐA 5MB)</p>
+    const nextStep = () => {
+        setError(null);
+        setCurrentStep(prev => prev + 1);
+    };
 
-                                {formData.receiptImage && (
-                                    <div className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <i className="fa-solid fa-image text-stone-500 flex-shrink-0"></i>
-                                            <span className="text-sm text-stone-700 font-medium truncate">{formData.receiptImage.name}</span>
+    const prevStep = () => {
+        setCurrentStep(prev => prev - 1);
+    };
+
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            const result = await analyzeFeedback(formData);
+            setAnalysis(result);
+            sendToChat(formData, result).catch(console.error);
+            setIsSubmitted(true);
+        } catch (err) {
+            setError('Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [formData]);
+
+    const resetForm = () => {
+        setFormData({
+            foodQuality: 0,
+            service: 0,
+            ambiance: 0,
+            recommend: null,
+            visitDate: new Date().toISOString().split('T')[0],
+            phoneNumber: '',
+            receiptImage: null,
+            foodComplaint: '',
+            serviceComplaint: '',
+            ambianceComplaint: '',
+        });
+        setIsSubmitted(false);
+        setAnalysis(null);
+        setError(null);
+        setCurrentStep(0);
+    }
+
+    const renderStepIndicator = () => (<div className="mb-6">
+            <p className="text-center text-sm font-semibold text-orange-700">Bước {currentStep} / 2</p>
+            <div className="w-full bg-stone-200 rounded-full h-1.5 mt-1">
+                <div className="bg-orange-600 h-1.5 rounded-full" style={{width: `${(currentStep / 2) * 100}%`}}></div>
+            </div>
+        </div>);
+
+    return (<div className="min-h-screen bg-stone-100 font-sans">
+            <Header/>
+            {showCamera && (<CameraCapture
+                    onCapture={handlePhotoTaken}
+                    onClose={() => setShowCamera(false)}
+                />)}
+            <main className="p-4 max-w-md mx-auto -mt-20">
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
+                    {!isSubmitted ? (<>
+                            {currentStep === 0 && (<div
+                                    className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
+                                    <div className="absolute inset-0 z-0">
+                                        {aquariumCreatures.map(creature => (<creature.Component
+                                                key={creature.id}
+                                                className="absolute"
+                                                style={creature.style}
+                                            />))}
+                                    </div>
+
+                                    {/* Bubbles rising in the foreground */}
+                                    <div className="absolute inset-0 z-20 pointer-events-none">
+                                        {[...Array(15)].map((_, i) => (
+                                            <div key={i} className="absolute bottom-0 rounded-full bg-yellow-400/20"
+                                                 style={{
+                                                     left: `${Math.random() * 100}%`,
+                                                     width: `${2 + Math.random() * 4}px`,
+                                                     height: `${2 + Math.random() * 4}px`,
+                                                     animation: `bubble ${5 + Math.random() * 8}s linear infinite`,
+                                                     animationDelay: `${Math.random() * 10}s`
+                                                 }}></div>))}
+                                    </div>
+
+                                    <div className="relative z-10 flex flex-col items-center w-full">
+                                        <div
+                                            className="w-40 h-40 rounded-full bg-yellow-500 flex items-center justify-center animate-stamp-in shadow-2xl"
+                                            style={{boxShadow: '0 0 25px rgba(250, 204, 21, 0.4), 0 0 10px rgba(0,0,0,0.5) inset'}}>
+                                            <img src="/logo.png" alt="Gold One Logo" className="w-24 h-24"
+                                                 style={{filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))'}}/>
                                         </div>
-                                        <button type="button" onClick={() => handleFileSelect(null)} className="text-red-500 hover:text-red-700 ml-2">
-                                            <i className="fa-solid fa-trash"></i>
+
+                                        <div className="animate-fade-in animation-delay-500">
+                                            <h2 className="text-3xl font-bold text-white mt-8"
+                                                style={{textShadow: '0 2px 8px rgba(0,0,0,0.7)'}}>
+                                                Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng
+                                            </h2>
+                                            <p className="text-stone-300 mt-4 mb-8 max-w-sm">
+                                                Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều
+                                                được <strong className="font-semibold text-yellow-400">niêm
+                                                phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải
+                                                nghiệm tại Nhà Hàng Goldone.
+                                            </p>
+                                        </div>
+
+                                        <button onClick={nextStep}
+                                                className="w-full bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50">
+                                            Niêm Phong & Gửi Ý Kiến
                                         </button>
                                     </div>
-                                )}
-                            </FormField>
-                        </div>
-                    </div>
-                  )}
+                                </div>)}
+                            {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6">
+                                    <h2 className="text-2xl font-bold text-stone-800 text-center">Chia sẻ trải nghiệm
+                                        của bạn</h2>
+                                    <p className="text-center text-stone-500 -mt-4">Phản hồi của bạn giúp chúng tôi phục
+                                        vụ tốt hơn.</p>
 
-                  {error && <p className="text-sm text-red-600 bg-red-100 p-3 rounded-lg text-center">{error}</p>}
+                                    {renderStepIndicator()}
 
-                  <div className="pt-4 flex items-center gap-4">
-                    {currentStep > 1 && (
-                      <button type="button" onClick={prevStep} className="w-1/3 bg-stone-200 text-stone-700 font-bold py-3 px-4 rounded-lg hover:bg-stone-300 transition duration-300">
-                        Quay lại
-                      </button>
-                    )}
-                    {currentStep < 2 && (
-                      <button type="button" onClick={nextStep} className="flex-1 bg-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-300">
-                        Tiếp tục
-                      </button>
-                    )}
-                    {currentStep === 2 && (
-                      <div className="flex-1">
-                        <SubmitButton isLoading={isLoading} disabled={isLoading} />
-                      </div>
-                    )}
-                  </div>
+                                    {currentStep === 1 && (<div className="space-y-6 animate-form-item">
+                                            <FormField label="Chất lượng món ăn">
+                                                <Rating rating={formData.foodQuality}
+                                                        onRatingChange={(value) => handleRatingChange('foodQuality', value)}/>
+                                            </FormField>
 
-                </form>
-              )}
-            </>
-          ) : (
-            <div className="p-6 text-center">
-              <h2 className="text-2xl font-bold text-stone-800">Cảm ơn bạn đã phản hồi!</h2>
-              <p className="text-stone-600 mt-2">Chúng tôi rất trân trọng ý kiến của bạn.</p>
+                                            {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
+                                                <div className="animate-form-item">
+                                                    <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
+                                <textarea
+                                    name="foodComplaint"
+                                    rows={3}
+                                    value={formData.foodComplaint}
+                                    onChange={handleInputChange}
+                                    placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
+                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                />
+                                                    </FormField>
+                                                </div>)}
 
-              {analysis && (
-                <div className="text-left bg-stone-50 rounded-lg p-4 mt-8 border border-stone-200">
-                    <h3 className="font-bold text-stone-700 mb-3 text-lg">Phân tích phản hồi của bạn</h3>
-                    <div className="space-y-3 text-sm">
-                        <p><strong className="font-semibold text-stone-600">Tóm tắt:</strong> <span className="text-stone-800">{analysis.summary}</span></p>
-                        <p><strong className="font-semibold text-stone-600">Cảm xúc:</strong> <span className={`px-2 py-1 rounded-full text-xs font-medium ${analysis.sentiment === 'Tích cực' ? 'bg-emerald-100 text-emerald-800' : analysis.sentiment === 'Tiêu cực' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>{analysis.sentiment}</span></p>
-                        <div>
-                            <strong className="font-semibold text-stone-600">Từ khóa chính:</strong>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                                {analysis.keywords.map(kw => <span key={kw} className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">{kw}</span>)}
+                                            <FormField label="Chất lượng phục vụ">
+                                                <Rating rating={formData.service}
+                                                        onRatingChange={(value) => handleRatingChange('service', value)}/>
+                                            </FormField>
+
+                                            {formData.service > 0 && formData.service <= 2 && (
+                                                <div className="animate-form-item">
+                                                    <FormField label="Bạn không hài lòng về điều gì ở phục vụ?">
+                                <textarea
+                                    name="serviceComplaint"
+                                    rows={3}
+                                    value={formData.serviceComplaint}
+                                    onChange={handleInputChange}
+                                    placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
+                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                />
+                                                    </FormField>
+                                                </div>)}
+
+                                            <FormField label="Không gian nhà hàng">
+                                                <Rating rating={formData.ambiance}
+                                                        onRatingChange={(value) => handleRatingChange('ambiance', value)}/>
+                                            </FormField>
+
+                                            {formData.ambiance > 0 && formData.ambiance <= 2 && (
+                                                <div className="animate-form-item">
+                                                    <FormField label="Bạn không hài lòng về điều gì ở không gian?">
+                                <textarea
+                                    name="ambianceComplaint"
+                                    rows={3}
+                                    value={formData.ambianceComplaint}
+                                    onChange={handleInputChange}
+                                    placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
+                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                />
+                                                    </FormField>
+                                                </div>)}
+                                        </div>)}
+
+                                    {currentStep === 2 && (<div className="space-y-6 animate-form-item">
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-stone-800 mb-3">Thông tin
+                                                    chuyến thăm</h3>
+                                                <FormField label="Ngày bạn ghé thăm *">
+                                                    <input
+                                                        type="date"
+                                                        name="visitDate"
+                                                        value={formData.visitDate}
+                                                        onChange={handleInputChange}
+                                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                                    />
+                                                </FormField>
+
+                                                <div className="mt-2"></div>
+                                                <FormField label="Phòng số (Tùy chọn)">
+                                                    <input
+                                                        type="text"
+                                                        name="roomNumber"
+                                                        value={formData.roomNumber}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Phòng bạn ngồi"
+                                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                                    />
+                                                </FormField>
+                                            </div>
+
+                                            <hr className="border-stone-200"/>
+
+                                            <div className="space-y-4">
+                                                <h3 className="text-lg font-semibold text-stone-800">Thông tin bổ sung
+                                                    (Tùy chọn)</h3>
+                                                <FormField label="Số điện thoại">
+                                                    <input
+                                                        type="tel"
+                                                        name="phoneNumber"
+                                                        value={formData.phoneNumber}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Để chúng tôi có thể liên hệ lại"
+                                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                                    />
+                                                </FormField>
+
+                                                <FormField label="Đính kèm hóa đơn">
+                                                    <div className="flex gap-4">
+                                                        <button type="button"
+                                                                onClick={() => fileInputRef.current?.click()}
+                                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
+                                                            <i className="fa-solid fa-upload"></i>
+                                                            <span>Tải ảnh lên</span>
+                                                        </button>
+                                                        <button type="button" onClick={() => setShowCamera(true)}
+                                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
+                                                            <i className="fa-solid fa-camera"></i>
+                                                            <span>Chụp ảnh</span>
+                                                        </button>
+                                                        <input ref={fileInputRef} id="receipt-upload" type="file"
+                                                               className="hidden" onChange={handleFileChange}
+                                                               accept="image/png, image/jpeg"/>
+                                                    </div>
+                                                    <p className="text-xs text-stone-500 mt-2 text-center">PNG, JPG (TỐI
+                                                        ĐA 5MB)</p>
+
+                                                    {formData.receiptImage && (<div
+                                                            className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
+                                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                                <i className="fa-solid fa-image text-stone-500 flex-shrink-0"></i>
+                                                                <span
+                                                                    className="text-sm text-stone-700 font-medium truncate">{formData.receiptImage.name}</span>
+                                                            </div>
+                                                            <button type="button" onClick={() => handleFileSelect(null)}
+                                                                    className="text-red-500 hover:text-red-700 ml-2">
+                                                                <i className="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </div>)}
+                                                </FormField>
+                                            </div>
+                                        </div>)}
+
+                                    {error &&
+                                        <p className="text-sm text-red-600 bg-red-100 p-3 rounded-lg text-center">{error}</p>}
+
+                                    <div className="pt-4 flex items-center gap-4">
+                                        {currentStep > 1 && (<button type="button" onClick={prevStep}
+                                                                     className="w-1/3 bg-stone-200 text-stone-700 font-bold py-3 px-4 rounded-lg hover:bg-stone-300 transition duration-300">
+                                                Quay lại
+                                            </button>)}
+                                        {currentStep < 2 && (<button type="button" onClick={nextStep}
+                                                                     className="flex-1 bg-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-300">
+                                                Tiếp tục
+                                            </button>)}
+                                        {currentStep === 2 && (<div className="flex-1">
+                                                <SubmitButton isLoading={isLoading} disabled={isLoading}/>
+                                            </div>)}
+                                    </div>
+
+                                </form>)}
+                        </>) : (<div className="p-8 text-center animate-fade-in">
+                            <div
+                                className="w-20 h-20 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-5 border-4 border-emerald-200">
+                                <i className="fa-solid fa-envelope-circle-check text-4xl text-emerald-600"></i>
                             </div>
-                        </div>
-                    </div>
+                            <h2 className="text-2xl font-bold text-stone-800">Đã gửi thành công!</h2>
+                            <p className="text-stone-600 mt-3 mb-6 max-w-xs mx-auto">
+                                Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp
+                                Gold One ngày một tốt hơn!
+                            </p>
+                        </div>)}
                 </div>
-              )}
-            </div>
-          )}
-        </div>
-        <footer className="text-center py-6 text-stone-500 text-xs">
-          <p>&copy; {new Date().getFullYear()} Goldone. All Rights Reserved.</p>
-        </footer>
-      </main>
-      <style>{`
+                <footer className="text-center py-6 text-stone-500 text-xs">
+                    <p>&copy; {new Date().getFullYear()} Goldone. All Rights Reserved.</p>
+                </footer>
+            </main>
+            <style>{`
         @keyframes fade-slide-in {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -468,8 +452,7 @@ const App: React.FC = () => {
             100% { transform: translateY(-150px); opacity: 0; }
         }
       `}</style>
-    </div>
-  );
+        </div>);
 };
 
 export default App;
