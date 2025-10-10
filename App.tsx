@@ -403,10 +403,6 @@ const App: React.FC = () => {
                     </div>
                 </div>
               )}
-
-              <button onClick={resetForm} className="mt-8 w-full bg-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                Gửi phản hồi khác
-              </button>
             </div>
           )}
         </div>
