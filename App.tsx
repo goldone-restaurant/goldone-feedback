@@ -388,7 +388,7 @@ const App: React.FC = () => {
                             <h2 className="text-2xl font-bold text-stone-800">Đã gửi thành công!</h2>
                             <p className="text-stone-600 mt-3 mb-6 max-w-xs mx-auto">
                                 Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp
-                                Gold One ngày một tốt hơn!
+                                Goldone ngày một tốt hơn!
                             </p>
                         </div>)}
                 </div>
