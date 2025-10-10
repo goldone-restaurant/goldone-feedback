@@ -97,7 +97,7 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
                 text: [
                     lowRatingsDiff,            // các điểm rating thấp (đỏ)
                     complaintsDiff,            // các phàn nàn (đỏ)
-                    analysis?.sentiment === "Tiêu cực" ? "\n**ƯU TIÊN CAO**: Sentiment *Tiêu cực*, cần liên hệ khách sớm." : ""
+                    analysis?.sentiment === "Tiêu cực" ? "\n**ƯU TIÊN CAO**: *Tiêu cực*, cần liên hệ khách sớm." : ""
                 ]
                     .filter(Boolean)
                     .join("\n"),
