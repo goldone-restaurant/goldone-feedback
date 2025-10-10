@@ -385,9 +385,6 @@ const App: React.FC = () => {
             </>
           ) : (
             <div className="p-6 text-center">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                <i className="fa-solid fa-check text-3xl text-emerald-600"></i>
-              </div>
               <h2 className="text-2xl font-bold text-stone-800">Cảm ơn bạn đã phản hồi!</h2>
               <p className="text-stone-600 mt-2">Chúng tôi rất trân trọng ý kiến của bạn.</p>
 
