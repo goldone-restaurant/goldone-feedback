@@ -7,7 +7,6 @@ type MMFileUploadResp = {
 };
 
 
-
 const MM_URL = "https://chat.goldone.vn";
 const MM_CHANNEL_ID = "hj8rn3iai7ydjpof3shddymrke";
 const MM_BOT_TOKEN = "538a85qojjfi7xr8t6coqtp6or";
