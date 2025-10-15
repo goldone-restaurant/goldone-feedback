@@ -236,74 +236,78 @@ const App: React.FC = () => {
                                     onRatingChange={(value) => handleRatingChange('foodQuality', value)}
                                 />
                             </FormField>
-                            <PositiveHint
-                                score={formData.foodQuality}
-                                label="món ăn"
-                                suggest="Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp. Sẽ quay lại!"
-                            />
-                            {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
-                                <div className="animate-form-item">
-                                    <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
-      <textarea
-          name="foodComplaint"
-          rows={3}
-          value={formData.foodComplaint}
-          onChange={handleInputChange}
-          placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
-          className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-      />
-                                    </FormField>
-                                </div>)}
 
+                            {/* Nếu 1–2 sao: hiển thị ô phàn nàn */}
+                            {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
+                                <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
+    <textarea
+        name="foodComplaint"
+        rows={3}
+        value={formData.foodComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
+        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+    />
+                                </FormField>)}
+
+                            {/* Nếu ≥3 sao: placeholder gợi ý khen */}
+                            {formData.foodQuality >= 3 && (
+                                <FormField label="Món ăn có điểm gì bạn hài lòng? (tuỳ chọn)">
+    <textarea
+        name="foodComplaint"
+        rows={3}
+        value={formData.foodComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp..."
+        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+    />
+                                </FormField>)}
                             {/* Phục vụ */}
-                            <FormField label="Chất lượng phục vụ">
-                                <Rating
-                                    rating={formData.service}
-                                    onRatingChange={(value) => handleRatingChange('service', value)}
-                                />
-                            </FormField>
-                            <PositiveHint
-                                score={formData.service}
-                                label="phục vụ"
-                                suggest="Nhân viên thân thiện, phục vụ nhanh và tận tâm."
-                            />
-                            {formData.service > 0 && formData.service <= 2 && (<div className="animate-form-item">
+                            {formData.service > 0 && formData.service <= 2 && (
                                 <FormField label="Bạn không hài lòng về điều gì ở phục vụ?">
-      <textarea
-          name="serviceComplaint"
-          rows={3}
-          value={formData.serviceComplaint}
-          onChange={handleInputChange}
-          placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
-          className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-      />
-                                </FormField>
-                            </div>)}
+    <textarea
+        name="serviceComplaint"
+        rows={3}
+        value={formData.serviceComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
+        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+    />
+                                </FormField>)}
+                            {formData.service >= 3 && (<FormField label="Bạn ấn tượng điều gì về phục vụ? (tuỳ chọn)">
+    <textarea
+        name="serviceComplaint"
+        rows={3}
+        value={formData.serviceComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách..."
+        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+    />
+                                </FormField>)}
 
                             {/* Không gian */}
-                            <FormField label="Không gian nhà hàng">
-                                <Rating
-                                    rating={formData.ambiance}
-                                    onRatingChange={(value) => handleRatingChange('ambiance', value)}
-                                />
-                            </FormField>
-                            <PositiveHint
-                                score={formData.ambiance}
-                                label="không gian"
-                                suggest="Không gian sạch, sang và ấm cúng; âm nhạc dễ chịu."
-                            />
-                            {formData.ambiance > 0 && formData.ambiance <= 2 && (<div className="animate-form-item">
+                            {formData.ambiance > 0 && formData.ambiance <= 2 && (
                                 <FormField label="Bạn không hài lòng về điều gì ở không gian?">
-      <textarea
-          name="ambianceComplaint"
-          rows={3}
-          value={formData.ambianceComplaint}
-          onChange={handleInputChange}
-          placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
-          className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-      />
-                                </FormField>
-                            </div>)}
+    <textarea
+        name="ambianceComplaint"
+        rows={3}
+        value={formData.ambianceComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
+        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+    />
+                                </FormField>)}
+                            {formData.ambiance >= 3 && (<FormField label="Bạn thích điều gì ở không gian? (tuỳ chọn)">
+    <textarea
+        name="ambianceComplaint"
+        rows={3}
+        value={formData.ambianceComplaint}
+        onChange={handleInputChange}
+        placeholder="Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
+        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+    />
+                                </FormField>)}
+
 
                         </div>)}
 
@@ -476,44 +480,6 @@ const App: React.FC = () => {
         }
       `}</style>
     </div>);
-};
-
-const PositiveHint: React.FC<{ score: number; label: string; suggest: string }> = ({ score, label, suggest }) => {
-    if (score < 3) return null;
-    return (
-        <div className="mt-3 animate-form-item">
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                <div className="flex items-start gap-3">
-                    <i className="fa-solid fa-thumbs-up text-emerald-600 text-xl mt-1"></i>
-                    <div className="flex-1">
-                        <h4 className="font-semibold text-emerald-800">
-                            {`Bạn đang hài lòng về ${label}. Gửi vài lời đánh giá tích cực chứ?`}
-                        </h4>
-                        <div className="mt-2 bg-white/70 border border-emerald-200 rounded-lg p-3">
-                            <p className="text-sm text-stone-700">{suggest}</p>
-                            <div className="mt-2 flex gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => navigator.clipboard.writeText(suggest).catch(() => {})}
-                                    className="px-3 py-2 rounded-md bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"
-                                >
-                                    Sao chép gợi ý
-                                </button>
-                                <a
-                                    href={import.meta.env.VITE_GOOGLE_REVIEW_URL ?? "https://g.page/r/your-place-review"}
-                                    target="_blank" rel="noreferrer"
-                                    className="px-3 py-2 rounded-md bg-white text-emerald-700 border border-emerald-300 text-sm font-semibold hover:bg-emerald-100 transition"
-                                >
-                                    Mở trang đánh giá
-                                </a>
-                            </div>
-                            <p className="text-xs text-emerald-700 mt-2">* Bạn có thể chỉnh lại lời nhận xét trước khi đăng.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
 };
 
 
