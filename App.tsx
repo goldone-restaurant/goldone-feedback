@@ -188,11 +188,11 @@ const App: React.FC = () => {
             onCapture={handlePhotoTaken}
             onClose={() => setShowCamera(false)}
         />)}
-        <main className="p-4 max-w-md mx-auto" style={{marginTop: '-3rem', zIndex: 999}}>
+        <main className="p-4 max-w-md mx-auto" style={{marginTop: '-3rem'}}>
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
                 {!isSubmitted ? (<>
                     {currentStep === 0 && (<div
-                        className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
+                        className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900" style={{position: 'relative', zIndex: 999}}>
                         <div className="absolute inset-0 z-0">
                             {aquariumCreatures.map(creature => (<creature.Component
                                 key={creature.id}
