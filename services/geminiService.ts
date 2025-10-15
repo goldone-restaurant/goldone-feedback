@@ -32,87 +32,52 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
             ? analysis.keywords.join(", ")
             : "—";
 
-    // 1) Gom phàn nàn có nội dung
+    // 1) Gom các mục có comment
     const complaints: Array<{ label: string; text: string }> = [];
-    if (form.foodComplaint?.trim())      complaints.push({ label: "Món ăn",    text: form.foodComplaint.trim() });
-    if (form.serviceComplaint?.trim())   complaints.push({ label: "Phục vụ",   text: form.serviceComplaint.trim() });
-    if (form.ambianceComplaint?.trim())  complaints.push({ label: "Không gian", text: form.ambianceComplaint.trim() });
+    if (form.foodComplaint?.trim())
+        complaints.push({ label: "Món ăn", text: form.foodComplaint.trim() });
+    if (form.serviceComplaint?.trim())
+        complaints.push({ label: "Phục vụ", text: form.serviceComplaint.trim() });
+    if (form.ambianceComplaint?.trim())
+        complaints.push({ label: "Không gian", text: form.ambianceComplaint.trim() });
 
-    // 2) Xác định rating thấp (<=2) để highlight
-    const lowRatings: string[] = [];
-    if (form.foodQuality > 0 && form.foodQuality <= 2)    lowRatings.push(`Món ăn: ${form.foodQuality}/5`);
-    if (form.service > 0 && form.service <= 2)            lowRatings.push(`Phục vụ: ${form.service}/5`);
-    if (form.ambiance > 0 && form.ambiance <= 2)          lowRatings.push(`Không gian: ${form.ambiance}/5`);
-
-    // 3) Chuẩn bị text dạng diff để các dòng cần chú ý hiện màu đỏ
-    //    (trên hầu hết theme Mattermost: tiền tố "-" trong ```diff sẽ xuất hiện nổi bật)
+    // 2) Tô đỏ các comment bằng khối diff
     const complaintsDiff = complaints.length
         ? ["```diff", ...complaints.map(c => `- ${c.label}: ${c.text}`), "```"].join("\n")
         : "";
 
-    const lowRatingsDiff = lowRatings.length
-        ? ["```diff", ...lowRatings.map(line => `- Điểm thấp • ${line}`), "```"].join("\n")
-        : "";
-
-    // 4) Attachment chính (tổng quan)
+    // 3) Attachment chính — luôn màu xanh, hiển thị y hệt đánh giá tích cực
     const mainAttachment: any = {
-        color:
-            analysis?.sentiment === "Tích cực" ? "#2ECC71" :
-                analysis?.sentiment === "Tiêu cực" ? "#E74C3C" : "#F1C40F",
+        color: "#2ECC71",
         fields: [
             { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
             { title: "Phòng", value: (form as any).roomNumber || "—", short: true },
             { title: "SĐT", value: form.phoneNumber || "—", short: true },
-            {
-                title: "Giới thiệu bạn bè",
-                value: form.recommend == null ? "Chưa trả lời" : (form.recommend ? "Có" : "Không"),
-                short: true
-            },
-
             { title: "Món ăn", value: stars(form.foodQuality), short: true },
             { title: "Phục vụ", value: stars(form.service), short: true },
             { title: "Không gian", value: stars(form.ambiance), short: true },
-
             { title: "Cảm xúc AI phân tích", value: analysis?.sentiment ?? "—", short: true },
             { title: "Từ khóa chính", value: keywords, short: false },
             { title: "Tóm tắt AI", value: analysis?.summary ?? "—", short: false },
-
-            // Gắn cờ ở attachment chính để người xem biết có phần cần chú ý bên dưới
-            ...(lowRatings.length
-                ? [{ title: "⚠️ Điểm thấp", value: "**Vui lòng xem mục NỔI BẬT bên dưới**", short: false }]
-                : []),
-            ...(complaints.length
-                ? [{ title: "🚨 Có phàn nàn", value: "**Vui lòng xem mục NỔI BẬT bên dưới**", short: false }]
-                : []),
         ],
+        ...(complaintsDiff
+            ? {
+                text: [
+                    "### Ý kiến cụ thể",
+                    complaintsDiff
+                ].join("\n")
+            }
+            : {})
     };
 
-    // 5) Attachment NỔI BẬT: gom tất cả cảnh báo/điểm thấp/phàn nàn vào khối riêng, nền đỏ
-    const highlightAttachment =
-        complaints.length || lowRatings.length
-            ? {
-                color: "#E74C3C", // đỏ đậm, gây chú ý
-                title: "🔥 NỔI BẬT – Cần xử lý sớm",
-                // dùng 'text' để render markdown tốt hơn
-                text: [
-                    lowRatingsDiff,            // các điểm rating thấp (đỏ)
-                    complaintsDiff,            // các phàn nàn (đỏ)
-                    analysis?.sentiment === "Tiêu cực" ? "\n**ƯU TIÊN CAO**: *Tiêu cực*, cần liên hệ khách sớm." : ""
-                ]
-                    .filter(Boolean)
-                    .join("\n"),
-            }
-            : null;
-
-    // 6) Trả payload cuối
+    // 4) Payload cuối
     return {
         username: "test-automation",
         text: `${emoji} *Feedback mới nhận!* @channel`,
-        attachments: highlightAttachment
-            ? [mainAttachment, highlightAttachment]   // khối chính + khối nổi bật
-            : [mainAttachment],
+        attachments: [mainAttachment],
     };
 }
+
 
 export async function sendToChat(form: FeedbackData, analysis: GeminiAnalysis) {
     if (!MATTERMOST_WEBHOOK) {
