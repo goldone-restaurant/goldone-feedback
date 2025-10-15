@@ -188,7 +188,7 @@ const App: React.FC = () => {
             onCapture={handlePhotoTaken}
             onClose={() => setShowCamera(false)}
         />)}
-        <main className="p-4 max-w-md mx-auto" style={{marginTop: '-7rem'}}>
+        <main className="p-4 max-w-md mx-auto" style={{marginTop: '-3rem'}}>
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
                 {!isSubmitted ? (<>
                     {currentStep === 0 && (<div
