@@ -189,7 +189,7 @@ const App: React.FC = () => {
             onClose={() => setShowCamera(false)}
         />)}
         <main className="p-4 max-w-md mx-auto" style={{marginTop: '-3rem'}}>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white" style={{position: 'relative', zIndex: 0}}>
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white" style={{position: 'relative', zIndex: 1}}>
                 {!isSubmitted ? (<>
                     {currentStep === 0 && (<div
                         className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900" style={{position: 'relative', zIndex: 999}}>
