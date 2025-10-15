@@ -10,10 +10,6 @@ import CameraCapture from './components/CameraCapture';
 import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
 import {sendToChat} from "@/sendToChatBrowser.ts";
-import ConfettiBackground from "./components/ConfettiBackground";
-
-
-
 
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
