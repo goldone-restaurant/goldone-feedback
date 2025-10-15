@@ -229,87 +229,110 @@ const App: React.FC = () => {
                         {renderStepIndicator()}
 
                         {currentStep === 1 && (<div className="space-y-6 animate-form-item">
-                            {/* Món ăn */}
-                            <FormField label="Chất lượng món ăn">
-                                <Rating
-                                    rating={formData.foodQuality}
-                                    onRatingChange={(value) => handleRatingChange('foodQuality', value)}
-                                />
-                            </FormField>
+                                {/* Món ăn */}
+                                <FormField label="Chất lượng món ăn">
+                                    <Rating
+                                        rating={formData.foodQuality}
+                                        onRatingChange={(value) => handleRatingChange('foodQuality', value)}
+                                    />
+                                </FormField>
 
-                            {/* Nếu 1–2 sao: hiển thị ô phàn nàn */}
-                            {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
-                                <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
-    <textarea
-        name="foodComplaint"
-        rows={3}
-        value={formData.foodComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
-        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-    />
-                                </FormField>)}
+                                {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
+                                    <div className="animate-form-item">
+                                        <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
+          <textarea
+              name="foodComplaint"
+              rows={3}
+              value={formData.foodComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
+              className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+          />
+                                        </FormField>
+                                    </div>)}
 
-                            {/* Nếu ≥3 sao: placeholder gợi ý khen */}
-                            {formData.foodQuality >= 3 && (
-                                <FormField label="Món ăn có điểm gì bạn hài lòng? (tuỳ chọn)">
-    <textarea
-        name="foodComplaint"
-        rows={3}
-        value={formData.foodComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp..."
-        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
-    />
-                                </FormField>)}
-                            {/* Phục vụ */}
-                            {formData.service > 0 && formData.service <= 2 && (
-                                <FormField label="Bạn không hài lòng về điều gì ở phục vụ?">
-    <textarea
-        name="serviceComplaint"
-        rows={3}
-        value={formData.serviceComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
-        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-    />
-                                </FormField>)}
-                            {formData.service >= 3 && (<FormField label="Bạn ấn tượng điều gì về phục vụ? (tuỳ chọn)">
-    <textarea
-        name="serviceComplaint"
-        rows={3}
-        value={formData.serviceComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách..."
-        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
-    />
-                                </FormField>)}
+                                {formData.foodQuality >= 3 && (<div className="animate-form-item">
+                                        <FormField label="Món ăn có điểm gì bạn hài lòng? (tuỳ chọn)">
+          <textarea
+              name="foodComplaint"
+              rows={3}
+              value={formData.foodComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp..."
+              className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+          />
+                                        </FormField>
+                                    </div>)}
 
-                            {/* Không gian */}
-                            {formData.ambiance > 0 && formData.ambiance <= 2 && (
-                                <FormField label="Bạn không hài lòng về điều gì ở không gian?">
-    <textarea
-        name="ambianceComplaint"
-        rows={3}
-        value={formData.ambianceComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
-        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-    />
-                                </FormField>)}
-                            {formData.ambiance >= 3 && (<FormField label="Bạn thích điều gì ở không gian? (tuỳ chọn)">
-    <textarea
-        name="ambianceComplaint"
-        rows={3}
-        value={formData.ambianceComplaint}
-        onChange={handleInputChange}
-        placeholder="Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
-        className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
-    />
-                                </FormField>)}
+                                {/* Phục vụ */}
+                                <FormField label="Chất lượng phục vụ">
+                                    <Rating
+                                        rating={formData.service}
+                                        onRatingChange={(value) => handleRatingChange('service', value)}
+                                    />
+                                </FormField>
 
+                                {formData.service > 0 && formData.service <= 2 && (<div className="animate-form-item">
+                                        <FormField label="Bạn không hài lòng về điều gì ở phục vụ?">
+          <textarea
+              name="serviceComplaint"
+              rows={3}
+              value={formData.serviceComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Nhân viên không thân thiện, phục vụ chậm..."
+              className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus-border-orange-500 transition"
+          />
+                                        </FormField>
+                                    </div>)}
 
-                        </div>)}
+                                {formData.service >= 3 && (<div className="animate-form-item">
+                                        <FormField label="Bạn ấn tượng điều gì về phục vụ? (tuỳ chọn)">
+          <textarea
+              name="serviceComplaint"
+              rows={3}
+              value={formData.serviceComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách..."
+              className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+          />
+                                        </FormField>
+                                    </div>)}
+
+                                {/* Không gian */}
+                                <FormField label="Không gian nhà hàng">
+                                    <Rating
+                                        rating={formData.ambiance}
+                                        onRatingChange={(value) => handleRatingChange('ambiance', value)}
+                                    />
+                                </FormField>
+
+                                {formData.ambiance > 0 && formData.ambiance <= 2 && (<div className="animate-form-item">
+                                        <FormField label="Bạn không hài lòng về điều gì ở không gian?">
+          <textarea
+              name="ambianceComplaint"
+              rows={3}
+              value={formData.ambianceComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to..."
+              className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+          />
+                                        </FormField>
+                                    </div>)}
+
+                                {formData.ambiance >= 3 && (<div className="animate-form-item">
+                                        <FormField label="Bạn thích điều gì ở không gian? (tuỳ chọn)">
+          <textarea
+              name="ambianceComplaint"
+              rows={3}
+              value={formData.ambianceComplaint}
+              onChange={handleInputChange}
+              placeholder="Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
+              className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
+          />
+                                        </FormField>
+                                    </div>)}
+                            </div>)}
+
 
                         {currentStep === 2 && (<div className="space-y-6 animate-form-item">
                             <div>
