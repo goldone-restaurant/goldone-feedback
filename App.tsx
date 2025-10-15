@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {FeedbackData, GeminiAnalysis} from './types';
-import {analyzeFeedback, sendToChat} from './services/geminiService';
+import {analyzeFeedback} from './services/geminiService';
 import Header from './components/Header';
 import Rating from './components/Rating';
 import FormField from './components/FormField';
@@ -8,6 +8,7 @@ import SubmitButton from './components/SubmitButton';
 import CameraCapture from './components/CameraCapture';
 import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
+import {sendToChat} from "@/sendToChatBrowser.ts";
 
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);

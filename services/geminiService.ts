@@ -16,87 +16,29 @@ async function fileToGenerativePart(file: File) {
 }
 const MATTERMOST_WEBHOOK = "https://chat.goldone.vn/hooks/hjakns5xh3d3d8wnuqrgywck4o"; // Hoặc import.meta.env.VITE_MATTERMOST_WEBHOOK
 
-function stars(n?: number) {
-    if (!n || n <= 0) return "Không đánh giá";
-    const v = Math.max(1, Math.min(5, Math.round(n)));
-    return `${v}/5 ⭐`;
-}
-
-function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
-    const emoji =
-        analysis?.sentiment === "Tích cực" ? "🟢" :
-            analysis?.sentiment === "Tiêu cực" ? "🔴" : "🟡";
-
-    const keywords =
-        Array.isArray(analysis?.keywords) && analysis.keywords.length
-            ? analysis.keywords.join(", ")
-            : "—";
-
-    // 1) Gom các mục có comment
-    const complaints: Array<{ label: string; text: string }> = [];
-    if (form.foodComplaint?.trim())
-        complaints.push({ label: "Món ăn", text: form.foodComplaint.trim() });
-    if (form.serviceComplaint?.trim())
-        complaints.push({ label: "Phục vụ", text: form.serviceComplaint.trim() });
-    if (form.ambianceComplaint?.trim())
-        complaints.push({ label: "Không gian", text: form.ambianceComplaint.trim() });
-
-    // 2) Tô đỏ các comment bằng khối diff
-    const complaintsDiff = complaints.length
-        ? ["```diff", ...complaints.map(c => `- ${c.label}: ${c.text}`), "```"].join("\n")
-        : "";
-
-    // 3) Attachment chính — luôn màu xanh, hiển thị y hệt đánh giá tích cực
-    const mainAttachment: any = {
-        color: "#2ECC71",
-        fields: [
-            { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
-            { title: "Phòng", value: (form as any).roomNumber || "—", short: true },
-            { title: "SĐT", value: form.phoneNumber || "—", short: true },
-            { title: "Món ăn", value: stars(form.foodQuality), short: true },
-            { title: "Phục vụ", value: stars(form.service), short: true },
-            { title: "Không gian", value: stars(form.ambiance), short: true },
-            { title: "Cảm xúc AI phân tích", value: analysis?.sentiment ?? "—", short: true },
-            { title: "Từ khóa chính", value: keywords, short: false },
-            { title: "Tóm tắt AI", value: analysis?.summary ?? "—", short: false },
-        ],
-        ...(complaintsDiff
-            ? {
-                text: [
-                    "### Ý kiến cụ thể",
-                    complaintsDiff
-                ].join("\n")
-            }
-            : {})
-    };
-
-    // 4) Payload cuối
-    return {
-        username: "test-automation",
-        text: `${emoji} *Feedback mới nhận!* @channel`,
-        attachments: [mainAttachment],
-    };
-}
 
 
-export async function sendToChat(form: FeedbackData, analysis: GeminiAnalysis) {
-    if (!MATTERMOST_WEBHOOK) {
-        console.error("❌ Thiếu MATTERMOST_WEBHOOK");
-        return;
-    }
 
-    const payload = buildPayload(form, analysis);
 
-    try {
-        await axios.post(MATTERMOST_WEBHOOK, payload, {
-            headers: { "Content-Type": "application/json" },
-            timeout: 8000,
-        });
-        console.log("✅ Đã gửi feedback lên Mattermost");
-    } catch (err: any) {
-        console.error("❌ Gửi webhook thất bại:", err?.response?.status, err?.message);
-    }
-}
+
+// export async function sendToChat(form: FeedbackData, analysis: GeminiAnalysis) {
+//     if (!MATTERMOST_WEBHOOK) {
+//         console.error("❌ Thiếu MATTERMOST_WEBHOOK");
+//         return;
+//     }
+//
+//     const payload = buildPayload(form, analysis);
+//
+//     try {
+//         await axios.post(MATTERMOST_WEBHOOK, payload, {
+//             headers: { "Content-Type": "application/json" },
+//             timeout: 8000,
+//         });
+//         console.log("✅ Đã gửi feedback lên Mattermost");
+//     } catch (err: any) {
+//         console.error("❌ Gửi webhook thất bại:", err?.response?.status, err?.message);
+//     }
+// }
 
 export const analyzeFeedback = async (feedback: FeedbackData): Promise<GeminiAnalysis> => {
     
