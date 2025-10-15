@@ -1,4 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import {FeedbackData, GeminiAnalysis} from './types';
 import {analyzeFeedback} from './services/geminiService';
 import Header from './components/Header';
@@ -9,7 +10,6 @@ import CameraCapture from './components/CameraCapture';
 import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
 import {sendToChat} from "@/sendToChatBrowser.ts";
-const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
 
 
 
@@ -29,6 +29,8 @@ const App: React.FC = () => {
         serviceComplaint: '',
         ambianceComplaint: '',
     });
+
+    const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
 
     useEffect(() => {
         if (!formData.receiptImage) {
