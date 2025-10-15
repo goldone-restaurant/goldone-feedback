@@ -62,7 +62,6 @@ function stars(n?: number) {
     const v = Math.max(1, Math.min(5, Math.round(n)));
     return `${v}/5 ⭐`;
 }
-
 function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
     const emoji =
         analysis?.sentiment === "Tích cực"
