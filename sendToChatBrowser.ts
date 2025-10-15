@@ -1,66 +1,61 @@
-// sendToChatBrowser.ts
-// ⚠️ Demo ONLY – token nằm trên client, không an toàn cho production
-
+import axios from "axios";
 import {FeedbackData, GeminiAnalysis} from "@/types.ts";
-const MM_URL="https://chat.goldone.vn"
-const MM_BOT_TOKEN="538a85qojjfi7xr8t6coqtp6or"
-const MM_CHANNEL_ID="goldone-feedback-khach-hang"
 
 
 type MMFileUploadResp = {
     file_infos: Array<{ id: string }>;
 };
 
+
+
+const MM_URL = "https://chat.goldone.vn";
+const MM_CHANNEL_ID = "hj8rn3iai7ydjpof3shddymrke";
+const MM_BOT_TOKEN = "538a85qojjfi7xr8t6coqtp6or"; // ⚠️ dùng .env nếu public code
+
 export async function sendToChat(form: FeedbackData, analysis: GeminiAnalysis) {
-    const built = buildPayload(form, analysis); // dùng đúng hàm của bạn, trả { text, attachments }
+    const built = buildPayload(form, analysis); // { text, attachments }
 
-    // 1) (tuỳ) Upload ảnh để lấy file_ids
     let fileIds: string[] = [];
-    if (form.receiptImage) {
-        const fd = new FormData();
-        fd.append('channel_id', MM_CHANNEL_ID);
-        fd.append('files', form.receiptImage, form.receiptImage.name);
 
-        const upRes = await fetch(`${MM_URL}/api/v4/files`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${MM_BOT_TOKEN}` },
-            body: fd,
+    try {
+        // 1️⃣ Upload file nếu có
+        if (form.receiptImage) {
+            const fd = new FormData();
+            fd.append("channel_id", MM_CHANNEL_ID);
+            fd.append("files", form.receiptImage, form.receiptImage.name);
+
+            const uploadRes = await axios.post(`${MM_URL}/api/v4/files`, fd, {
+                headers: {
+                    Authorization: `Bearer ${MM_BOT_TOKEN}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            fileIds = (uploadRes.data.file_infos || []).map((f: any) => f.id);
+            console.log("✅ Uploaded file:", fileIds);
+        }
+
+        // 2️⃣ Tạo post gửi message + file_ids + attachments
+        const postBody = {
+            channel_id: MM_CHANNEL_ID,
+            message: built.text,
+            file_ids: fileIds,
+            props: { attachments: built.attachments },
+        };
+
+        const postRes = await axios.post(`${MM_URL}/api/v4/posts`, postBody, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${MM_BOT_TOKEN}`,
+            },
         });
 
-        if (!upRes.ok) {
-            const t = await upRes.text();
-            console.error('Upload file failed:', upRes.status, t);
-            // vẫn tiếp tục post text nếu muốn
-        } else {
-            const upJson = (await upRes.json()) as MMFileUploadResp;
-            fileIds = (upJson.file_infos || []).map((fi) => fi.id);
-        }
+        console.log("✅ Sent post:", postRes.data);
+        return postRes.data;
+    } catch (err: any) {
+        console.error("❌ Mattermost send error:", err.response?.status, err.message);
+        if (err.response?.data) console.error(err.response.data);
     }
-
-    // 2) Tạo post kèm file_ids + attachments (Slack-style)
-    const postBody = {
-        channel_id: MM_CHANNEL_ID,
-        message: built.text,
-        file_ids: fileIds, // rỗng nếu không có ảnh
-        props: { attachments: built.attachments },
-    };
-
-    const postRes = await fetch(`${MM_URL}/api/v4/posts`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${MM_BOT_TOKEN}`,
-        },
-        body: JSON.stringify(postBody),
-    });
-
-    if (!postRes.ok) {
-        const t = await postRes.text();
-        throw new Error(`Create post failed: ${postRes.status} ${t}`);
-    }
-
-    // ok
-    return await postRes.json();
 }
 
 function stars(n?: number) {
@@ -71,15 +66,17 @@ function stars(n?: number) {
 
 function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
     const emoji =
-        analysis?.sentiment === "Tích cực" ? "🟢" :
-            analysis?.sentiment === "Tiêu cực" ? "🔴" : "🟡";
+        analysis?.sentiment === "Tích cực"
+            ? "🟢"
+            : analysis?.sentiment === "Tiêu cực"
+                ? "🔴"
+                : "🟡";
 
     const keywords =
         Array.isArray(analysis?.keywords) && analysis.keywords.length
             ? analysis.keywords.join(", ")
             : "—";
 
-    // 1) Gom các mục có comment
     const complaints: Array<{ label: string; text: string }> = [];
     if (form.foodComplaint?.trim())
         complaints.push({ label: "Món ăn", text: form.foodComplaint.trim() });
@@ -88,12 +85,10 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
     if (form.ambianceComplaint?.trim())
         complaints.push({ label: "Không gian", text: form.ambianceComplaint.trim() });
 
-    // 2) Tô đỏ các comment bằng khối diff
     const complaintsDiff = complaints.length
-        ? ["```diff", ...complaints.map(c => `- ${c.label}: ${c.text}`), "```"].join("\n")
+        ? ["```diff", ...complaints.map((c) => `- ${c.label}: ${c.text}`), "```"].join("\n")
         : "";
 
-    // 3) Attachment chính — luôn màu xanh, hiển thị y hệt đánh giá tích cực
     const mainAttachment: any = {
         color: "#2ECC71",
         fields: [
@@ -108,19 +103,13 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
             { title: "Tóm tắt AI", value: analysis?.summary ?? "—", short: false },
         ],
         ...(complaintsDiff
-            ? {
-                text: [
-                    "### Ý kiến cụ thể",
-                    complaintsDiff
-                ].join("\n")
-            }
-            : {})
+            ? { text: ["### Ý kiến cụ thể", complaintsDiff].join("\n") }
+            : {}),
     };
 
-    // 4) Payload cuối
     return {
         username: "test-automation",
-        text: `${emoji} *Feedback mới nhận!* @channel`,
+        text: `${emoji} *Feedback mới nhận từ khách hàng!*`,
         attachments: [mainAttachment],
     };
 }
