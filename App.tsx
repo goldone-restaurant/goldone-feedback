@@ -195,68 +195,56 @@ const App: React.FC = () => {
         <main className="p-4 max-w-md mx-auto" style={{marginTop: '-7rem'}}>
             <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
                 {!isSubmitted ? (<>
-                    {currentStep === 0 && (
-                        <div className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
-                            {/* Confetti thay cho banghieu1.png */}
-                            <ConfettiBackground
-                                className="absolute inset-0 z-[1] pointer-events-none"
-                                density={120}
-                                palette={["#FFD700", "#E6B800", "#FF8C00", "#00BFFF", "#ADFF2F"]}
-                            />
-
-                            {/* (Tuỳ chọn) Giữ lại “cá bơi” nhưng cho xuống dưới confetti */}
-                            <div className="absolute inset-0 z-0">
-                                {aquariumCreatures.map((creature) => (
-                                    <creature.Component key={creature.id} className="absolute" style={creature.style} />
-                                ))}
-                            </div>
-
-                            {/* Bubbles trước foreground */}
-                            <div className="absolute inset-0 z-20 pointer-events-none">
-                                {[...Array(15)].map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="absolute bottom-0 rounded-full bg-yellow-400/20"
-                                        style={{
-                                            left: `${Math.random() * 100}%`,
-                                            width: `${2 + Math.random() * 4}px`,
-                                            height: `${2 + Math.random() * 4}px`,
-                                            animation: `bubble ${5 + Math.random() * 8}s linear infinite`,
-                                            animationDelay: `${Math.random() * 10}s`,
-                                        }}
-                                    />
-                                ))}
-                            </div>
-
-                            {/* Nội dung chính giữ z-10 để nằm trên confetti */}
-                            <div className="relative z-10 flex flex-col items-center w-full">
-                                <div
-                                    className="w-40 h-40 rounded-full bg-yellow-500 flex items-center justify-center animate-stamp-in shadow-2xl"
-                                    style={{boxShadow: '0 0 25px rgba(250, 204, 21, 0.4), 0 0 10px rgba(0,0,0,0.5) inset'}}>
-                                    <img src="/logo.png" alt="Gold One Logo" className="w-24 h-24"
-                                         style={{filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))'}}/>
-                                </div>
-
-                                <div className="animate-fade-in animation-delay-500">
-                                    <h2 className="text-3xl font-bold text-white mt-8"
-                                        style={{textShadow: '0 2px 8px rgba(0,0,0,0.7)'}}>
-                                        Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng
-                                    </h2>
-                                    <p className="text-stone-300 mt-4 mb-8 max-w-sm">
-                                        Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều
-                                        được <strong className="font-semibold text-yellow-400">niêm
-                                        phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải
-                                        nghiệm tại Nhà Hàng Goldone.
-                                    </p>
-                                </div>
-
-                                <button onClick={nextStep}
-                                        className="w-full bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50">
-                                    Niêm Phong & Gửi Ý Kiến
-                                </button>
-                            </div>
+                    {currentStep === 0 && (<div
+                        className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900">
+                        <div className="absolute inset-0 z-0">
+                            {aquariumCreatures.map(creature => (<creature.Component
+                                key={creature.id}
+                                className="absolute"
+                                style={creature.style}
+                            />))}
                         </div>
-                    )}
+
+                        {/* Bubbles rising in the foreground */}
+                        <div className="absolute inset-0 z-20 pointer-events-none">
+                            {[...Array(15)].map((_, i) => (
+                                <div key={i} className="absolute bottom-0 rounded-full bg-yellow-400/20"
+                                     style={{
+                                         left: `${Math.random() * 100}%`,
+                                         width: `${2 + Math.random() * 4}px`,
+                                         height: `${2 + Math.random() * 4}px`,
+                                         animation: `bubble ${5 + Math.random() * 8}s linear infinite`,
+                                         animationDelay: `${Math.random() * 10}s`
+                                     }}></div>))}
+                        </div>
+
+                        <div className="relative z-10 flex flex-col items-center w-full">
+                            <div
+                                className="w-40 h-40 rounded-full bg-yellow-500 flex items-center justify-center animate-stamp-in shadow-2xl"
+                                style={{boxShadow: '0 0 25px rgba(250, 204, 21, 0.4), 0 0 10px rgba(0,0,0,0.5) inset'}}>
+                                <img src="/logo.png" alt="Gold One Logo" className="w-24 h-24"
+                                     style={{filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))'}}/>
+                            </div>
+
+                            <div className="animate-fade-in animation-delay-500">
+                                <h2 className="text-3xl font-bold text-white mt-8"
+                                    style={{textShadow: '0 2px 8px rgba(0,0,0,0.7)'}}>
+                                    Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng
+                                </h2>
+                                <p className="text-stone-300 mt-4 mb-8 max-w-sm">
+                                    Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều
+                                    được <strong className="font-semibold text-yellow-400">niêm
+                                    phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải
+                                    nghiệm tại Nhà Hàng Goldone.
+                                </p>
+                            </div>
+
+                            <button onClick={nextStep}
+                                    className="w-full bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50">
+                                Niêm Phong & Gửi Ý Kiến
+                            </button>
+                        </div>
+                    </div>)}
                     {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6">
                         <h2 className="text-2xl font-bold text-stone-800 text-center">Chia sẻ trải nghiệm
                             của bạn</h2>
