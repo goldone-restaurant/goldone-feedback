@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {FeedbackData, GeminiAnalysis} from './types';
 import {analyzeFeedback} from './services/geminiService';
 import Header from './components/Header';
@@ -9,6 +9,9 @@ import CameraCapture from './components/CameraCapture';
 import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
 import {sendToChat} from "@/sendToChatBrowser.ts";
+const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+
+
 
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
@@ -26,6 +29,23 @@ const App: React.FC = () => {
         serviceComplaint: '',
         ambianceComplaint: '',
     });
+
+    useEffect(() => {
+        if (!formData.receiptImage) {
+            setReceiptPreview(null);
+            return;
+        }
+        const url = URL.createObjectURL(formData.receiptImage);
+        setReceiptPreview(url);
+        return () => URL.revokeObjectURL(url); // cleanup tránh leak
+    }, [formData.receiptImage]);
+
+    const formatBytes = (b?: number) => {
+        if (!b || b <= 0) return '';
+        const u = ['B','KB','MB','GB']; let i=0; let n=b;
+        while (n >= 1024 && i < u.length-1) { n/=1024; i++; }
+        return `${n.toFixed(1)} ${u[i]}`;
+    };
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analysis, setAnalysis] = useState<GeminiAnalysis | null>(null);
@@ -398,18 +418,50 @@ const App: React.FC = () => {
                                     <p className="text-xs text-stone-500 mt-2 text-center">PNG, JPG (TỐI
                                         ĐA 5MB)</p>
 
-                                    {formData.receiptImage && (<div
-                                        className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <i className="fa-solid fa-image text-stone-500 flex-shrink-0"></i>
-                                            <span
-                                                className="text-sm text-stone-700 font-medium truncate">{formData.receiptImage.name}</span>
+                                    {formData.receiptImage && (
+                                        <div className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
+                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                {/* Thumbnail */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => receiptPreview && window.open(receiptPreview, '_blank')}
+                                                    className="relative w-16 h-16 rounded-md border border-stone-300 overflow-hidden flex-shrink-0 hover:opacity-90"
+                                                    title="Nhấn để xem lớn"
+                                                >
+                                                    {receiptPreview ? (
+                                                        <img
+                                                            src={receiptPreview}
+                                                            alt="Hóa đơn đã chọn"
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <i className="fa-solid fa-image text-stone-400 text-xl w-full h-full flex items-center justify-center" />
+                                                    )}
+                                                </button>
+
+                                                {/* Tên + dung lượng */}
+                                                <div className="min-w-0">
+                                                    <div className="text-sm text-stone-800 font-medium truncate">
+                                                        {formData.receiptImage.name}
+                                                    </div>
+                                                    <div className="text-xs text-stone-500">
+                                                        {formatBytes(formData.receiptImage.size)}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Xóa */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleFileSelect(null)}
+                                                className="text-red-500 hover:text-red-700 ml-2"
+                                                title="Xóa ảnh"
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
                                         </div>
-                                        <button type="button" onClick={() => handleFileSelect(null)}
-                                                className="text-red-500 hover:text-red-700 ml-2">
-                                            <i className="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>)}
+                                    )}
+
                                 </FormField>
                             </div>
                         </div>)}
