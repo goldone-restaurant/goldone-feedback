@@ -189,7 +189,7 @@ const App: React.FC = () => {
             onClose={() => setShowCamera(false)}
         />)}
         <main className="p-4 max-w-md mx-auto" style={{marginTop: '-3rem'}}>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border-4 border-white" style={{position: 'relative', zIndex: 999}}>
                 {!isSubmitted ? (<>
                     {currentStep === 0 && (<div
                         className="relative text-center flex flex-col items-center justify-center min-h-[550px] overflow-hidden p-8 bg-slate-900" style={{position: 'relative', zIndex: 999}}>
@@ -241,7 +241,7 @@ const App: React.FC = () => {
                             </button>
                         </div>
                     </div>)}
-                    {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6" style={{position: 'relative', zIndex: 999}}>
+                    {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6">
                         <h2 className="text-2xl font-bold text-stone-800 text-center">Chia sẻ trải nghiệm
                             của bạn</h2>
                         <p className="text-center text-stone-500 -mt-4">Phản hồi của bạn giúp chúng tôi phục
