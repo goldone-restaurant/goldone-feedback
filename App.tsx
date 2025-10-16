@@ -492,19 +492,19 @@ const App: React.FC = () => {
                                 </FormField>
 
                                 <div className="mt-2"></div>
-                                <FormField label="Chi nhánh">
-                                    {/* Hiển thị dạng text thân thiện */}
-                                    <p className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 font-medium">
-                                        {formData.branchName
+                                <FormField
+                                    label={
+                                        formData.branchName
                                             ? `Chi nhánh hiện tại: ${formData.branchName}`
-                                            : 'Chưa xác định chi nhánh'}
-                                    </p>
-
-                                    {/* Input ẩn để gửi kèm khi submit */}
+                                            : 'Chi nhánh hiện tại: —'
+                                    }
+                                >
+                                    {/* Input hidden để gửi kèm khi submit */}
                                     <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
                                     <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
                                     <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                 </FormField>
+
 
 
                                 <div className="mt-2"></div>
