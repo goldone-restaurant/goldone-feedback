@@ -556,7 +556,7 @@ const App: React.FC = () => {
 
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold text-stone-800">Thông tin bổ sung
-                                    (Tùy chọn)</h3>
+                                    </h3>
                                 <FormField label="Số điện thoại">
                                     <input
                                         type="tel"
