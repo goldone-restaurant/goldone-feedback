@@ -493,25 +493,19 @@ const App: React.FC = () => {
 
                                 <div className="mt-2"></div>
                                 <FormField label="Chi nhánh">
-                                    {/* Input hiển thị (chỉ đọc, người dùng thấy tên CN + địa chỉ) */}
-                                    <input
-                                        type="text"
-                                        name="branchDisplay"
-                                        value={
-                                            formData.branchName
-                                                ? `${formData.branchName} — ${formData.branchAddress}`
-                                                : ''
-                                        }
-                                        readOnly
-                                        placeholder="Chi nhánh tự động điền"
-                                        className="w-full p-3 border border-stone-300 rounded-lg bg-stone-50 text-stone-700 cursor-not-allowed"
-                                    />
+                                    {/* Hiển thị dạng text thân thiện */}
+                                    <p className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 font-medium">
+                                        {formData.branchName
+                                            ? `Chi nhánh hiện tại: ${formData.branchName}`
+                                            : 'Chưa xác định chi nhánh'}
+                                    </p>
 
-                                    {/* Các input ẩn gửi kèm khi submit */}
+                                    {/* Input ẩn để gửi kèm khi submit */}
                                     <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
                                     <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
                                     <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                 </FormField>
+
 
                                 <div className="mt-2"></div>
                                 {formData.branchId && (
