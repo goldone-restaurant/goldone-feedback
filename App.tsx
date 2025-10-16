@@ -495,7 +495,7 @@ const App: React.FC = () => {
                                 <FormField
                                     label={
                                         formData.branchName
-                                            ? `Chi nhánh hiện tại: ${formData.branchName}`
+                                            ? `Chi nhánh hiện tại: ${formData.branchName} — ${formData.branchAddress}`
                                             : 'Chi nhánh hiện tại: —'
                                     }
                                 >
@@ -509,20 +509,17 @@ const App: React.FC = () => {
 
                                 <div className="mt-2"></div>
                                 {formData.branchId && (
-                                    <FormField label="Bàn/Phòng (Tùy chọn)">
-                                        <select
-                                            name="tableId"
-                                            value={formData.tableId ?? ''}
-                                            onChange={handleTableChange}
-                                            className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white"
-                                        >
-                                            <option value="">— Chọn bàn/phòng —</option>
-                                            {(TABLES_BY_BRANCH.get(formData.branchId) || []).map(t => (
-                                                <option key={t.tableId} value={t.tableId}>
-                                                    {t.tableId}. {t.tableName} ({t.tableType})
-                                                </option>
-                                            ))}
-                                        </select>
+                                    <FormField
+                                        label={
+                                            formData.tableName
+                                                ? `Phòng hiện tại: ${formData.tableName} (${formData.tableType})`
+                                                : 'Phòng hiện tại: —'
+                                        }
+                                    >
+                                        {/* Input hidden để gửi kèm khi submit */}
+                                        <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
+                                        <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
+                                        <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                     </FormField>
                                 )}
                             </div>
