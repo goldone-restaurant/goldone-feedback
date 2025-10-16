@@ -39,12 +39,11 @@ const App: React.FC = () => {
         console.log(`🪑 Bàn ${t.tableId}: ${t.tableName} (${t.tableType})`);
     }
 
-    const currentHash = window.location.hash || ""; // ví dụ "#35"
-    if (currentHash) {
-        logTable(currentHash);
-    } else {
-        console.log("⚠️ Không có hash trong URL.");
-    }
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (id) logTable(id);
+    }, []);
 
 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
