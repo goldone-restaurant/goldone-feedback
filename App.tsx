@@ -23,7 +23,6 @@ const App: React.FC = () => {
         comments: '',
         visitDate: new Date().toISOString().split('T')[0],
         phoneNumber: '',
-        roomNumber: '',
         receiptImage: null,
         foodComplaint: '',
         serviceComplaint: '',
@@ -35,6 +34,85 @@ const App: React.FC = () => {
         tableName: '',
         tableType: '',
     });
+
+    const BRANCHES = useMemo(() => {
+        const map = new Map<number, {branchId: number; branchName: string; branchAddress: string}>();
+        Object.values(TABLES_MAP).forEach((t: any) => {
+            if (!map.has(t.branchId)) {
+                map.set(t.branchId, {
+                    branchId: t.branchId,
+                    branchName: t.branchName,
+                    branchAddress: t.branchAddress,
+                });
+            }
+        });
+        return Array.from(map.values()).sort((a, b) => a.branchId - b.branchId);
+    }, []);
+
+    const TABLES_BY_BRANCH = useMemo(() => {
+        const by = new Map<number, {tableId: number; tableName: string; tableType: string}[]>();
+        Object.values(TABLES_MAP).forEach((t: any) => {
+            const arr = by.get(t.branchId) || [];
+            if (!arr.find(x => x.tableId === t.tableId)) {
+                arr.push({ tableId: t.tableId, tableName: t.tableName, tableType: t.tableType });
+            }
+            by.set(t.branchId, arr.sort((a, b) => a.tableId - b.tableId));
+        });
+        return by;
+    }, []);
+
+    const handleTableChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const tidStr = e.target.value;
+        if (!tidStr || !formData.branchId) {
+            setFormData(prev => ({ ...prev, tableId: undefined, tableName: undefined, tableType: undefined, roomNumber: '' }));
+            return;
+        }
+        const tableId = Number(tidStr);
+        const list = TABLES_BY_BRANCH.get(formData.branchId) || [];
+        const t = list.find(x => x.tableId === tableId);
+        if (!t) return;
+
+        setFormData(prev => ({
+            ...prev,
+            tableId: t.tableId,
+            tableName: t.tableName,
+            tableType: t.tableType,
+            roomNumber: t.tableName, // auto điền tên bàn xuống "Phòng số"
+        }));
+    };
+
+    const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const branchIdStr = e.target.value;
+        if (!branchIdStr) {
+            // Clear nếu chọn "— Chọn chi nhánh —"
+            setFormData(prev => ({
+                ...prev,
+                branchId: undefined,
+                branchName: undefined,
+                branchAddress: '',
+                tableId: undefined,
+                tableName: undefined,
+                tableType: undefined,
+                roomNumber: '',
+            }));
+            return;
+        }
+        const branchId = Number(branchIdStr);
+        const b = BRANCHES.find(x => x.branchId === branchId);
+        if (!b) return;
+
+        setFormData(prev => ({
+            ...prev,
+            branchId: b.branchId,
+            branchName: b.branchName,
+            branchAddress: b.branchAddress,
+            // reset bàn khi đổi chi nhánh
+            tableId: undefined,
+            tableName: undefined,
+            tableType: undefined,
+            roomNumber: '',
+        }));
+    };
 
 
     function getIdFromUrl(): string | null {
@@ -415,25 +493,38 @@ const App: React.FC = () => {
 
                                 <div className="mt-2"></div>
                                 <FormField label="Chi nhánh (Tùy chọn)">
-                                    <input
-                                        type="text"
-                                        name="branchAddress"
-                                        value={formData.branchAddress}
-                                        onChange={handleInputChange}
-                                        placeholder="Chi nhánh"
-                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                    />
+                                    <select
+                                        name="branchId"
+                                        value={formData.branchId ?? ''}
+                                        onChange={handleBranchChange}
+                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white"
+                                    >
+                                        <option value="">— Chọn chi nhánh —</option>
+                                        {BRANCHES.map(b => (
+                                            <option key={b.branchId} value={b.branchId}>
+                                                {b.branchName} — {b.branchAddress}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </FormField>
-                                <FormField label="Phòng số (Tùy chọn)">
-                                    <input
-                                        type="text"
-                                        name="tableName"
-                                        value={formData.tableName}
-                                        onChange={handleInputChange}
-                                        placeholder="Phòng bạn ngồi"
-                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                    />
-                                </FormField>
+                                <div className="mt-2"></div>
+                                {formData.branchId && (
+                                    <FormField label="Bàn/Phòng (Tùy chọn)">
+                                        <select
+                                            name="tableId"
+                                            value={formData.tableId ?? ''}
+                                            onChange={handleTableChange}
+                                            className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white"
+                                        >
+                                            <option value="">— Chọn bàn/phòng —</option>
+                                            {(TABLES_BY_BRANCH.get(formData.branchId) || []).map(t => (
+                                                <option key={t.tableId} value={t.tableId}>
+                                                    {t.tableId}. {t.tableName} ({t.tableType})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </FormField>
+                                )}
                             </div>
 
                             <hr className="border-stone-200"/>
