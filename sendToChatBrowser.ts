@@ -87,11 +87,21 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
         ? ["```diff", ...complaints.map((c) => `- ${c.label}: ${c.text}`), "```"].join("\n")
         : "";
 
+    const branchDisplay = form.branchName
+        ? `CN ${form.branchId} – ${form.branchName}\n${form.branchAddress}`
+        : "—";
+
+    const tableDisplay = form.tableName
+        ? `#${form.tableId} – ${form.tableName} (${form.tableType})`
+        : "—";
+
     const mainAttachment: any = {
         color: "#2ECC71",
         fields: [
+            { title: "Chi nhánh", value: branchDisplay, short: false },
+            { title: "Bàn", value: tableDisplay, short: true },
+
             { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
-            { title: "Phòng", value: (form as any).roomNumber || "—", short: true },
             { title: "SĐT", value: form.phoneNumber || "—", short: true },
             { title: "Món ăn", value: stars(form.foodQuality), short: true },
             { title: "Phục vụ", value: stars(form.service), short: true },
