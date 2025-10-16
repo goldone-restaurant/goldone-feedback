@@ -308,14 +308,14 @@ const App: React.FC = () => {
 
                                 {formData.service >= 3 && (<div className="animate-form-item">
                                         <FormField label="Bạn ấn tượng điều gì về phục vụ? (tuỳ chọn)">
-          <textarea
-              name="serviceComplaint"
-              rows={3}
-              value={formData.serviceComplaint}
-              onChange={handleInputChange}
-              placeholder="Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách..."
-              className="w-full p-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-emerald-50/30"
-          />
+<textarea
+    name="serviceComplaint"
+    rows={3}
+    value={formData.serviceComplaint}
+    onChange={handleInputChange}
+    placeholder="💡 Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách..."
+    className="w-full p-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-amber-50/30 placeholder-orange-600 placeholder:font-semibold placeholder:tracking-wide"
+/>
                                         </FormField>
                                     </div>)}
 
