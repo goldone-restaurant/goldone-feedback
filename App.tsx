@@ -492,21 +492,27 @@ const App: React.FC = () => {
                                 </FormField>
 
                                 <div className="mt-2"></div>
-                                <FormField label="Chi nhánh (Tùy chọn)">
-                                    <select
-                                        name="branchId"
-                                        value={formData.branchId ?? ''}
-                                        onChange={handleBranchChange}
-                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition bg-white"
-                                    >
-                                        <option value="">— Chọn chi nhánh —</option>
-                                        {BRANCHES.map(b => (
-                                            <option key={b.branchId} value={b.branchId}>
-                                                {b.branchName} — {b.branchAddress}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <FormField label="Chi nhánh">
+                                    {/* Input hiển thị (chỉ đọc, người dùng thấy tên CN + địa chỉ) */}
+                                    <input
+                                        type="text"
+                                        name="branchDisplay"
+                                        value={
+                                            formData.branchName
+                                                ? `${formData.branchName} — ${formData.branchAddress}`
+                                                : ''
+                                        }
+                                        readOnly
+                                        placeholder="Chi nhánh tự động điền"
+                                        className="w-full p-3 border border-stone-300 rounded-lg bg-stone-50 text-stone-700 cursor-not-allowed"
+                                    />
+
+                                    {/* Các input ẩn gửi kèm khi submit */}
+                                    <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
+                                    <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
+                                    <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                 </FormField>
+
                                 <div className="mt-2"></div>
                                 {formData.branchId && (
                                     <FormField label="Bàn/Phòng (Tùy chọn)">
