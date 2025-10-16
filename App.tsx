@@ -279,7 +279,7 @@ const App: React.FC = () => {
     rows={3}
     value={formData.foodComplaint}
     onChange={handleInputChange}
-    placeholder="🍤 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp..."
+    placeholder="💡 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp..."
     className="w-full p-3 border border-lime-300 rounded-lg focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition bg-lime-50/40 placeholder-lime-700 placeholder:font-semibold placeholder:italic placeholder:tracking-wide"
 />
                                         </FormField>
@@ -347,7 +347,7 @@ const App: React.FC = () => {
        rows={3}
        value={formData.ambianceComplaint}
        onChange={handleInputChange}
-       placeholder="🌿 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
+       placeholder="💡 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
        className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition bg-emerald-100 placeholder-emerald-600 placeholder:font-bold placeholder:tracking-wider"
    />
                                         </FormField>
