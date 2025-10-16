@@ -1,15 +1,12 @@
 import React from "react";
 import ConfettiBackground from "./ConfettiBackground";
+import AquariumBackground from "@/components/AquariumBackground.tsx";
 
 const Header: React.FC = () => {
     return (
         <header className="relative h-48 overflow-hidden">
             {/* Confetti thay cho banghieu1.png */}
-            <ConfettiBackground
-                className="absolute inset-0 z-0 pointer-events-none"
-                density={120}
-                palette={["#FFD700", "#E6B800", "#FF8C00", "#00BFFF", "#ADFF2F"]} // màu GoldOne
-            />
+            <AquariumBackground className="absolute inset-0" bubbles dim />
 
             {/* Gradient phủ lên confetti để chữ/logo rõ hơn */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/30 z-[1]" />
