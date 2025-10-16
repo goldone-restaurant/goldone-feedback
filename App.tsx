@@ -348,7 +348,7 @@ const App: React.FC = () => {
        value={formData.ambianceComplaint}
        onChange={handleInputChange}
        placeholder="🌿 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu..."
-       className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition bg-emerald-100 placeholder-emerald-800 placeholder:font-bold placeholder:uppercase placeholder:tracking-wider"
+       className="w-full p-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition bg-emerald-100 placeholder-emerald-600 placeholder:font-bold placeholder:uppercase placeholder:tracking-wider"
    />
                                         </FormField>
                                     </div>)}
