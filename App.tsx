@@ -481,17 +481,6 @@ const App: React.FC = () => {
                             <div>
                                 <h3 className="text-lg font-semibold text-stone-800 mb-3">Thông tin
                                     chuyến thăm</h3>
-                                <FormField label="Ngày bạn ghé thăm *">
-                                    <input
-                                        type="date"
-                                        name="visitDate"
-                                        value={formData.visitDate}
-                                        onChange={handleInputChange}
-                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                    />
-                                </FormField>
-
-                                <div className="mt-2"></div>
                                 <FormField
                                     label={
                                         formData.branchName ? (
@@ -535,6 +524,31 @@ const App: React.FC = () => {
                                         <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                     </FormField>
                                 )}
+
+                                <div className="mt-2"></div>
+                                <FormField
+                                    label={
+                                        formData.visitDate
+                                            ? (
+                                                <>
+                                                    Ngày bạn ghé thăm:{' '}
+                                                    <span className="text-blue-600 font-semibold">
+            {new Date(formData.visitDate).toLocaleDateString('vi-VN')}
+          </span>
+                                                </>
+                                            )
+                                            : 'Ngày bạn ghé thăm: —'
+                                    }
+                                >
+                                    {/* Input ẩn để gửi kèm khi submit */}
+                                    <input
+                                        type="hidden"
+                                        name="visitDate"
+                                        value={formData.visitDate ?? new Date().toISOString().split('T')[0]}
+                                    />
+                                </FormField>
+
+
 
                             </div>
 
