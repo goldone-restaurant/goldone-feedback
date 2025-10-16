@@ -415,11 +415,21 @@ const App: React.FC = () => {
                                 </FormField>
 
                                 <div className="mt-2"></div>
+                                <FormField label="Chi nhánh (Tùy chọn)">
+                                    <input
+                                        type="text"
+                                        name="branchAddress"
+                                        value={formData.branchAddress}
+                                        onChange={handleInputChange}
+                                        placeholder="Chi nhánh"
+                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                    />
+                                </FormField>
                                 <FormField label="Phòng số (Tùy chọn)">
                                     <input
                                         type="text"
-                                        name="roomNumber"
-                                        value={formData.roomNumber}
+                                        name="tableName"
+                                        value={formData.tableName}
                                         onChange={handleInputChange}
                                         placeholder="Phòng bạn ngồi"
                                         className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
