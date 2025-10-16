@@ -1,7 +1,7 @@
 // AquariumBackground.tsx
 import React, { useEffect, useMemo } from "react";
-import TropicalFishIcon from './components/icons/TropicalFishIcon';
-import CrabIcon from './components/icons/CrabIcon';
+import TropicalFishIcon from './icons/TropicalFishIcon';
+import CrabIcon from './icons/CrabIcon';
 
 type Props = {
     className?: string;
