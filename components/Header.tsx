@@ -13,7 +13,7 @@ const Header: React.FC = () => {
 
             {/* Nội dung header */}
             <div className="relative z-[2] h-full flex items-center justify-center text-white">
-                <img src="/banghieu.png" alt="Gold One Logo" className="flex-shrink-0" style={{ height: '8rem', maxWidth: 'fit-content' }} />
+                <img src="/banghieu.png" alt="Gold One Logo" className="flex-shrink-0" style={{ height: '9rem', maxWidth: 'fit-content' }} />
             </div>
         </header>
     );
