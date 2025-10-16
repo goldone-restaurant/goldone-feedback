@@ -45,7 +45,7 @@ const App: React.FC = () => {
         return h || null;
     }
 
-    seEffect(() => {
+    useEffect(() => {
         const id = getIdFromUrl();
         if (!id) return;
 
