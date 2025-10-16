@@ -28,23 +28,50 @@ const App: React.FC = () => {
         foodComplaint: '',
         serviceComplaint: '',
         ambianceComplaint: '',
+        branchId: '',
+        branchName: '',
+        branchAddress: '',
+        tableId: '',
+        tableName: '',
+        tableType: '',
     });
 
-    function logTable(hash) {
-        const t = TABLES_MAP[hash];
-        if (!t) return console.log("❌ Không tìm thấy bàn:", hash);
 
+    function getIdFromUrl(): string | null {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('id');
+        if (q) return q;
+        const h = window.location.hash?.replace('#', '');
+        return h || null;
+    }
+
+    seEffect(() => {
+        const id = getIdFromUrl();
+        if (!id) return;
+
+        const t = TABLES_MAP[id];
+        if (!t) {
+            console.log("❌ Không tìm thấy bàn:", id);
+            return;
+        }
+
+        // log cho dev
         console.log(`📍 Chi nhánh ${t.branchId}: ${t.branchName}`);
         console.log(`🏠 Địa chỉ: ${t.branchAddress}`);
         console.log(`🪑 Bàn ${t.tableId}: ${t.tableName} (${t.tableType})`);
-    }
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) logTable(id);
+        // Điền tự động vào form
+        setFormData(prev => ({
+            ...prev,
+            roomNumber: prev.roomNumber || `${t.tableName}`,   // hoặc `${t.tableName} - CN ${t.branchId}`
+            branchId: t.branchId,
+            branchName: t.branchName,
+            branchAddress: t.branchAddress,
+            tableId: t.tableId,
+            tableName: t.tableName,
+            tableType: t.tableType,
+        }));
     }, []);
-
 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
 
