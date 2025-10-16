@@ -39,8 +39,13 @@ const App: React.FC = () => {
         console.log(`🪑 Bàn ${t.tableId}: ${t.tableName} (${t.tableType})`);
     }
 
-// Ví dụ:
-    logTable("35");
+    const currentHash = window.location.hash || ""; // ví dụ "#35"
+    if (currentHash) {
+        logTable(currentHash);
+    } else {
+        console.log("⚠️ Không có hash trong URL.");
+    }
+
 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
 
