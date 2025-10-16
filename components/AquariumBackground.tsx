@@ -1,15 +1,12 @@
 // AquariumBackground.tsx
 import React, { useEffect, useMemo } from "react";
-import TropicalFishIcon from './icons/TropicalFishIcon';
-import CrabIcon from './icons/CrabIcon';
+import TropicalFishIcon from "./icons/TropicalFishIcon";
+import CrabIcon from "./icons/CrabIcon";
 
 type Props = {
     className?: string;
     fishCount?: number;      // số cá
-    crabCount?: number;      // số cua
-    minSpeedSec?: number;    // tốc độ bơi tối thiểu (giây/chu kỳ)
-    maxSpeedSec?: number;    // tốc độ bơi tối đa
-    startDelayMax?: number;  // trễ bắt đầu tối đa
+    crabCount?: number;      // số cua (giữ option, mặc định ít)
     bubbles?: boolean;       // bật hiệu ứng bong bóng
     pauseOnHover?: boolean;  // hover để tạm dừng
     dim?: boolean;           // phủ lớp tối mờ để chữ phía trước dễ đọc
@@ -17,11 +14,8 @@ type Props = {
 
 const AquariumBackground: React.FC<Props> = ({
                                                  className,
-                                                 fishCount = 6,
-                                                 crabCount = 2,
-                                                 minSpeedSec = 18,
-                                                 maxSpeedSec = 34,
-                                                 startDelayMax = 22,
+                                                 fishCount = 24,
+                                                 crabCount = 1,
                                                  bubbles = true,
                                                  pauseOnHover = true,
                                                  dim = false,
@@ -31,7 +25,6 @@ const AquariumBackground: React.FC<Props> = ({
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // tạo danh sách “sinh vật” ngay lần mount đầu
     const creatures = useMemo(() => {
         const list: Array<{
             id: string;
@@ -42,32 +35,49 @@ const AquariumBackground: React.FC<Props> = ({
 
         const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-        // cá
+        // cá — nhiều con, kích thước đa dạng, KHÔNG delay
         for (let i = 0; i < fishCount; i++) {
-            const size = Math.round(rand(28, 64)); // px
+            const size = Math.round(rand(16, 110)); // px — nhỏ tới rất to
             const reverse = Math.random() > 0.5;
+
+            // con càng to bơi càng chậm (độ dài chu kỳ lớn hơn)
+            const minDur = 12;  // s
+            const maxDur = 36;  // s
+            const dur = Math.round(
+                minDur + (1 - (size - 16) / (110 - 16)) * (maxDur - minDur)
+            ); // map size -> duration ngược
+
+            // mỗi con bắt đầu ở vị trí ngang ngẫu nhiên để tránh “đồng bộ pha”
+            // (dù delay = 0, nhưng top/dir/duration khác nhau nhìn vẫn tự nhiên)
+            const initialOffset = reverse ? rand(0, 90) : rand(0, 90); // vw
+
             list.push({
                 id: `fish-${i}`,
                 type: "fish",
                 reverse,
                 style: {
-                    top: `${rand(8, 80)}%`,
+                    top: `${rand(6, 86)}%`,
                     width: `${size}px`,
                     height: `${size}px`,
+                    left: reverse ? "auto" : `calc(${initialOffset}vw)`,
+                    right: reverse ? `calc(${initialOffset}vw)` : "auto",
                     animationName: reverse ? "swim-reverse" : "swim",
-                    animationDuration: `${rand(minSpeedSec, maxSpeedSec)}s`,
-                    animationDelay: `${rand(0, startDelayMax)}s`,
+                    animationDuration: `${dur}s`,
+                    animationDelay: "0s", // KHÔNG CHỜ
+                    animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
                     animationFillMode: "backwards",
                     opacity: rand(0.7, 1),
+                    willChange: "transform",
                 },
             });
         }
 
-        // cua
+        // cua — để ít thôi cho đỡ rối, KHÔNG delay
         for (let i = 0; i < crabCount; i++) {
             const size = Math.round(rand(36, 68));
             const reverse = Math.random() > 0.5;
+            const dur = Math.round(rand(26, 40)); // chậm và đều
             list.push({
                 id: `crab-${i}`,
                 type: "crab",
@@ -77,19 +87,20 @@ const AquariumBackground: React.FC<Props> = ({
                     height: `${size}px`,
                     bottom: `${rand(2, 6)}%`,
                     animationName: reverse ? "scuttle-reverse" : "scuttle",
-                    animationDuration: `${rand(minSpeedSec + 6, maxSpeedSec + 10)}s`,
-                    animationDelay: `${rand(0, startDelayMax)}s`,
+                    animationDuration: `${dur}s`,
+                    animationDelay: "0s", // KHÔNG CHỜ
+                    animationTimingFunction: "linear",
                     animationIterationCount: "infinite",
                     animationFillMode: "backwards",
-                    opacity: rand(0.75, 1),
+                    opacity: rand(0.8, 1),
+                    willChange: "transform",
                 },
             });
         }
 
         return list;
-    }, [fishCount, crabCount, minSpeedSec, maxSpeedSec, startDelayMax]);
+    }, [fishCount, crabCount]);
 
-    // nếu user chọn giảm chuyển động, tắt animation
     useEffect(() => {
         if (!prefersReduced) return;
         const els = document.querySelectorAll(".aq-creature");
@@ -107,6 +118,8 @@ const AquariumBackground: React.FC<Props> = ({
                 overflow: "hidden",
                 zIndex: 0,
                 pointerEvents: "none",
+                background:
+                    "linear-gradient(180deg, rgba(2,6,23,1) 0%, rgba(15,23,42,1) 35%, rgba(8,47,73,1) 100%)",
             }}
         >
             {/* layer cá/cua */}
@@ -134,7 +147,7 @@ const AquariumBackground: React.FC<Props> = ({
             {/* bubbles */}
             {bubbles && !prefersReduced && (
                 <div className="absolute inset-0" style={{ pointerEvents: "none" }}>
-                    {Array.from({ length: 20 }).map((_, i) => (
+                    {Array.from({ length: 22 }).map((_, i) => (
                         <div
                             key={i}
                             className="absolute bottom-0 rounded-full"
@@ -144,7 +157,7 @@ const AquariumBackground: React.FC<Props> = ({
                                 height: `${2 + Math.random() * 5}px`,
                                 background: "rgba(250, 204, 21, 0.18)",
                                 animation: `bubble ${5 + Math.random() * 8}s linear infinite`,
-                                animationDelay: `${Math.random() * 10}s`,
+                                animationDelay: `${Math.random() * 2}s`, // bóng có thể lệch nhẹ cho tự nhiên
                                 filter: "blur(0.2px)",
                             }}
                         />
@@ -160,32 +173,37 @@ const AquariumBackground: React.FC<Props> = ({
                 />
             )}
 
-            {/* CSS keyframes nội bộ */}
+            {/* CSS keyframes */}
             <style>{`
         .aq-pause-on-hover:hover .aq-creature { animation-play-state: paused; }
 
+        /* Bơi từ trái -> phải, luôn chạy ngay lập tức */
         @keyframes swim {
-          0%   { transform: translateX(-110px) translateY(20px) rotate(-5deg); }
-          50%  { transform: translateX(40vw)   translateY(-20px) rotate(5deg); }
-          100% { transform: translateX(90vw)   translateY(20px) rotate(-5deg); }
+          0%   { transform: translateX(-120px) translateY(12px) rotate(-5deg); }
+          50%  { transform: translateX(43vw)   translateY(-18px) rotate(5deg); }
+          100% { transform: translateX(100vw)  translateY(12px) rotate(-5deg); }
         }
+        /* Bơi từ phải -> trái, lật trục X để quay đầu */
         @keyframes swim-reverse {
-          0%   { transform: translateX(90vw)   translateY(-20px) rotate(5deg) scaleX(-1); }
-          50%  { transform: translateX(40vw)   translateY(20px) rotate(-5deg) scaleX(-1); }
-          100% { transform: translateX(-110px) translateY(-20px) rotate(5deg) scaleX(-1); }
+          0%   { transform: translateX(100vw)  translateY(-18px) rotate(5deg)  scaleX(-1); }
+          50%  { transform: translateX(43vw)   translateY(12px)  rotate(-5deg) scaleX(-1); }
+          100% { transform: translateX(-120px) translateY(-18px) rotate(5deg)  scaleX(-1); }
         }
+
+        /* Cua chạy sát đáy */
         @keyframes scuttle {
-          0%   { transform: translateX(-120px) scaleX(1); }
-          48%  { transform: translateX(40vw)   scaleX(1); }
-          52%  { transform: translateX(44vw)   scaleX(-1); }
-          100% { transform: translateX(92vw)   scaleX(-1); }
+          0%   { transform: translateX(-140px) scaleX(1); }
+          48%  { transform: translateX(44vw)   scaleX(1); }
+          52%  { transform: translateX(48vw)   scaleX(-1); }
+          100% { transform: translateX(102vw)  scaleX(-1); }
         }
         @keyframes scuttle-reverse {
-          0%   { transform: translateX(92vw)   scaleX(-1); }
-          48%  { transform: translateX(44vw)   scaleX(-1); }
-          52%  { transform: translateX(40vw)   scaleX(1); }
-          100% { transform: translateX(-120px) scaleX(1); }
+          0%   { transform: translateX(102vw)  scaleX(-1); }
+          48%  { transform: translateX(48vw)   scaleX(-1); }
+          52%  { transform: translateX(44vw)   scaleX(1); }
+          100% { transform: translateX(-140px) scaleX(1); }
         }
+
         @keyframes bubble {
           0%   { transform: translateY(0);      opacity: 0; }
           10%  { opacity: 1; }
