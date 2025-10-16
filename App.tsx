@@ -63,7 +63,6 @@ const App: React.FC = () => {
         // Điền tự động vào form
         setFormData(prev => ({
             ...prev,
-            roomNumber: prev.roomNumber || `${t.tableName}`,   // hoặc `${t.tableName} - CN ${t.branchId}`
             branchId: t.branchId,
             branchName: t.branchName,
             branchAddress: t.branchAddress,
