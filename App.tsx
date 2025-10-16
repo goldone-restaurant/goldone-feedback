@@ -11,6 +11,8 @@ import TropicalFishIcon from './components/icons/TropicalFishIcon';
 import CrabIcon from './components/icons/CrabIcon';
 import {sendToChat} from "@/sendToChatBrowser.ts";
 
+import { TABLES_MAP } from './tables-map.js';
+
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState<FeedbackData>({
@@ -27,6 +29,18 @@ const App: React.FC = () => {
         serviceComplaint: '',
         ambianceComplaint: '',
     });
+
+    function logTable(hash) {
+        const t = TABLES_MAP[hash];
+        if (!t) return console.log("❌ Không tìm thấy bàn:", hash);
+
+        console.log(`📍 Chi nhánh ${t.branchId}: ${t.branchName}`);
+        console.log(`🏠 Địa chỉ: ${t.branchAddress}`);
+        console.log(`🪑 Bàn ${t.tableId}: ${t.tableName} (${t.tableType})`);
+    }
+
+// Ví dụ:
+    logTable("35");
 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
 
