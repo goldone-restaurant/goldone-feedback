@@ -491,37 +491,52 @@ const App: React.FC = () => {
                                     />
                                 </FormField>
 
-                                <div className="mt-2"></div>
                                 <FormField
                                     label={
-                                        formData.branchName
-                                            ? `Chi nhánh hiện tại: ${formData.branchName} — ${formData.branchAddress}`
-                                            : 'Chi nhánh hiện tại: —'
+                                        formData.branchName ? (
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className="text-stone-700 font-semibold">Chi nhánh hiện tại:</span>
+                                                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-sm">
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-600" />
+          <span className="font-medium">{formData.branchName}</span>
+          <span className="opacity-60">({formData.branchAddress})</span>
+        </span>
+                                            </div>
+                                        ) : (
+                                            'Chi nhánh hiện tại: —'
+                                        )
                                     }
                                 >
-                                    {/* Input hidden để gửi kèm khi submit */}
                                     <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
                                     <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
                                     <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                 </FormField>
 
+                                <div className="mt-2" />
 
-
-                                <div className="mt-2"></div>
                                 {formData.branchId && (
                                     <FormField
                                         label={
-                                            formData.tableName
-                                                ? `Phòng hiện tại: ${formData.tableName} (${formData.tableType})`
-                                                : 'Phòng hiện tại: —'
+                                            formData.tableName ? (
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className="text-stone-700 font-semibold">Phòng hiện tại:</span>
+                                                    <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 text-amber-900 px-3 py-1 text-sm">
+            <span className="inline-block h-2 w-2 rounded-full bg-amber-600" />
+            <span className="font-medium">{formData.tableName}</span>
+                                                        {formData.tableType && <span className="opacity-60">({formData.tableType})</span>}
+          </span>
+                                                </div>
+                                            ) : (
+                                                'Phòng hiện tại: —'
+                                            )
                                         }
                                     >
-                                        {/* Input hidden để gửi kèm khi submit */}
                                         <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
                                         <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
                                         <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                     </FormField>
                                 )}
+
                             </div>
 
                             <hr className="border-stone-200"/>
