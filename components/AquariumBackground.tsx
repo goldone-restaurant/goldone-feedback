@@ -118,8 +118,6 @@ const AquariumBackground: React.FC<Props> = ({
                 overflow: "hidden",
                 zIndex: 0,
                 pointerEvents: "none",
-                background:
-                    "linear-gradient(180deg, rgba(2,6,23,1) 0%, rgba(15,23,42,1) 35%, rgba(8,47,73,1) 100%)",
             }}
         >
             {/* layer cá/cua */}
