@@ -395,7 +395,7 @@ const App: React.FC = () => {
                                     </div>)}
 
                                 {formData.foodQuality >= 3 && (<div className="animate-form-item">
-                                        <FormField label="Món ăn có điểm gì bạn hài lòng? (tuỳ chọn)">
+                                        <FormField label="Món ăn có điểm gì bạn hài lòng?">
 <textarea
     name="foodComplaint"
     rows={3}
@@ -429,7 +429,7 @@ const App: React.FC = () => {
                                     </div>)}
 
                                 {formData.service >= 3 && (<div className="animate-form-item">
-                                        <FormField label="Bạn ấn tượng điều gì về phục vụ? (tuỳ chọn)">
+                                        <FormField label="Bạn ấn tượng điều gì về phục vụ?">
 <textarea
     name="serviceComplaint"
     rows={3}
@@ -463,7 +463,7 @@ const App: React.FC = () => {
                                     </div>)}
 
                                 {formData.ambiance >= 3 && (<div className="animate-form-item">
-                                        <FormField label="Bạn thích điều gì ở không gian? (tuỳ chọn)">
+                                        <FormField label="Bạn thích điều gì ở không gian?">
    <textarea
        name="ambianceComplaint"
        rows={3}
