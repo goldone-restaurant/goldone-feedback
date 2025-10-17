@@ -392,7 +392,7 @@ const App: React.FC = () => {
                                 {/* Nút gửi ý kiến */}
                                 <button
                                     onClick={nextStep}
-                                    className="flex-1 bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50"
+                                    className="flex-1 bg-yellow-500 mt-4 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50"
                                 >
                                     Niêm Phong & Gửi Ý Kiến
                                 </button>
