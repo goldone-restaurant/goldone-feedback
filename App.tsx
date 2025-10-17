@@ -583,6 +583,7 @@ const App: React.FC = () => {
                                         )}
                                     </FormField>
 
+                                    <div className="mt-2"></div>
 
                                     {formData.branchId && (
                                         <FormField
@@ -595,7 +596,7 @@ const App: React.FC = () => {
                                                             <span className="text-stone-600">({formData.tableType || t('unknownType')})</span>
                                                         </>
                                                     )
-                                                    : t('room') // khi KHÔNG lock hoặc chưa có phòng từ query → chỉ hiển thị "Phòng/Bàn"
+                                                    : t('room')
                                             }
                                         >
                                             {tableLockedFromQuery && formData.tableName ? (
@@ -605,21 +606,19 @@ const App: React.FC = () => {
                                                     <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                                 </>
                                             ) : (
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="tableName"
-                                                        value={formData.tableName ?? ''}
-                                                        onChange={(e) =>
-                                                            setFormData(prev => ({
-                                                                ...prev,
-                                                                tableName: e.target.value,
-                                                            }))
-                                                        }
-                                                        placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
-                                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
-                                                    />
-                                                </div>
+                                                <input
+                                                    type="text"
+                                                    name="tableName"
+                                                    value={formData.tableName ?? ''}
+                                                    onChange={(e) =>
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            tableName: e.target.value,
+                                                        }))
+                                                    }
+                                                    placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
+                                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
+                                                />
                                             )}
                                         </FormField>
                                     )}
