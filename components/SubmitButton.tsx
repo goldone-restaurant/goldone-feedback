@@ -1,5 +1,5 @@
 import React from 'react';
-import { useI18n } from '@/i18nContext'; // 👈 hook/context i18n bạn đang dùng
+import { useI18n } from './I18nProvider'; // 👈 import đúng như bạn nói
 
 interface SubmitButtonProps {
     isLoading: boolean;
@@ -7,7 +7,7 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ isLoading, disabled }) => {
-    const { t } = useI18n(); // 👈 lấy hàm dịch ngôn ngữ hiện tại
+    const { t } = useI18n(); // 👈 dùng i18n hook để lấy hàm dịch
 
     return (
         <button
