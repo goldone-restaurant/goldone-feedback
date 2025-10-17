@@ -66,6 +66,8 @@ export const dictionaries: Record<Lang, Dict> = {
         processing: "Đang xử lý...",
 
         branch: "Chi nhánh",
+        selectBranch: "— Chọn chi nhánh —",
+
 
     },
 
@@ -123,6 +125,8 @@ export const dictionaries: Record<Lang, Dict> = {
 
         branch: "Branch",
 
+        selectBranch: "— Select branch —",
+
     },
 
     zh: {
@@ -177,6 +181,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         branch: "分店",
 
+        selectBranch: "— 选择分店 —",
+
+
     },
 
     ja: {
@@ -230,6 +237,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         branch: "支店",
 
+        selectBranch: "— 支店を選択 —",
+
+
     },
 
     ko: {
@@ -281,6 +291,9 @@ export const dictionaries: Record<Lang, Dict> = {
         processing: "처리 중...",
 
         branch: "지점",
+
+        selectBranch: "— 지점을 선택 —",
+
 
     },
 };
