@@ -605,19 +605,21 @@ const App: React.FC = () => {
                                                     <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                                 </>
                                             ) : (
-                                                <input
-                                                    type="text"
-                                                    name="tableName"
-                                                    value={formData.tableName ?? ''}
-                                                    onChange={(e) =>
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            tableName: e.target.value,
-                                                        }))
-                                                    }
-                                                    placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
-                                                    className="mt-2 w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
-                                                />
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="text"
+                                                        name="tableName"
+                                                        value={formData.tableName ?? ''}
+                                                        onChange={(e) =>
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                tableName: e.target.value,
+                                                            }))
+                                                        }
+                                                        placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
+                                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
+                                                    />
+                                                </div>
                                             )}
                                         </FormField>
                                     )}
