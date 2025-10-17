@@ -7,8 +7,7 @@ export const dictionaries: Record<Lang, Dict> = {
     vi: {
         // --- Hero / Intro ---
         heroTitle: "Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng",
-        heroDesc:
-            "Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được niêm phong và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.",
+        heroDesc: "Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được niêm phong và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.",
         ctaSealAndSend: "Niêm Phong & Gửi Ý Kiến",
         stepOf: "Bước {{n}} / 2",
 
@@ -34,8 +33,7 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "Quay lại",
         next: "Tiếp tục",
         sentSuccessTitle: "Đã gửi thành công!",
-        sentSuccessDesc:
-            "Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Goldone ngày một tốt hơn!",
+        sentSuccessDesc: "Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Goldone ngày một tốt hơn!",
 
         // --- Auto detected labels ---
         currentBranch: "Chi nhánh hiện tại:",
@@ -44,12 +42,9 @@ export const dictionaries: Record<Lang, Dict> = {
         unknown: "—",
 
         // --- Placeholders (positive + negative examples) ---
-        phFoodPositive:
-            "💡 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp...",
-        phServicePositive:
-            "💡 Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách...",
-        phAmbiancePositive:
-            "💡 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu...",
+        phFoodPositive: "💡 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp...",
+        phServicePositive: "💡 Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách...",
+        phAmbiancePositive: "💡 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu...",
         phFoodNegative: "Ví dụ: Món ăn bị nguội, quá mặn, không tươi...",
         phServiceNegative: "Ví dụ: Nhân viên không thân thiện, phục vụ chậm...",
         phAmbianceNegative: "Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to...",
@@ -73,8 +68,7 @@ export const dictionaries: Record<Lang, Dict> = {
 
     en: {
         heroTitle: "Send Directly to Management & Restaurant Owner",
-        heroDesc:
-            "We seal every message—compliment or suggestion—and senior management reads carefully to elevate your Goldone experience.",
+        heroDesc: "We seal every message—compliment or suggestion—and senior management reads carefully to elevate your Goldone experience.",
         ctaSealAndSend: "Seal & Send Feedback",
         stepOf: "Step {{n}} / 2",
         shareYourExp: "Share your experience",
@@ -98,18 +92,14 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "Back",
         next: "Next",
         sentSuccessTitle: "Sent successfully!",
-        sentSuccessDesc:
-            "Management & owner have received your sealed feedback. Thank you for helping Goldone improve!",
+        sentSuccessDesc: "Management & owner have received your sealed feedback. Thank you for helping Goldone improve!",
         currentBranch: "Current branch:",
         currentRoom: "Current room:",
         currentVisitDate: "Visit date:",
         unknown: "—",
-        phFoodPositive:
-            "💡 e.g., Fresh seafood, well-seasoned, beautiful plating...",
-        phServicePositive:
-            "💡 e.g., Friendly staff, fast service, attentive...",
-        phAmbiancePositive:
-            "💡 e.g., Elegant, clean, pleasant music...",
+        phFoodPositive: "💡 e.g., Fresh seafood, well-seasoned, beautiful plating...",
+        phServicePositive: "💡 e.g., Friendly staff, fast service, attentive...",
+        phAmbiancePositive: "💡 e.g., Elegant, clean, pleasant music...",
         phFoodNegative: "e.g., Cold dishes, too salty, not fresh...",
         phServiceNegative: "e.g., Unfriendly staff, slow service...",
         phAmbianceNegative: "e.g., Dirty tables, music too loud...",
@@ -131,8 +121,7 @@ export const dictionaries: Record<Lang, Dict> = {
 
     zh: {
         heroTitle: "直接发送至管理层与餐厅老板",
-        heroDesc:
-            "我们会密封所有反馈，无论表扬或建议，都会由高层认真阅读以提升您的 Goldone 体验。",
+        heroDesc: "我们会密封所有反馈，无论表扬或建议，都会由高层认真阅读以提升您的 Goldone 体验。",
         ctaSealAndSend: "密封并发送反馈",
         stepOf: "第 {{n}} 步 / 共 2 步",
         shareYourExp: "分享您的体验",
@@ -156,8 +145,7 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "返回",
         next: "继续",
         sentSuccessTitle: "发送成功！",
-        sentSuccessDesc:
-            "管理层与老板已收到您的密封反馈，感谢您帮助 Goldone 进步！",
+        sentSuccessDesc: "管理层与老板已收到您的密封反馈，感谢您帮助 Goldone 进步！",
         currentBranch: "当前分店：",
         currentRoom: "当前包厢：",
         currentVisitDate: "来访日期：",
@@ -188,8 +176,7 @@ export const dictionaries: Record<Lang, Dict> = {
 
     ja: {
         heroTitle: "経営陣・オーナーへ直接届けます",
-        heroDesc:
-            "称賛もご意見も封印して、上層部が丁寧に拝読し、Goldoneの体験向上につなげます。",
+        heroDesc: "称賛もご意見も封印して、上層部が丁寧に拝読し、Goldoneの体験向上につなげます。",
         ctaSealAndSend: "封印して送信",
         stepOf: "ステップ {{n}} / 2",
         shareYourExp: "体験を共有してください",
@@ -244,8 +231,7 @@ export const dictionaries: Record<Lang, Dict> = {
 
     ko: {
         heroTitle: "경영진 및 오너에게 직접 전달",
-        heroDesc:
-            "칭찬과 제안 모두를 봉인하여 경영진이 꼼꼼히 확인하고 Goldone 경험을 개선합니다.",
+        heroDesc: "칭찬과 제안 모두를 봉인하여 경영진이 꼼꼼히 확인하고 Goldone 경험을 개선합니다.",
         ctaSealAndSend: "봉인하고 전송",
         stepOf: "단계 {{n}} / 2",
         shareYourExp: "경험을 공유해주세요",
@@ -306,9 +292,11 @@ export function interpolate(str: string, params?: Record<string, any>) {
 export function createI18n(initial: Lang = 'vi') {
     let lang: Lang = initial;
     return {
-        get lang() { return lang; },
-        setLang(next: Lang) { lang = next; },
-        t(key: string, params?: Record<string, any>) {
+        get lang() {
+            return lang;
+        }, setLang(next: Lang) {
+            lang = next;
+        }, t(key: string, params?: Record<string, any>) {
             const dict = dictionaries[lang] || dictionaries.vi;
             const raw = dict[key] || dictionaries.vi[key] || key;
             return interpolate(raw, params);
