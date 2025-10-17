@@ -304,7 +304,7 @@ const App: React.FC = () => {
     }
 
     const renderStepIndicator = () => (<div className="mb-6">
-        <p className="text-center text-sm font-semibold text-orange-700"> {t('stepOf', { n: currentStep })} / 2</p>
+        <p className="text-center text-sm font-semibold text-orange-700"> {t('stepOf', { n: currentStep })}</p>
         <div className="w-full bg-stone-200 rounded-full h-1.5 mt-1">
             <div className="bg-orange-600 h-1.5 rounded-full" style={{width: `${(currentStep / 2) * 100}%`}}></div>
         </div>
@@ -396,7 +396,7 @@ const App: React.FC = () => {
 
                         {currentStep === 1 && (<div className="space-y-6 animate-form-item">
                                 {/* Món ăn */}
-                                <FormField label="Chất lượng món ăn">
+                                <FormField label={t('foodQuality')}>
                                     <Rating
                                         rating={formData.foodQuality}
                                         onRatingChange={(value) => handleRatingChange('foodQuality', value)}
@@ -405,13 +405,13 @@ const App: React.FC = () => {
 
                                 {formData.foodQuality > 0 && formData.foodQuality <= 2 && (
                                     <div className="animate-form-item">
-                                        <FormField label="Bạn không hài lòng về điều gì ở món ăn?">
+                                        <FormField label={t('foodPositivePrompt')}>
           <textarea
               name="foodComplaint"
               rows={3}
               value={formData.foodComplaint}
               onChange={handleInputChange}
-              placeholder="Ví dụ: Món ăn bị nguội, quá mặn, không tươi..."
+              placeholder={t('phFoodPositive')}
               className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
           />
                                         </FormField>
