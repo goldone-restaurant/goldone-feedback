@@ -91,18 +91,27 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
         ? `CN ${form.branchId} – ${form.branchName}\n${form.branchAddress}`
         : "—";
 
-    const tableDisplay = form.tableName
-        ? `${form.tableName}`
-        : "—";
+    const tableDisplay = form.tableName ? `${form.tableName}` : "—";
+
+    const LANG_DISPLAY: Record<string, string> = {
+        vi: "🇻🇳 Tiếng Việt",
+        en: "🇺🇸 English",
+        zh: "🇨🇳 中文",
+        ja: "🇯🇵 日本語",
+        ko: "🇰🇷 한국어",
+    };
+
+    const languageDisplay =
+        LANG_DISPLAY[form.userLanguage || "vi"] || form.userLanguage || "—";
 
     const mainAttachment: any = {
         color: "#2ECC71",
         fields: [
             { title: "Chi nhánh", value: branchDisplay, short: false },
             { title: "Bàn", value: tableDisplay, short: true },
-
             { title: "Ngày ghé thăm", value: form.visitDate || "—", short: true },
             { title: "SĐT", value: form.phoneNumber || "—", short: true },
+            { title: "Ngôn ngữ", value: languageDisplay, short: true }, // 👈 thêm dòng này
             { title: "Món ăn", value: stars(form.foodQuality), short: true },
             { title: "Phục vụ", value: stars(form.service), short: true },
             { title: "Không gian", value: stars(form.ambiance), short: true },
@@ -121,3 +130,4 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
         attachments: [mainAttachment],
     };
 }
+
