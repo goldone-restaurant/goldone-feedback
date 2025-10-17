@@ -365,7 +365,7 @@ const App: React.FC = () => {
                                     {/* Label mô tả */}
                                     <label
                                         htmlFor="Language"
-                                        className="block text-stone-700 font-medium mb-1"
+                                        className="block text-stone-700 font-medium mb-1 text-white"
                                     >
                                         🌐 {t('Language')}
                                     </label>
