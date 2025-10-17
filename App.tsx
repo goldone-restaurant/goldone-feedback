@@ -13,6 +13,7 @@ import {sendToChat} from "@/sendToChatBrowser.ts";
 
 import { TABLES_MAP } from './tables-map.js';
 import ReactCountryFlag from "react-country-flag";
+import { useI18n } from './I18nProvider';
 
 
 const App: React.FC = () => {
@@ -349,15 +350,11 @@ const App: React.FC = () => {
                             </div>
 
                             <div className="animate-fade-in animation-delay-500">
-                                <h2 className="text-3xl font-bold text-white mt-8"
-                                    style={{textShadow: '0 2px 8px rgba(0,0,0,0.7)'}}>
-                                    Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng
+                                <h2 className="text-3xl font-bold text-white mt-8">
+                                    {t('heroTitle')}
                                 </h2>
                                 <p className="text-stone-300 mt-4 mb-8 max-w-sm">
-                                    Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều
-                                    được <strong className="font-semibold text-yellow-400">niêm
-                                    phong</strong> và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải
-                                    nghiệm tại Nhà Hàng Goldone.
+                                    {t('heroDesc')}
                                 </p>
                             </div>
 
