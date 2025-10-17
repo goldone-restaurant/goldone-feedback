@@ -605,7 +605,6 @@ const App: React.FC = () => {
                                                     <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                                 </>
                                             ) : (
-                                                <div className="mt-2"></div>
                                                 <input
                                                     type="text"
                                                     name="tableName"
@@ -617,7 +616,7 @@ const App: React.FC = () => {
                                                         }))
                                                     }
                                                     placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
-                                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
+                                                    className="mt-2 w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
                                                 />
                                             )}
                                         </FormField>
