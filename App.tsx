@@ -698,7 +698,7 @@ const App: React.FC = () => {
                         <div className="pt-4 flex items-center gap-4">
                             {currentStep > 1 && (<button type="button" onClick={prevStep}
                                                          className="w-1/3 bg-stone-200 text-stone-700 font-bold py-3 px-4 rounded-lg hover:bg-stone-300 transition duration-300">
-                                Quay lại
+                                {t('back')}
                             </button>)}
                             {currentStep < 2 && (<button type="button" onClick={nextStep}
                                                          className="flex-1 bg-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-300">
