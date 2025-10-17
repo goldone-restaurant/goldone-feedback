@@ -92,7 +92,7 @@ function buildPayload(form: FeedbackData, analysis: GeminiAnalysis) {
         : "—";
 
     const tableDisplay = form.tableName
-        ? `#${form.tableId} – ${form.tableName} (${form.tableType})`
+        ? `${form.tableName}`
         : "—";
 
     const mainAttachment: any = {
