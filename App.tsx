@@ -624,9 +624,6 @@ const App: React.FC = () => {
                                         </FormField>
                                     )}
 
-
-
-                                    /* Ngày ghé thăm */
                                     <FormField
                                         label={
                                             branchLockedFromQuery && formData.visitDate
