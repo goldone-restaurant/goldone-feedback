@@ -624,6 +624,8 @@ const App: React.FC = () => {
                                         </FormField>
                                     )}
 
+                                    <div className="mt-2"></div>
+
                                     <FormField
                                         label={
                                             branchLockedFromQuery && formData.visitDate
