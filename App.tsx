@@ -39,6 +39,9 @@ const App: React.FC = () => {
         tableType: '',
     });
 
+    const [branchLockedFromQuery, setBranchLockedFromQuery] = useState(false);
+    const [tableLockedFromQuery, setTableLockedFromQuery] = useState(false);
+
     const BRANCHES = useMemo(() => {
         const map = new Map<number, {branchId: number; branchName: string; branchAddress: string}>();
         Object.values(TABLES_MAP).forEach((t: any) => {
@@ -89,8 +92,13 @@ const App: React.FC = () => {
 
     const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const branchIdStr = e.target.value;
+
+        // Người dùng thao tác bằng tay → bỏ lock
+        setBranchLockedFromQuery(false);
+        // Khi đổi chi nhánh thủ công, phòng cũng không còn lock từ URL
+        setTableLockedFromQuery(false);
+
         if (!branchIdStr) {
-            // Clear nếu chọn "— Chọn chi nhánh —"
             setFormData(prev => ({
                 ...prev,
                 branchId: undefined,
@@ -103,6 +111,7 @@ const App: React.FC = () => {
             }));
             return;
         }
+
         const branchId = Number(branchIdStr);
         const b = BRANCHES.find(x => x.branchId === branchId);
         if (!b) return;
@@ -112,7 +121,7 @@ const App: React.FC = () => {
             branchId: b.branchId,
             branchName: b.branchName,
             branchAddress: b.branchAddress,
-            // reset bàn khi đổi chi nhánh
+            // reset phòng khi đổi chi nhánh
             tableId: undefined,
             tableName: undefined,
             tableType: undefined,
@@ -132,19 +141,16 @@ const App: React.FC = () => {
     useEffect(() => {
         const id = getIdFromUrl();
         if (!id) return;
-
         const t = TABLES_MAP[id];
         if (!t) {
             console.log("❌ Không tìm thấy bàn:", id);
             return;
         }
 
-        // log cho dev
         console.log(`📍 Chi nhánh ${t.branchId}: ${t.branchName}`);
         console.log(`🏠 Địa chỉ: ${t.branchAddress}`);
         console.log(`🪑 Bàn ${t.tableId}: ${t.tableName} (${t.tableType})`);
 
-        // Điền tự động vào form
         setFormData(prev => ({
             ...prev,
             branchId: t.branchId,
@@ -154,6 +160,10 @@ const App: React.FC = () => {
             tableName: t.tableName,
             tableType: t.tableType,
         }));
+
+        // 🔒 đánh dấu là dữ liệu đến từ URL
+        setBranchLockedFromQuery(true);
+        setTableLockedFromQuery(true);
     }, []);
 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
@@ -536,7 +546,7 @@ const App: React.FC = () => {
 
                                     <FormField
                                         label={
-                                            formData.branchId
+                                            branchLockedFromQuery
                                                 ? (
                                                     <>
                                                         {t('currentBranch')}{' '}
@@ -546,36 +556,22 @@ const App: React.FC = () => {
                                                         <span className="text-stone-600">— {formData.branchAddress}</span>
                                                     </>
                                                 )
-                                                : t('branch') // 👈 Khi chưa có chi nhánh từ id: chỉ hiển thị "Chi nhánh"
+                                                : t('branch')  // khi KHÔNG lock: chỉ hiện "Chi nhánh"
                                         }
                                     >
-                                        {formData.branchId ? (
-                                            // ✅ ĐÃ xác định từ id → chỉ gửi hidden fields
+                                        {branchLockedFromQuery ? (
+                                            // 🔒 ĐÃ lock từ URL → hidden fields, không cho chọn lại
                                             <>
                                                 <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
                                                 <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
                                                 <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                             </>
                                         ) : (
-                                            // ❌ CHƯA xác định → cho phép chọn từ danh sách
+                                            // ❌ Không lock → cho chọn từ danh sách, và CHỌN KHÔNG biến thành label
                                             <select
                                                 name="branchId"
                                                 value={formData.branchId ?? ''}
-                                                onChange={(e) => {
-                                                    const id = Number(e.target.value);
-                                                    const b = BRANCHES.find(x => x.branchId === id);
-                                                    if (!b) return;
-                                                    setFormData(prev => ({
-                                                        ...prev,
-                                                        branchId: b.branchId,
-                                                        branchName: b.branchName,
-                                                        branchAddress: b.branchAddress,
-                                                        // reset bàn/phòng khi chọn chi nhánh mới
-                                                        tableId: undefined,
-                                                        tableName: undefined,
-                                                        tableType: undefined,
-                                                    }));
-                                                }}
+                                                onChange={handleBranchChange}
                                                 className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-white"
                                             >
                                                 <option value="">{t('selectBranch')}</option>
