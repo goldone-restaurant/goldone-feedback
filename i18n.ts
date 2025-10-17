@@ -61,6 +61,9 @@ export const dictionaries: Record<Lang, Dict> = {
         phonePlaceholder: "Để chúng tôi có thể liên hệ lại",
         previewImage: "Nhấn để xem lớn",
         delete: "Xóa ảnh",
+
+        sendFeedback: "Gửi phản hồi",
+        processing: "Đang xử lý...",
     },
 
     en: {
@@ -111,6 +114,9 @@ export const dictionaries: Record<Lang, Dict> = {
         phonePlaceholder: "So we can contact you if needed",
         previewImage: "Click to view larger",
         delete: "Delete",
+
+        sendFeedback: "Send feedback",
+        processing: "Processing...",
     },
 
     zh: {
@@ -159,6 +165,9 @@ export const dictionaries: Record<Lang, Dict> = {
         phonePlaceholder: "以便我们在需要时联系您",
         previewImage: "点击查看大图",
         delete: "删除",
+
+        sendFeedback: "发送反馈",
+        processing: "处理中...",
     },
 
     ja: {
@@ -205,6 +214,9 @@ export const dictionaries: Record<Lang, Dict> = {
         phonePlaceholder: "必要な場合にご連絡できるように",
         previewImage: "クリックして拡大表示",
         delete: "削除",
+
+        sendFeedback: "フィードバックを送信",
+        processing: "処理中...",
     },
 
     ko: {
@@ -251,6 +263,9 @@ export const dictionaries: Record<Lang, Dict> = {
         phonePlaceholder: "필요 시 연락드릴 수 있도록",
         previewImage: "클릭하여 크게 보기",
         delete: "삭제",
+
+        sendFeedback: "피드백 보내기",
+        processing: "처리 중...",
     },
 };
 
