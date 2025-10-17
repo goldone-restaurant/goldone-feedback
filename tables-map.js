@@ -42,14 +42,14 @@ export const TABLES_MAP = {
     "248": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 48, "tableName": "KYOTO", "tableType": "bàn dài" },
     "249": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 49, "tableName": "MEXICO", "tableType": "bàn dài" },
 
-    "31": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 1, tableName: "Oishi", tableType: "bàn tròn" },
-    "32": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 2, tableName: "Lutos", tableType: "bàn tròn" },
-    "33": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 3, tableName: "London", tableType: "bàn tròn" },
-    "34": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 4, tableName: "Fuji", tableType: "bàn dài" },
-    "35": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 5, tableName: "Sugoi", tableType: "bàn dài" },
-    "36": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 6, tableName: "Chicago", tableType: "bàn tròn" },
-    "37": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 7, tableName: "Monaco", tableType: "bàn tròn" },
-    "38": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 8, tableName: "Lyon", tableType: "bàn dài" },
-    "39": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 9, tableName: "Dubai", tableType: "bàn dài" },
-    "310": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1, TP.HCM", tableId: 10, tableName: "Pharaod", tableType: "bàn tròn" }
+    "31": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 1, tableName: "Oishi", tableType: "bàn tròn" },
+    "32": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 2, tableName: "Lutos", tableType: "bàn tròn" },
+    "33": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 3, tableName: "London", tableType: "bàn tròn" },
+    "34": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 4, tableName: "Fuji", tableType: "bàn dài" },
+    "35": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 5, tableName: "Sugoi", tableType: "bàn dài" },
+    "36": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 6, tableName: "Chicago", tableType: "bàn tròn" },
+    "37": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 7, tableName: "Monaco", tableType: "bàn tròn" },
+    "38": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 8, tableName: "Lyon", tableType: "bàn dài" },
+    "39": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 9, tableName: "Dubai", tableType: "bàn dài" },
+    "310": { branchId: 3, branchName: "Gold One 3", branchAddress: "Số 10, Đường Alexander De Rhodes, Quận 1", tableId: 10, tableName: "Pharaod", tableType: "bàn tròn" }
 };
