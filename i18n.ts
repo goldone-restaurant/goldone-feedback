@@ -7,7 +7,8 @@ export const dictionaries: Record<Lang, Dict> = {
     vi: {
         // --- Hero / Intro ---
         heroTitle: "Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng",
-        heroDesc: "Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được niêm phong và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.",
+        heroDesc:
+            "Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được niêm phong và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.",
         ctaSealAndSend: "Niêm Phong & Gửi Ý Kiến",
         stepOf: "Bước {{n}} / 2",
 
@@ -33,7 +34,8 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "Quay lại",
         next: "Tiếp tục",
         sentSuccessTitle: "Đã gửi thành công!",
-        sentSuccessDesc: "Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Goldone ngày một tốt hơn!",
+        sentSuccessDesc:
+            "Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Goldone ngày một tốt hơn!",
 
         // --- Auto detected labels ---
         currentBranch: "Chi nhánh hiện tại:",
@@ -41,20 +43,27 @@ export const dictionaries: Record<Lang, Dict> = {
         currentVisitDate: "Ngày bạn ghé thăm:",
         unknown: "—",
 
-        // --- Placeholders (positive examples) ---
-        phFoodPositive: "💡 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp...",
-        phServicePositive: "💡 Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách...",
-        phAmbiancePositive: "💡 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu...",
+        // --- Placeholders (positive + negative examples) ---
+        phFoodPositive:
+            "💡 Ví dụ: Hải sản tươi, nêm nếm vừa miệng, trình bày đẹp...",
+        phServicePositive:
+            "💡 Ví dụ: Nhân viên thân thiện, phục vụ nhanh, quan tâm khách...",
+        phAmbiancePositive:
+            "💡 Ví dụ: Không gian sang trọng, sạch sẽ, âm nhạc dễ chịu...",
+        phFoodNegative: "Ví dụ: Món ăn bị nguội, quá mặn, không tươi...",
+        phServiceNegative: "Ví dụ: Nhân viên không thân thiện, phục vụ chậm...",
+        phAmbianceNegative: "Ví dụ: Bàn ghế không sạch sẽ, nhạc quá to...",
 
         // --- Errors ---
         sendError: "Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.",
     },
+
     en: {
         heroTitle: "Send Directly to Management & Restaurant Owner",
-        heroDesc: "We seal every message—compliment or suggestion—and senior management reads carefully to elevate your Goldone experience.",
+        heroDesc:
+            "We seal every message—compliment or suggestion—and senior management reads carefully to elevate your Goldone experience.",
         ctaSealAndSend: "Seal & Send Feedback",
         stepOf: "Step {{n}} / 2",
-
         shareYourExp: "Share your experience",
         helpUsImprove: "Your feedback helps us serve you better.",
         foodQuality: "Food quality",
@@ -76,25 +85,30 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "Back",
         next: "Next",
         sentSuccessTitle: "Sent successfully!",
-        sentSuccessDesc: "Management & owner have received your sealed feedback. Thank you for helping Goldone improve!",
-
+        sentSuccessDesc:
+            "Management & owner have received your sealed feedback. Thank you for helping Goldone improve!",
         currentBranch: "Current branch:",
         currentRoom: "Current room:",
         currentVisitDate: "Visit date:",
         unknown: "—",
-
-        phFoodPositive: "💡 e.g., Fresh seafood, well-seasoned, beautiful plating...",
-        phServicePositive: "💡 e.g., Friendly staff, fast service, attentive...",
-        phAmbiancePositive: "💡 e.g., Elegant, clean, pleasant music...",
-
+        phFoodPositive:
+            "💡 e.g., Fresh seafood, well-seasoned, beautiful plating...",
+        phServicePositive:
+            "💡 e.g., Friendly staff, fast service, attentive...",
+        phAmbiancePositive:
+            "💡 e.g., Elegant, clean, pleasant music...",
+        phFoodNegative: "e.g., Cold dishes, too salty, not fresh...",
+        phServiceNegative: "e.g., Unfriendly staff, slow service...",
+        phAmbianceNegative: "e.g., Dirty tables, music too loud...",
         sendError: "Something went wrong. Please try again.",
     },
+
     zh: {
         heroTitle: "直接发送至管理层与餐厅老板",
-        heroDesc: "我们会密封所有反馈，无论表扬或建议，都会由高层认真阅读以提升您的 Goldone 体验。",
+        heroDesc:
+            "我们会密封所有反馈，无论表扬或建议，都会由高层认真阅读以提升您的 Goldone 体验。",
         ctaSealAndSend: "密封并发送反馈",
         stepOf: "第 {{n}} 步 / 共 2 步",
-
         shareYourExp: "分享您的体验",
         helpUsImprove: "您的反馈将帮助我们提供更好的服务。",
         foodQuality: "菜品质量",
@@ -116,25 +130,27 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "返回",
         next: "继续",
         sentSuccessTitle: "发送成功！",
-        sentSuccessDesc: "管理层与老板已收到您的密封反馈，感谢您帮助 Goldone 进步！",
-
+        sentSuccessDesc:
+            "管理层与老板已收到您的密封反馈，感谢您帮助 Goldone 进步！",
         currentBranch: "当前分店：",
         currentRoom: "当前包厢：",
         currentVisitDate: "来访日期：",
         unknown: "—",
-
         phFoodPositive: "💡 例如：海鲜新鲜、调味适中、摆盘精美…",
         phServicePositive: "💡 例如：员工友好、上菜迅速、细致周到…",
         phAmbiancePositive: "💡 例如：环境雅致、干净整洁、音乐舒适…",
-
+        phFoodNegative: "例如：菜品不热、过咸、不新鲜…",
+        phServiceNegative: "例如：员工不友好、上菜慢…",
+        phAmbianceNegative: "例如：桌椅不干净、音乐太响…",
         sendError: "发送失败，请重试。",
     },
+
     ja: {
         heroTitle: "経営陣・オーナーへ直接届けます",
-        heroDesc: "称賛もご意見も封印して、上層部が丁寧に拝読し、Goldoneの体験向上につなげます。",
+        heroDesc:
+            "称賛もご意見も封印して、上層部が丁寧に拝読し、Goldoneの体験向上につなげます。",
         ctaSealAndSend: "封印して送信",
         stepOf: "ステップ {{n}} / 2",
-
         shareYourExp: "体験を共有してください",
         helpUsImprove: "皆さまの声がより良いサービスにつながります。",
         foodQuality: "料理の品質",
@@ -157,24 +173,25 @@ export const dictionaries: Record<Lang, Dict> = {
         next: "次へ",
         sentSuccessTitle: "送信しました！",
         sentSuccessDesc: "封印済みのご意見を受領しました。ご協力に感謝します！",
-
         currentBranch: "現在の支店：",
         currentRoom: "現在の部屋：",
         currentVisitDate: "来店日：",
         unknown: "—",
-
         phFoodPositive: "💡 例：海鮮が新鮮、味付けが良い、盛り付けが綺麗…",
         phServicePositive: "💡 例：スタッフが親切、提供が早い、気配りが良い…",
         phAmbiancePositive: "💡 例：高級感、清潔、心地よい音楽…",
-
+        phFoodNegative: "例：料理が冷たい、しょっぱすぎる、新鮮ではない…",
+        phServiceNegative: "例：スタッフが不親切、提供が遅い…",
+        phAmbianceNegative: "例：テーブルが汚い、音楽が大きすぎる…",
         sendError: "送信に失敗しました。再試行してください。",
     },
+
     ko: {
         heroTitle: "경영진 및 오너에게 직접 전달",
-        heroDesc: "칭찬과 제안 모두를 봉인하여 경영진이 꼼꼼히 확인하고 Goldone 경험을 개선합니다.",
+        heroDesc:
+            "칭찬과 제안 모두를 봉인하여 경영진이 꼼꼼히 확인하고 Goldone 경험을 개선합니다.",
         ctaSealAndSend: "봉인하고 전송",
         stepOf: "단계 {{n}} / 2",
-
         shareYourExp: "경험을 공유해주세요",
         helpUsImprove: "소중한 의견은 더 나은 서비스로 이어집니다.",
         foodQuality: "음식 품질",
@@ -197,16 +214,16 @@ export const dictionaries: Record<Lang, Dict> = {
         next: "계속",
         sentSuccessTitle: "전송 완료!",
         sentSuccessDesc: "봉인된 의견을 접수했습니다. 감사합니다!",
-
         currentBranch: "현재 지점:",
         currentRoom: "현재 룸:",
         currentVisitDate: "방문 날짜:",
         unknown: "—",
-
         phFoodPositive: "💡 예: 신선한 해산물, 적절한 간, 보기 좋은 플레이팅…",
         phServicePositive: "💡 예: 친절한 직원, 빠른 응대, 세심한 배려…",
         phAmbiancePositive: "💡 예: 고급스러운 분위기, 청결함, 편안한 음악…",
-
+        phFoodNegative: "예: 음식이 식음, 너무 짬, 신선하지 않음…",
+        phServiceNegative: "예: 불친절한 직원, 느린 응대…",
+        phAmbianceNegative: "예: 테이블 불결, 음악이 너무 큼…",
         sendError: "전송 오류가 발생했습니다. 다시 시도해주세요.",
     },
 };
