@@ -12,6 +12,8 @@ import CrabIcon from './components/icons/CrabIcon';
 import {sendToChat} from "@/sendToChatBrowser.ts";
 
 import { TABLES_MAP } from './tables-map.js';
+import ReactCountryFlag from "react-country-flag";
+
 
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
@@ -368,11 +370,21 @@ const App: React.FC = () => {
                                         onChange={(e) => setLanguage(e.target.value)}
                                         className="flex items-center gap-2 border border-stone-300 rounded-lg px-3 py-2 bg-white text-stone-700 focus:ring-2 focus:ring-emerald-500"
                                     >
-                                        <option value="vi">🇻🇳 Tiếng Việt</option>
-                                        <option value="zh">🇨🇳 中文</option>
-                                        <option value="en">🇺🇸 English</option>
-                                        <option value="ja">🇯🇵 日本語</option>
-                                        <option value="ko">🇰🇷 한국어</option>
+                                        <option value="vi">
+                                            🇻🇳 Tiếng Việt
+                                        </option>
+                                        <option value="zh">
+                                            🇨🇳 中文
+                                        </option>
+                                        <option value="en">
+                                            🇺🇸 English
+                                        </option>
+                                        <option value="ja">
+                                            🇯🇵 日本語
+                                        </option>
+                                        <option value="ko">
+                                            🇰🇷 한국어
+                                        </option>
                                     </select>
                                 </div>
 
