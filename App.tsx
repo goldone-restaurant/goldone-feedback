@@ -585,26 +585,42 @@ const App: React.FC = () => {
                                     </FormField>
 
 
-                                    {/* Phòng hiện tại */}
                                     {formData.branchId && (
                                         <FormField
                                             label={
-                                                formData.tableName ? (
-                                                    <>
-                                                        {t('currentRoom')}{' '}
-                                                        <span className="text-amber-600 font-semibold">
-                  {formData.tableName}
-                </span>{' '}
-                                                        <span className="text-stone-600">({formData.tableType})</span>
-                                                    </>
-                                                ) : (
-                                                    `${t('currentRoom')} ${t('unknown')}`
-                                                )
+                                                tableLockedFromQuery && formData.tableName
+                                                    ? (
+                                                        <>
+                                                            {t('currentRoom')}{' '}
+                                                            <span className="text-amber-600 font-semibold">{formData.tableName}</span>{' '}
+                                                            <span className="text-stone-600">({formData.tableType || t('unknownType')})</span>
+                                                        </>
+                                                    )
+                                                    : t('room') // khi KHÔNG lock hoặc chưa có phòng từ query → chỉ hiển thị "Phòng/Bàn"
                                             }
                                         >
-                                            <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
-                                            <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
-                                            <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
+                                            {tableLockedFromQuery && formData.tableName ? (
+                                                <>
+                                                    <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
+                                                    <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
+                                                    <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
+                                                </>
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    name="tableName"
+                                                    value={formData.tableName ?? ''}
+                                                    onChange={(e) =>
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            tableName: e.target.value,
+                                                            // không có query → cho phép nhập tay, tableId/tableType có thể rỗng
+                                                        }))
+                                                    }
+                                                    placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
+                                                    className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition bg-white"
+                                                />
+                                            )}
                                         </FormField>
                                     )}
 
