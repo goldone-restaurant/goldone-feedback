@@ -387,10 +387,12 @@ const App: React.FC = () => {
                         </div>
                     </div>)}
                     {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6">
-                        <h2 className="text-2xl font-bold text-stone-800 text-center">Chia sẻ trải nghiệm
-                            của bạn</h2>
-                        <p className="text-center text-stone-500 -mt-4">Phản hồi của bạn giúp chúng tôi phục
-                            vụ tốt hơn.</p>
+                        <h2 className="text-2xl font-bold text-stone-800 text-center">
+                            {t('shareYourExp')}
+                        </h2>
+                        <p className="text-center text-stone-500 -mt-4">
+                            {t('helpUsImprove')}
+                        </p>
 
                         {renderStepIndicator()}
 
