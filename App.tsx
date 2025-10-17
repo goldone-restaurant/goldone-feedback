@@ -536,48 +536,50 @@ const App: React.FC = () => {
 
                                     <FormField
                                         label={
-                                            formData.branchName
+                                            formData.branchId
                                                 ? (
                                                     <>
                                                         {t('currentBranch')}{' '}
                                                         <span className="text-emerald-600 font-semibold">
               {formData.branchName}
             </span>{' '}
-                                                        <span className="text-stone-600">
-              — {formData.branchAddress}
-            </span>
+                                                        <span className="text-stone-600">— {formData.branchAddress}</span>
                                                     </>
                                                 )
-                                                : `${t('currentBranch')} ${t('unknown')}`
+                                                : t('branch') // 👈 Khi chưa có chi nhánh từ id: chỉ hiển thị "Chi nhánh"
                                         }
                                     >
-                                        {/* Nếu đã có chi nhánh → hiển thị hidden inputs */}
-                                        {formData.branchName ? (
+                                        {formData.branchId ? (
+                                            // ✅ ĐÃ xác định từ id → chỉ gửi hidden fields
                                             <>
                                                 <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
                                                 <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
                                                 <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                             </>
                                         ) : (
-                                            /* Nếu chưa có chi nhánh → hiển thị dropdown chọn */
+                                            // ❌ CHƯA xác định → cho phép chọn từ danh sách
                                             <select
                                                 name="branchId"
                                                 value={formData.branchId ?? ''}
                                                 onChange={(e) => {
-                                                    const selected = BRANCHES.find(b => b.branchId === Number(e.target.value));
-                                                    if (selected) {
-                                                        setFormData({
-                                                            ...formData,
-                                                            branchId: selected.branchId,
-                                                            branchName: selected.branchName,
-                                                            branchAddress: selected.branchAddress,
-                                                        });
-                                                    }
+                                                    const id = Number(e.target.value);
+                                                    const b = BRANCHES.find(x => x.branchId === id);
+                                                    if (!b) return;
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        branchId: b.branchId,
+                                                        branchName: b.branchName,
+                                                        branchAddress: b.branchAddress,
+                                                        // reset bàn/phòng khi chọn chi nhánh mới
+                                                        tableId: undefined,
+                                                        tableName: undefined,
+                                                        tableType: undefined,
+                                                    }));
                                                 }}
                                                 className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-white"
                                             >
                                                 <option value="">{t('selectBranch')}</option>
-                                                {BRANCHES.map(b => (
+                                                {BRANCHES.map((b) => (
                                                     <option key={b.branchId} value={b.branchId}>
                                                         {b.branchName} — {b.branchAddress}
                                                     </option>
