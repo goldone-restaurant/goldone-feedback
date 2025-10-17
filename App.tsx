@@ -359,7 +359,7 @@ const App: React.FC = () => {
                                 </p>
                             </div>
 
-                            <div className="flex items-center justify-between mt-4 gap-3">
+                            <div className="mt-4 gap-3">
                                 {/* Nút chọn ngôn ngữ */}
                                 <div className="flex items-center gap-2">
                                     <select
