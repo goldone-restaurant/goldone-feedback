@@ -63,7 +63,9 @@ export const dictionaries: Record<Lang, Dict> = {
         branch: "Chi nhánh",
         selectBranch: "— Chọn chi nhánh —",
 
-
+        room: "Phòng/Bàn",
+        enterRoomName: "Nhập tên phòng hoặc bàn",
+        unknownType: "Không rõ loại",
     },
 
     en: {
@@ -117,6 +119,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         selectBranch: "— Select branch —",
 
+        room: "Room/Table",
+        enterRoomName: "Enter room or table name",
+        unknownType: "Unknown type",
     },
 
     zh: {
@@ -171,7 +176,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         selectBranch: "— 选择分店 —",
 
-
+        room: "房间/桌号",
+        enterRoomName: "输入房间或桌号",
+        unknownType: "未知类型",
     },
 
     ja: {
@@ -226,7 +233,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         selectBranch: "— 支店を選択 —",
 
-
+        room: "部屋／テーブル",
+        enterRoomName: "部屋またはテーブル名を入力",
+        unknownType: "不明なタイプ",
     },
 
     ko: {
@@ -280,7 +289,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         selectBranch: "— 지점을 선택 —",
 
-
+        room: "방/테이블",
+        enterRoomName: "방 또는 테이블 이름 입력",
+        unknownType: "알 수 없는 유형",
     },
 };
 
