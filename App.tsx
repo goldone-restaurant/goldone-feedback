@@ -534,26 +534,58 @@ const App: React.FC = () => {
                                         {t('visitInfo')}
                                     </h3>
 
-                                    {/* Chi nhánh hiện tại */}
                                     <FormField
                                         label={
-                                            formData.branchName ? (
-                                                <>
-                                                    {t('currentBranch')}{' '}
-                                                    <span className="text-emerald-600 font-semibold">
-                {formData.branchName}
-              </span>{' '}
-                                                    <span className="text-stone-600">— {formData.branchAddress}</span>
-                                                </>
-                                            ) : (
-                                                `${t('currentBranch')} ${t('unknown')}`
-                                            )
+                                            formData.branchName
+                                                ? (
+                                                    <>
+                                                        {t('currentBranch')}{' '}
+                                                        <span className="text-emerald-600 font-semibold">
+              {formData.branchName}
+            </span>{' '}
+                                                        <span className="text-stone-600">
+              — {formData.branchAddress}
+            </span>
+                                                    </>
+                                                )
+                                                : `${t('currentBranch')} ${t('unknown')}`
                                         }
                                     >
-                                        <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
-                                        <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
-                                        <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
+                                        {/* Nếu đã có chi nhánh → hiển thị hidden inputs */}
+                                        {formData.branchName ? (
+                                            <>
+                                                <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
+                                                <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
+                                                <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
+                                            </>
+                                        ) : (
+                                            /* Nếu chưa có chi nhánh → hiển thị dropdown chọn */
+                                            <select
+                                                name="branchId"
+                                                value={formData.branchId ?? ''}
+                                                onChange={(e) => {
+                                                    const selected = BRANCHES.find(b => b.branchId === Number(e.target.value));
+                                                    if (selected) {
+                                                        setFormData({
+                                                            ...formData,
+                                                            branchId: selected.branchId,
+                                                            branchName: selected.branchName,
+                                                            branchAddress: selected.branchAddress,
+                                                        });
+                                                    }
+                                                }}
+                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition bg-white"
+                                            >
+                                                <option value="">{t('selectBranch')}</option>
+                                                {BRANCHES.map(b => (
+                                                    <option key={b.branchId} value={b.branchId}>
+                                                        {b.branchName} — {b.branchAddress}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
                                     </FormField>
+
 
                                     {/* Phòng hiện tại */}
                                     {formData.branchId && (
