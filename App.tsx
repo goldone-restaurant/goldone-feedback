@@ -516,164 +516,182 @@ const App: React.FC = () => {
 
 
 
-                        {currentStep === 2 && (<div className="space-y-6 animate-form-item">
-                            <div>
-                                <h3 className="text-lg font-semibold text-stone-800 mb-3">Thông tin
-                                    chuyến thăm</h3>
-                                <FormField
-                                    label={
-                                        formData.branchName ? (
-                                            <>
-                                                Chi nhánh hiện tại:{' '}
-                                                <span className="text-emerald-600 font-semibold">
-          {formData.branchName}
-        </span>{' '}
-                                                <span className="text-stone-600">— {formData.branchAddress}</span>
-                                            </>
-                                        ) : (
-                                            'Chi nhánh hiện tại: —'
-                                        )
-                                    }
-                                >
-                                    <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
-                                    <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
-                                    <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
-                                </FormField>
+                        {currentStep === 2 && (
+                            <div className="space-y-6 animate-form-item">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-stone-800 mb-3">
+                                        {t('visitInfo')}
+                                    </h3>
 
-                                <div className="mt-2" />
-
-                                {formData.branchId && (
+                                    {/* Chi nhánh hiện tại */}
                                     <FormField
                                         label={
-                                            formData.tableName ? (
+                                            formData.branchName ? (
                                                 <>
-                                                    Phòng hiện tại:{' '}
-                                                    <span className="text-amber-600 font-semibold">
-            {formData.tableName}
-          </span>{' '}
-                                                    <span className="text-stone-600">({formData.tableType})</span>
+                                                    {t('currentBranch')}{' '}
+                                                    <span className="text-emerald-600 font-semibold">
+                {formData.branchName}
+              </span>{' '}
+                                                    <span className="text-stone-600">— {formData.branchAddress}</span>
                                                 </>
                                             ) : (
-                                                'Phòng hiện tại: —'
+                                                `${t('currentBranch')} ${t('unknown')}`
                                             )
                                         }
                                     >
-                                        <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
-                                        <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
-                                        <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
+                                        <input type="hidden" name="branchId" value={formData.branchId ?? ''} />
+                                        <input type="hidden" name="branchName" value={formData.branchName ?? ''} />
+                                        <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                     </FormField>
-                                )}
 
-                                <div className="mt-2"></div>
-                                <FormField
-                                    label={
-                                        formData.visitDate
-                                            ? (
-                                                <>
-                                                    Ngày bạn ghé thăm:{' '}
-                                                    <span className="text-blue-600 font-semibold">
-            {new Date(formData.visitDate).toLocaleDateString('vi-VN')}
-          </span>
-                                                </>
-                                            )
-                                            : 'Ngày bạn ghé thăm: —'
-                                    }
-                                >
-                                    {/* Input ẩn để gửi kèm khi submit */}
-                                    <input
-                                        type="hidden"
-                                        name="visitDate"
-                                        value={formData.visitDate ?? new Date().toISOString().split('T')[0]}
-                                    />
-                                </FormField>
-
-
-
-                            </div>
-
-                            <hr className="border-stone-200"/>
-
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-stone-800">Thông tin bổ sung
-                                    </h3>
-                                <FormField label="Số điện thoại">
-                                    <input
-                                        type="tel"
-                                        name="phoneNumber"
-                                        value={formData.phoneNumber}
-                                        onChange={handleInputChange}
-                                        placeholder="Để chúng tôi có thể liên hệ lại"
-                                        className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                    />
-                                </FormField>
-
-                                <FormField label="Đính kèm hóa đơn">
-                                    <div className="flex gap-4">
-                                        <button type="button"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
-                                            <i className="fa-solid fa-upload"></i>
-                                            <span>Tải ảnh lên</span>
-                                        </button>
-                                        <button type="button" onClick={() => setShowCamera(true)}
-                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2">
-                                            <i className="fa-solid fa-camera"></i>
-                                            <span>Chụp ảnh</span>
-                                        </button>
-                                        <input ref={fileInputRef} id="receipt-upload" type="file"
-                                               className="hidden" onChange={handleFileChange}
-                                               accept="image/png, image/jpeg"/>
-                                    </div>
-                                    <p className="text-xs text-stone-500 mt-2 text-center">PNG, JPG (TỐI
-                                        ĐA 5MB)</p>
-
-                                    {formData.receiptImage && (
-                                        <div className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
-                                            <div className="flex items-center gap-3 overflow-hidden">
-                                                {/* Thumbnail */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => receiptPreview && window.open(receiptPreview, '_blank')}
-                                                    className="relative w-16 h-16 rounded-md border border-stone-300 overflow-hidden flex-shrink-0 hover:opacity-90"
-                                                    title="Nhấn để xem lớn"
-                                                >
-                                                    {receiptPreview ? (
-                                                        <img
-                                                            src={receiptPreview}
-                                                            alt="Hóa đơn đã chọn"
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <i className="fa-solid fa-image text-stone-400 text-xl w-full h-full flex items-center justify-center" />
-                                                    )}
-                                                </button>
-
-                                                {/* Tên + dung lượng */}
-                                                <div className="min-w-0">
-                                                    <div className="text-sm text-stone-800 font-medium truncate">
-                                                        {formData.receiptImage.name}
-                                                    </div>
-                                                    <div className="text-xs text-stone-500">
-                                                        {formatBytes(formData.receiptImage.size)}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Xóa */}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleFileSelect(null)}
-                                                className="text-red-500 hover:text-red-700 ml-2"
-                                                title="Xóa ảnh"
-                                            >
-                                                <i className="fa-solid fa-trash"></i>
-                                            </button>
-                                        </div>
+                                    {/* Phòng hiện tại */}
+                                    {formData.branchId && (
+                                        <FormField
+                                            label={
+                                                formData.tableName ? (
+                                                    <>
+                                                        {t('currentRoom')}{' '}
+                                                        <span className="text-amber-600 font-semibold">
+                  {formData.tableName}
+                </span>{' '}
+                                                        <span className="text-stone-600">({formData.tableType})</span>
+                                                    </>
+                                                ) : (
+                                                    `${t('currentRoom')} ${t('unknown')}`
+                                                )
+                                            }
+                                        >
+                                            <input type="hidden" name="tableId" value={formData.tableId ?? ''} />
+                                            <input type="hidden" name="tableName" value={formData.tableName ?? ''} />
+                                            <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
+                                        </FormField>
                                     )}
 
-                                </FormField>
+                                    {/* Ngày ghé thăm */}
+                                    <FormField
+                                        label={
+                                            formData.visitDate ? (
+                                                <>
+                                                    {t('currentVisitDate')}{' '}
+                                                    <span className="text-blue-600 font-semibold">
+                {new Date(formData.visitDate).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US')}
+              </span>
+                                                </>
+                                            ) : (
+                                                `${t('currentVisitDate')} ${t('unknown')}`
+                                            )
+                                        }
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="visitDate"
+                                            value={formData.visitDate ?? new Date().toISOString().split('T')[0]}
+                                        />
+                                    </FormField>
+                                </div>
+
+                                <hr className="border-stone-200" />
+
+                                {/* Thông tin bổ sung */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-stone-800">
+                                        {t('additionalInfo') || 'Thông tin bổ sung'}
+                                    </h3>
+
+                                    {/* Số điện thoại */}
+                                    <FormField label={t('phoneNumber')}>
+                                        <input
+                                            type="tel"
+                                            name="phoneNumber"
+                                            value={formData.phoneNumber}
+                                            onChange={handleInputChange}
+                                            placeholder={
+                                                t('phonePlaceholder') ||
+                                                'Để chúng tôi có thể liên hệ lại'
+                                            }
+                                            className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                        />
+                                    </FormField>
+
+                                    {/* Đính kèm hóa đơn */}
+                                    <FormField label={t('attachReceipt')}>
+                                        <div className="flex gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2"
+                                            >
+                                                <i className="fa-solid fa-upload"></i>
+                                                <span>{t('uploadImage')}</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCamera(true)}
+                                                className="flex-1 cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2"
+                                            >
+                                                <i className="fa-solid fa-camera"></i>
+                                                <span>{t('takePhoto')}</span>
+                                            </button>
+                                            <input
+                                                ref={fileInputRef}
+                                                id="receipt-upload"
+                                                type="file"
+                                                className="hidden"
+                                                onChange={handleFileChange}
+                                                accept="image/png, image/jpeg"
+                                            />
+                                        </div>
+                                        <p className="text-xs text-stone-500 mt-2 text-center">
+                                            {t('maxSize')}
+                                        </p>
+
+                                        {/* Hiển thị ảnh */}
+                                        {formData.receiptImage && (
+                                            <div className="mt-4 flex items-center justify-between bg-stone-100 p-3 rounded-lg">
+                                                <div className="flex items-center gap-3 overflow-hidden">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => receiptPreview && window.open(receiptPreview, '_blank')}
+                                                        className="relative w-16 h-16 rounded-md border border-stone-300 overflow-hidden flex-shrink-0 hover:opacity-90"
+                                                        title={t('previewImage') || 'Nhấn để xem lớn'}
+                                                    >
+                                                        {receiptPreview ? (
+                                                            <img
+                                                                src={receiptPreview}
+                                                                alt="Hóa đơn đã chọn"
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <i className="fa-solid fa-image text-stone-400 text-xl w-full h-full flex items-center justify-center" />
+                                                        )}
+                                                    </button>
+
+                                                    <div className="min-w-0">
+                                                        <div className="text-sm text-stone-800 font-medium truncate">
+                                                            {formData.receiptImage.name}
+                                                        </div>
+                                                        <div className="text-xs text-stone-500">
+                                                            {formatBytes(formData.receiptImage.size)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Xóa ảnh */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleFileSelect(null)}
+                                                    className="text-red-500 hover:text-red-700 ml-2"
+                                                    title={t('delete') || 'Xóa ảnh'}
+                                                >
+                                                    <i className="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </FormField>
+                                </div>
                             </div>
-                        </div>)}
+                        )}
+
 
                         {error && <p className="text-sm text-red-600 bg-red-100 p-3 rounded-lg text-center">{error}</p>}
 
@@ -684,7 +702,7 @@ const App: React.FC = () => {
                             </button>)}
                             {currentStep < 2 && (<button type="button" onClick={nextStep}
                                                          className="flex-1 bg-orange-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-700 transition duration-300">
-                                Tiếp tục
+                                {t('next')}
                             </button>)}
                             {currentStep === 2 && (<div className="flex-1">
                                 <SubmitButton isLoading={isLoading} disabled={isLoading}/>

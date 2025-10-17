@@ -56,6 +56,11 @@ export const dictionaries: Record<Lang, Dict> = {
 
         // --- Errors ---
         sendError: "Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.",
+
+        additionalInfo: "Thông tin bổ sung",
+        phonePlaceholder: "Để chúng tôi có thể liên hệ lại",
+        previewImage: "Nhấn để xem lớn",
+        delete: "Xóa ảnh",
     },
 
     en: {
@@ -101,6 +106,11 @@ export const dictionaries: Record<Lang, Dict> = {
         phServiceNegative: "e.g., Unfriendly staff, slow service...",
         phAmbianceNegative: "e.g., Dirty tables, music too loud...",
         sendError: "Something went wrong. Please try again.",
+
+        additionalInfo: "Additional information",
+        phonePlaceholder: "So we can contact you if needed",
+        previewImage: "Click to view larger",
+        delete: "Delete",
     },
 
     zh: {
@@ -143,6 +153,12 @@ export const dictionaries: Record<Lang, Dict> = {
         phServiceNegative: "例如：员工不友好、上菜慢…",
         phAmbianceNegative: "例如：桌椅不干净、音乐太响…",
         sendError: "发送失败，请重试。",
+
+
+        additionalInfo: "附加信息",
+        phonePlaceholder: "以便我们在需要时联系您",
+        previewImage: "点击查看大图",
+        delete: "删除",
     },
 
     ja: {
@@ -184,6 +200,11 @@ export const dictionaries: Record<Lang, Dict> = {
         phServiceNegative: "例：スタッフが不親切、提供が遅い…",
         phAmbianceNegative: "例：テーブルが汚い、音楽が大きすぎる…",
         sendError: "送信に失敗しました。再試行してください。",
+
+        additionalInfo: "追加情報",
+        phonePlaceholder: "必要な場合にご連絡できるように",
+        previewImage: "クリックして拡大表示",
+        delete: "削除",
     },
 
     ko: {
@@ -225,6 +246,11 @@ export const dictionaries: Record<Lang, Dict> = {
         phServiceNegative: "예: 불친절한 직원, 느린 응대…",
         phAmbianceNegative: "예: 테이블 불결, 음악이 너무 큼…",
         sendError: "전송 오류가 발생했습니다. 다시 시도해주세요.",
+
+        additionalInfo: "추가 정보",
+        phonePlaceholder: "필요 시 연락드릴 수 있도록",
+        previewImage: "클릭하여 크게 보기",
+        delete: "삭제",
     },
 };
 
