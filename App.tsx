@@ -37,6 +37,7 @@ const App: React.FC = () => {
         tableId: '',
         tableName: '',
         tableType: '',
+        userLanguage: lang,
     });
 
     const [branchLockedFromQuery, setBranchLockedFromQuery] = useState(false);
@@ -87,9 +88,10 @@ const App: React.FC = () => {
             tableId: t.tableId,
             tableName: t.tableName,
             tableType: t.tableType,
-            roomNumber: t.tableName, // auto điền tên bàn xuống "Phòng số"
+            roomNumber: t.tableName,
         }));
     };
+
 
     const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const branchIdStr = e.target.value;
@@ -138,6 +140,11 @@ const App: React.FC = () => {
         const h = window.location.hash?.replace('#', '');
         return h || null;
     }
+
+
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, userLanguage: lang }));
+    }, [lang]);
 
     useEffect(() => {
         const id = getIdFromUrl();

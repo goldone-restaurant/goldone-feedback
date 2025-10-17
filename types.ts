@@ -16,6 +16,7 @@ export interface FeedbackData {
     tableId?: number;
     tableName?: string;
     tableType?: string;
+    userLanguage?: 'vi' | 'en' | 'zh' | 'ja' | 'ko';
 }
 
 export interface GeminiAnalysis {
