@@ -64,6 +64,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         sendFeedback: "Gửi phản hồi",
         processing: "Đang xử lý...",
+
+        branch: "Chi nhánh",
+
     },
 
     en: {
@@ -117,6 +120,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         sendFeedback: "Send feedback",
         processing: "Processing...",
+
+        branch: "Branch",
+
     },
 
     zh: {
@@ -168,6 +174,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         sendFeedback: "发送反馈",
         processing: "处理中...",
+
+        branch: "分店",
+
     },
 
     ja: {
@@ -217,6 +226,10 @@ export const dictionaries: Record<Lang, Dict> = {
 
         sendFeedback: "フィードバックを送信",
         processing: "処理中...",
+
+
+        branch: "支店",
+
     },
 
     ko: {
@@ -266,6 +279,9 @@ export const dictionaries: Record<Lang, Dict> = {
 
         sendFeedback: "피드백 보내기",
         processing: "처리 중...",
+
+        branch: "지점",
+
     },
 };
 
