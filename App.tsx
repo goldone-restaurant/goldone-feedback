@@ -18,6 +18,7 @@ import { useI18n } from './I18nProvider';
 
 const App: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
+    const { lang, setLang, t } = useI18n();
     const [formData, setFormData] = useState<FeedbackData>({
         foodQuality: 0,
         service: 0,
@@ -359,30 +360,19 @@ const App: React.FC = () => {
                             </div>
 
                             <div className="mt-4 gap-3">
-                                {/* Nút chọn ngôn ngữ */}
-                                <div className="flex items-center gap-2">
+                                {/* Chọn ngôn ngữ */}
+                                <div className="flex items-center gap-2 w-full">
                                     <select
                                         name="language"
-                                        value={language}
-                                        style={{width: '100%'}}
-                                        onChange={(e) => setLanguage(e.target.value)}
-                                        className="flex items-center gap-2 border border-stone-300 rounded-lg px-3 py-2 bg-white text-stone-700 focus:ring-2 focus:ring-emerald-500"
+                                        value={lang}
+                                        onChange={(e) => setLang(e.target.value as any)}
+                                        className="w-full border border-stone-300 rounded-lg px-3 py-2 bg-white text-stone-700 focus:ring-2 focus:ring-emerald-500"
                                     >
-                                        <option value="vi">
-                                            🇻🇳 Tiếng Việt
-                                        </option>
-                                        <option value="zh">
-                                            🇨🇳 中文
-                                        </option>
-                                        <option value="en">
-                                            🇺🇸 English
-                                        </option>
-                                        <option value="ja">
-                                            🇯🇵 日本語
-                                        </option>
-                                        <option value="ko">
-                                            🇰🇷 한국어
-                                        </option>
+                                        <option value="vi">🇻🇳 Tiếng Việt</option>
+                                        <option value="zh">🇨🇳 中文</option>
+                                        <option value="en">🇺🇸 English</option>
+                                        <option value="ja">🇯🇵 日本語</option>
+                                        <option value="ko">🇰🇷 한국어</option>
                                     </select>
                                 </div>
 
