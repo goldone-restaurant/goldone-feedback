@@ -61,6 +61,8 @@ const App: React.FC = () => {
         return by;
     }, []);
 
+    const [language, setLanguage] = useState("vi");
+
     const handleTableChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const tidStr = e.target.value;
         if (!tidStr || !formData.branchId) {
@@ -357,10 +359,31 @@ const App: React.FC = () => {
                                 </p>
                             </div>
 
-                            <button onClick={nextStep}
-                                    className="w-full bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50">
-                                Niêm Phong & Gửi Ý Kiến
-                            </button>
+                            <div className="flex items-center justify-between mt-4 gap-3">
+                                {/* Nút chọn ngôn ngữ */}
+                                <div className="flex items-center gap-2">
+                                    <select
+                                        name="language"
+                                        value={language}
+                                        onChange={(e) => setLanguage(e.target.value)}
+                                        className="flex items-center gap-2 border border-stone-300 rounded-lg px-3 py-2 bg-white text-stone-700 focus:ring-2 focus:ring-emerald-500"
+                                    >
+                                        <option value="vi">🇻🇳 Tiếng Việt</option>
+                                        <option value="zh">🇨🇳 中文</option>
+                                        <option value="en">🇺🇸 English</option>
+                                        <option value="ja">🇯🇵 日本語</option>
+                                        <option value="ko">🇰🇷 한국어</option>
+                                    </select>
+                                </div>
+
+                                {/* Nút gửi ý kiến */}
+                                <button
+                                    onClick={nextStep}
+                                    className="flex-1 bg-yellow-500 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50"
+                                >
+                                    Niêm Phong & Gửi Ý Kiến
+                                </button>
+                            </div>
                         </div>
                     </div>)}
                     {currentStep > 0 && (<form onSubmit={handleSubmit} className="p-6 space-y-6">
