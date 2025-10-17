@@ -1,5 +1,5 @@
 import React from 'react';
-import { useI18n } from './I18nProvider'; // 👈 import đúng như bạn nói
+import { useI18n } from '../I18nProvider'; // 👈 import đúng như bạn nói
 
 interface SubmitButtonProps {
     isLoading: boolean;
