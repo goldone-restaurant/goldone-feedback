@@ -715,10 +715,9 @@ const App: React.FC = () => {
                         className="w-20 h-20 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-5 border-4 border-emerald-200">
                         <i className="fa-solid fa-envelope-circle-check text-4xl text-emerald-600"></i>
                     </div>
-                    <h2 className="text-2xl font-bold text-stone-800">Đã gửi thành công!</h2>
+                    <h2 className="text-2xl font-bold text-stone-800">{t('sentSuccessTitle')}</h2>
                     <p className="text-stone-600 mt-3 mb-6 max-w-xs mx-auto">
-                        Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp
-                        Goldone ngày một tốt hơn!
+                        {t('sentSuccessDesc')}
                     </p>
                 </div>)}
             </div>
