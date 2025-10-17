@@ -567,7 +567,6 @@ const App: React.FC = () => {
                                                 <input type="hidden" name="branchAddress" value={formData.branchAddress ?? ''} />
                                             </>
                                         ) : (
-                                            // ❌ Không lock → cho chọn từ danh sách, và CHỌN KHÔNG biến thành label
                                             <select
                                                 name="branchId"
                                                 value={formData.branchId ?? ''}
@@ -606,6 +605,7 @@ const App: React.FC = () => {
                                                     <input type="hidden" name="tableType" value={formData.tableType ?? ''} />
                                                 </>
                                             ) : (
+                                                <div className="mt-2"></div>
                                                 <input
                                                     type="text"
                                                     name="tableName"
@@ -614,7 +614,6 @@ const App: React.FC = () => {
                                                         setFormData(prev => ({
                                                             ...prev,
                                                             tableName: e.target.value,
-                                                            // không có query → cho phép nhập tay, tableId/tableType có thể rỗng
                                                         }))
                                                     }
                                                     placeholder={t('enterRoomName') || 'Nhập tên phòng/bàn'}
