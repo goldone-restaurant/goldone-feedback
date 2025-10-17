@@ -364,10 +364,10 @@ const App: React.FC = () => {
                                 <div className="w-full">
                                     {/* Label mô tả */}
                                     <label
-                                        htmlFor="language"
+                                        htmlFor="Language"
                                         className="block text-stone-700 font-medium mb-1"
                                     >
-                                        🌐 {t('language')}
+                                        🌐 {t('Language')}
                                     </label>
 
                                     <div className="flex items-center gap-2 w-full">
