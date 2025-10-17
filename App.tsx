@@ -41,6 +41,7 @@ const App: React.FC = () => {
 
     const [branchLockedFromQuery, setBranchLockedFromQuery] = useState(false);
     const [tableLockedFromQuery, setTableLockedFromQuery] = useState(false);
+    const todayStr = new Date().toISOString().split('T')[0];
 
     const BRANCHES = useMemo(() => {
         const map = new Map<number, {branchId: number; branchName: string; branchAddress: string}>();
@@ -623,27 +624,49 @@ const App: React.FC = () => {
                                         </FormField>
                                     )}
 
-                                    {/* Ngày ghé thăm */}
+
+
+                                    /* Ngày ghé thăm */
                                     <FormField
                                         label={
-                                            formData.visitDate ? (
-                                                <>
-                                                    {t('currentVisitDate')}{' '}
-                                                    <span className="text-blue-600 font-semibold">
-                {new Date(formData.visitDate).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US')}
-              </span>
-                                                </>
-                                            ) : (
-                                                `${t('currentVisitDate')} ${t('unknown')}`
-                                            )
+                                            branchLockedFromQuery && formData.visitDate
+                                                ? (
+                                                    <>
+                                                        {t('currentVisitDate')}{' '}
+                                                        <span className="text-blue-600 font-semibold">
+              {new Date(formData.visitDate).toLocaleDateString(
+                  lang === 'vi' ? 'vi-VN' : 'en-US'
+              )}
+            </span>
+                                                    </>
+                                                )
+                                                : t('visitDate') // Khi không lock → chỉ hiện "Ngày bạn ghé thăm"
                                         }
                                     >
-                                        <input
-                                            type="hidden"
-                                            name="visitDate"
-                                            value={formData.visitDate ?? new Date().toISOString().split('T')[0]}
-                                        />
+                                        {branchLockedFromQuery ? (
+                                            // 🔒 Lấy từ query → khóa, chỉ gửi hidden
+                                            <input
+                                                type="hidden"
+                                                name="visitDate"
+                                                value={formData.visitDate || todayStr}
+                                            />
+                                        ) : (
+                                            // ✅ Không lock → cho chọn ngày, tối đa là hôm nay
+                                            <input
+                                                type="date"
+                                                name="visitDate"
+                                                value={formData.visitDate || todayStr}
+                                                max={todayStr}                 // ⛔ không cho chọn ngày tương lai
+                                                onChange={(e) =>
+                                                    setFormData(prev => ({ ...prev, visitDate: e.target.value }))
+                                                }
+                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            />
+                                        )}
                                     </FormField>
+
+
+
                                 </div>
 
                                 <hr className="border-stone-200" />
