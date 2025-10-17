@@ -304,7 +304,7 @@ const App: React.FC = () => {
     }
 
     const renderStepIndicator = () => (<div className="mb-6">
-        <p className="text-center text-sm font-semibold text-orange-700">Bước {currentStep} / 2</p>
+        <p className="text-center text-sm font-semibold text-orange-700"> {t('stepOf', { n: currentStep })} / 2</p>
         <div className="w-full bg-stone-200 rounded-full h-1.5 mt-1">
             <div className="bg-orange-600 h-1.5 rounded-full" style={{width: `${(currentStep / 2) * 100}%`}}></div>
         </div>
@@ -381,7 +381,7 @@ const App: React.FC = () => {
                                     onClick={nextStep}
                                     className="flex-1 bg-yellow-500 mt-4 text-stone-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-400/50 animate-fade-in animation-delay-700 border-2 border-yellow-600/50"
                                 >
-                                    Niêm Phong & Gửi Ý Kiến
+                                    {t('ctaSealAndSend')}
                                 </button>
                             </div>
                         </div>
