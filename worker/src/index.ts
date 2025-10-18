@@ -44,7 +44,7 @@ async function handle(request: Request, env: Env): Promise<Response> {
 		if (url.searchParams.get("thanks") === "1") {
 			const retry = url.searchParams.get("retry_after") || "";
 			const loc = new URL(url.origin);
-			loc.pathname = "/goldone-feedback/thankyou.html";
+			loc.pathname = "/thankyou.html";
 			if (retry) loc.searchParams.set("retry_after", retry);
 
 			return new Response(null, {
