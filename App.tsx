@@ -725,16 +725,19 @@ const App: React.FC = () => {
                                     ) : (
                                         // 🌍 Khác → Email
                                         <FormField label={t('email')}>
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={formData.email || ''}
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({ ...prev, email: e.target.value }))
-                                                }
-                                                placeholder={t('emailPlaceholder')}
-                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                                            />
+                                            <div className="flex items-center border border-stone-300 rounded-lg focus-within:ring-2 focus-within:ring-emerald-500 transition bg-white">
+                                                <i className="fa-solid fa-envelope text-emerald-500 ml-3"></i>
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    value={formData.email || ''}
+                                                    onChange={(e) =>
+                                                        setFormData((prev) => ({ ...prev, email: e.target.value }))
+                                                    }
+                                                    placeholder={t('emailPlaceholder')}
+                                                    className="flex-1 p-3 bg-transparent focus:outline-none"
+                                                />
+                                            </div>
                                         </FormField>
                                     )}
 
