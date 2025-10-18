@@ -1,0 +1,41 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "goldone-survey-cooldown",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-10-11",
+
+	// Bật logs/metrics trong dashboard
+	"observability": { "enabled": true },
+
+	// (Khuyến nghị) Smart Placement
+	// "placement": { "mode": "smart" },
+
+	// Dùng remote resource khi `wrangler dev`
+	"dev": { "remote": true },
+
+	// ⚠️ Đặt ORIGIN = upstream thật (KHÔNG phải chính phanhoidichvu.goldone.vn)
+	"vars": {
+		"ORIGIN": "https://goldone-restaurant.github.io/goldone-feedback"
+	},
+
+	// KV namespace cho cooldown (chỉ 1 binding, ID thật)
+	"kv_namespaces": [
+		{
+			"binding": "FEEDBACK_KV",
+			"id": "68ce1585bb5142da887d4d2f6ee1a6ba"
+		}
+	],
+
+	// Route Worker vào domain thật của bạn
+	"routes": [
+		{
+			"pattern": "phanhoidichvu.goldone.vn/*",
+			"zone_name": "goldone.vn"
+			// "custom_domain": true
+		}
+	]
+}
