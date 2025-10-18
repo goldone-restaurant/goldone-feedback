@@ -75,7 +75,7 @@ export const dictionaries: Record<Lang, Dict> = {
     },
 
     en: {
-        heroTitle: "Send Directly to Management & Restaurant Owner",
+        heroTitle: "Send Directly to the Restaurant Owner & General Manager",
         heroDesc: "We seal every message—compliment or suggestion—and senior management reads carefully to elevate your Goldone experience.",
         ctaSealAndSend: "Seal & Send Feedback",
         stepOf: "Step {{n}} / 2",
@@ -135,7 +135,7 @@ export const dictionaries: Record<Lang, Dict> = {
     },
 
     zh: {
-        heroTitle: "直接发送至管理层与餐厅老板",
+        heroTitle: "直接发送给餐厅老板与总经理",
         heroDesc: "我们会密封所有反馈，无论表扬或建议，都会由高层认真阅读以提升您的 Goldone 体验。",
         ctaSealAndSend: "密封并发送反馈",
         stepOf: "第 {{n}} 步 / 共 2 步",
@@ -196,7 +196,7 @@ export const dictionaries: Record<Lang, Dict> = {
     },
 
     ja: {
-        heroTitle: "経営陣・オーナーへ直接届けます",
+        heroTitle: "オーナー＆総支配人へ直接お届け",
         heroDesc: "称賛もご意見も封印して、上層部が丁寧に拝読し、Goldoneの体験向上につなげます。",
         ctaSealAndSend: "封印して送信",
         stepOf: "ステップ {{n}} / 2",
@@ -257,7 +257,7 @@ export const dictionaries: Record<Lang, Dict> = {
     },
 
     ko: {
-        heroTitle: "경영진 및 오너에게 직접 전달",
+        heroTitle: "레스토랑 오너 및 총지배인에게 직접 전달",
         heroDesc: "칭찬과 제안 모두를 봉인하여 경영진이 꼼꼼히 확인하고 Goldone 경험을 개선합니다.",
         ctaSealAndSend: "봉인하고 전송",
         stepOf: "단계 {{n}} / 2",
