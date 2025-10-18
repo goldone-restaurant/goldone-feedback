@@ -38,8 +38,13 @@ async function handle(request: Request, env: Env): Promise<Response> {
 	if (!sid) sid = crypto.randomUUID();
 
 	// 1) GET trang khảo sát -> kiểm cooldown
+	// 1) GET trang khảo sát -> kiểm cooldown
 	if (request.method === "GET" && isSurveyPage(url.pathname)) {
-		// Nếu KV chưa bind đúng sẽ ném lỗi, nên bao bọc try/catch để log rõ
+		// ✅ NEW: nếu đã vào URL cảm ơn rồi thì bỏ qua redirect để tránh loop
+		if (url.searchParams.get("thanks") === "1") {
+			return proxyToOriginOrHello(request, env, sid);
+		}
+
 		try {
 			const now = Date.now();
 			const lastStr = await env.FEEDBACK_KV.get(kCooldown(sid), "text");
@@ -64,11 +69,13 @@ async function handle(request: Request, env: Env): Promise<Response> {
 			}
 		} catch (e) {
 			console.error("KV check error:", e);
-			// Vẫn cho qua để không làm vỡ trải nghiệm nếu KV có vấn đề
+			// Cho qua để không vỡ trải nghiệm nếu KV lỗi
 		}
-		// Không còn cooldown -> proxy/pass tiếp
+
+		// Không cooldown -> proxy trang form
 		return proxyToOriginOrHello(request, env, sid);
 	}
+
 
 	// 2) POST submit -> ghi thời điểm vào KV
 	if (request.method === "POST" && url.pathname === SUBMIT_API_PATH) {
