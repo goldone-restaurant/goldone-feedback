@@ -708,16 +708,19 @@ const App: React.FC = () => {
                                     ) : lang === 'zh' ? (
                                         // 🇨🇳 Trung Quốc → WeChat
                                         <FormField label={t('wechat')}>
-                                            <input
-                                                type="text"
-                                                name="wechatId"
-                                                value={formData.wechatId || ''}
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({ ...prev, wechatId: e.target.value }))
-                                                }
-                                                placeholder={t('wechatPlaceholder')}
-                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                                            />
+                                            <div className="flex items-center border border-stone-300 rounded-lg focus-within:ring-2 focus-within:ring-emerald-500 transition bg-white">
+                                                <i className="fa-brands fa-weixin text-emerald-500 ml-3 text-lg"></i>
+                                                <input
+                                                    type="text"
+                                                    name="wechatId"
+                                                    value={formData.wechatId || ''}
+                                                    onChange={(e) =>
+                                                        setFormData((prev) => ({ ...prev, wechatId: e.target.value }))
+                                                    }
+                                                    placeholder={t('wechatPlaceholder')}
+                                                    className="flex-1 p-3 bg-transparent focus:outline-none"
+                                                />
+                                            </div>
                                         </FormField>
                                     ) : (
                                         // 🌍 Khác → Email
