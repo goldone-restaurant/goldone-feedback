@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cảm ơn bạn!</title>
+    <style>
+        body {
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            height: 100vh; margin: 0;
+            background: #fafaf9; color: #333;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+        h1 { color: #16a34a; font-size: 1.8rem; }
+        p { color: #6b7280; margin-bottom: 20px; }
+        a { background: #10b981; color: white; padding: 10px 18px;
+            border-radius: 8px; text-decoration: none; font-weight: 600; }
+        a:hover { background: #059669; }
+    </style>
+</head>
+<body>
+<h1>Đã nhận phản hồi của bạn 🎉</h1>
+<p>Bạn có thể gửi lại sau khoảng <span id="minutes">30</span> phút.</p>
+<a href="/">Quay lại trang chính</a>
+
+<script>
+    const params = new URLSearchParams(location.search);
+    const retry = params.get("retry_after");
+    if (retry) document.getElementById("minutes").textContent = retry;
+</script>
+</body>
+</html>

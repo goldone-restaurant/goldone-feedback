@@ -77,6 +77,31 @@ async function handle(request: Request, env: Env): Promise<Response> {
 	}
 
 
+	// NEW: GET /api/cooldown -> trả trạng thái còn bao lâu (phút)
+	if (request.method === "GET" && url.pathname === "/api/cooldown") {
+		const now = Date.now();
+		const lastStr = await env.FEEDBACK_KV.get(kCooldown(sid), "text");
+		if (!lastStr) {
+			return new Response(JSON.stringify({ active: false, retry_after: 0 }), {
+				status: 200,
+				headers: { "Content-Type": "application/json; charset=utf-8" },
+			});
+		}
+		const last = Number(lastStr);
+		const diff = now - last;
+		if (Number.isNaN(last) || diff >= COOLDOWN_MS) {
+			return new Response(JSON.stringify({ active: false, retry_after: 0 }), {
+				status: 200,
+				headers: { "Content-Type": "application/json; charset=utf-8" },
+			});
+		}
+		const minsLeft = Math.ceil((COOLDOWN_MS - diff) / 60000);
+		return new Response(JSON.stringify({ active: true, retry_after: minsLeft }), {
+			status: 200,
+			headers: { "Content-Type": "application/json; charset=utf-8" },
+		});
+	}
+
 	// 2) POST submit -> ghi thời điểm vào KV
 	if (request.method === "POST" && url.pathname === SUBMIT_API_PATH) {
 		try {
