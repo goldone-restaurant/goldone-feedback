@@ -379,7 +379,7 @@ const App: React.FC = () => {
                                 </p>
                             </div>
 
-                            <div className="mt-4 gap-3">
+                            <div className="gap-3">
                                 {/* Chọn ngôn ngữ */}
                                 <div className="w-full">
                                     {/* Label mô tả */}
