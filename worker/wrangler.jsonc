@@ -19,7 +19,7 @@
 
 	// ⚠️ Đặt ORIGIN = upstream thật (KHÔNG phải chính phanhoidichvu.goldone.vn)
 	"vars": {
-		"ORIGIN": "https://goldone-restaurant.github.io/goldone-feedback"
+		"ORIGIN": "https://goldone-restaurant.github.io/goldone-feedback/"
 	},
 
 	// KV namespace cho cooldown (chỉ 1 binding, ID thật)

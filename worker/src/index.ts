@@ -123,25 +123,46 @@ function setSidCookie(sid: string, extra: Record<string, string> = {}) {
 async function proxyToOriginOrHello(request: Request, env: Env, sid: string) {
 	const reqUrl = new URL(request.url);
 
-	// Nếu ORIGIN không cấu hình -> trả Hello
 	if (!env.ORIGIN) {
 		return new Response("Hello from Worker (no ORIGIN set).", {
 			headers: setSidCookie(sid, { "Content-Type": "text/plain; charset=utf-8" }),
 		});
 	}
 
-	// Guard: tránh loop nếu ORIGIN trỏ chính host đang gắn route
-	const target = new URL(reqUrl.pathname + reqUrl.search, env.ORIGIN);
-	if (target.host === reqUrl.host) {
+	const originUrl = new URL(env.ORIGIN); // ⚠️ phải có "/" cuối
+	if (originUrl.host === reqUrl.host) {
 		console.error("ORIGIN misconfigured: points to same host -> loop");
 		return new Response(
-			"Misconfigured ORIGIN (loop). Set ORIGIN to your upstream (e.g., Pages/S3/backend), not this domain.",
+			"Misconfigured ORIGIN (loop). Set ORIGIN to your upstream (e.g., https://goldone-restaurant.github.io/goldone-feedback/).",
 			{ status: 500, headers: { "content-type": "text/plain; charset=utf-8" } }
 		);
 	}
 
+	// ✅ Join path: nếu path đã bắt đầu bằng basePrefix thì giữ nguyên,
+	// ngược lại thì ghép vào sau basePrefix.
+	function joinOriginPath(origin: URL, path: string, search: string) {
+		const o = new URL(origin.toString());
+		// basePrefix = "/goldone-feedback/"
+		const basePrefix = origin.pathname.endsWith("/")
+			? origin.pathname
+			: origin.pathname + "/";
+
+		if (path === "/" || path === "") {
+			o.pathname = basePrefix;        // root -> đúng base của ORIGIN
+		} else if (path.startsWith(basePrefix)) {
+			o.pathname = path;              // đã có prefix -> dùng nguyên đường dẫn
+		} else {
+			const trimmed = path.startsWith("/") ? path.slice(1) : path;
+			o.pathname = basePrefix + trimmed; // thêm vào sau prefix
+		}
+		o.search = search;
+		return o.toString();
+	}
+
+	const targetUrl = joinOriginPath(originUrl, reqUrl.pathname, reqUrl.search);
+
 	try {
-		const resp = await fetch(target.toString(), new Request(request));
+		const resp = await fetch(targetUrl, new Request(request));
 		const headers = new Headers(resp.headers);
 		headers.set(
 			"Set-Cookie",

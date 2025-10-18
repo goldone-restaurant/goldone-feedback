@@ -46,6 +46,42 @@ const App: React.FC = () => {
     const [tableLockedFromQuery, setTableLockedFromQuery] = useState(false);
     const todayStr = new Date().toISOString().split('T')[0];
 
+    const [cooldownLeftMin, setCooldownLeftMin] = useState<number>(0);
+    const [cooldownActive, setCooldownActive] = useState<boolean>(false);
+
+    const getQuery = (k: string) => new URLSearchParams(window.location.search).get(k);
+
+    useEffect(() => {
+        // Nếu URL có ?thanks=1 (do Worker 302) → show cảm ơn ngay
+        const thanks = getQuery('thanks');
+        const retry = Number(getQuery('retry_after') || 0);
+        if (thanks === '1') {
+            setIsSubmitted(true);
+            if (retry > 0) {
+                setCooldownActive(true);
+                setCooldownLeftMin(retry);
+            }
+        }
+
+        // Dù có query hay không, vẫn hỏi Worker để chắc chắn trạng thái cooldown
+        (async () => {
+            try {
+                const res = await fetch('/api/cooldown', { credentials: 'include' });
+                const data = await res.json();
+                if (data?.active) {
+                    setCooldownActive(true);
+                    setCooldownLeftMin(data.retry_after || 0);
+                    setIsSubmitted(true); // chuyển sang view cảm ơn
+                } else {
+                    setCooldownActive(false);
+                    // isSubmitted giữ nguyên (false) để hiện form
+                }
+            } catch (e) {
+                console.warn('Cooldown check failed', e);
+            }
+        })();
+    }, []);
+
     const BRANCHES = useMemo(() => {
         const map = new Map<number, {branchId: number; branchName: string; branchAddress: string}>();
         Object.values(TABLES_MAP).forEach((t: any) => {
@@ -290,12 +326,31 @@ const App: React.FC = () => {
         e.preventDefault();
         setError(null);
         setIsLoading(true);
-
         try {
+            // 1) Gọi Worker để “đóng dấu” (hoặc bị 429 nếu đang cooldown)
+            const res = await fetch('/api/submit', { method: 'POST', credentials: 'include' });
+
+            if (res.status === 429) {
+                const j = await res.json().catch(() => ({}));
+                const retry = Number(j?.retry_after || 0);
+                setCooldownActive(true);
+                setCooldownLeftMin(retry);
+                setIsSubmitted(true); // chuyển view cảm ơn
+                setError(`Bạn đã gửi gần đây. Vui lòng quay lại sau ~${retry} phút.`);
+                return; // ❌ không chạy tiếp
+            }
+
+            if (!res.ok) {
+                setError('Gửi thất bại. Vui lòng thử lại.');
+                return;
+            }
+
+            // 2) Nếu server OK → mới chạy các bước tốn thời gian phía client
             const result = await analyzeFeedback(formData);
             setAnalysis(result);
             sendToChat(formData, result).catch(console.error);
-            setIsSubmitted(true);
+
+            setIsSubmitted(true); // ✅ màn cảm ơn
         } catch (err) {
             setError('Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.');
             console.error(err);
