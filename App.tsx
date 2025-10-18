@@ -839,15 +839,22 @@ const App: React.FC = () => {
                         </div>
 
                     </form>)}
-                </>) : (<div className="p-8 text-center animate-fade-in">
-                    <div
-                        className="w-20 h-20 bg-emerald-100 rounded-full mx-auto flex items-center justify-center mb-5 border-4 border-emerald-200">
-                        <i className="fa-solid fa-envelope-circle-check text-4xl text-emerald-600"></i>
+                </>) : (<div className="relative p-8 text-center animate-fade-in rounded-2xl overflow-hidden border border-amber-200 shadow-lg bg-gradient-to-br from-amber-50 via-white to-emerald-50">
+                    {/* Hoạ tiết chấm mờ */}
+                    <div className="pointer-events-none absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,#fef3c7_2px,transparent_2px)] bg-[length:24px_24px]"></div>
+
+                    {/* Ánh sáng lướt */}
+                    <div className="pointer-events-none absolute -inset-1 shimmer-mask"></div>
+
+                    <div className="relative">
+                        <div className="w-20 h-20 bg-white/80 backdrop-blur-sm rounded-full mx-auto flex items-center justify-center mb-5 border-4 border-emerald-200 shadow-inner">
+                            <i className="fa-solid fa-envelope-circle-check text-4xl text-emerald-600"></i>
+                        </div>
+                        <h2 className="text-2xl font-bold text-stone-800 drop-shadow-sm">{t('sentSuccessTitle')}</h2>
+                        <p className="text-stone-600 mt-3 mb-6 max-w-xs mx-auto">
+                            {t('sentSuccessDesc')}
+                        </p>
                     </div>
-                    <h2 className="text-2xl font-bold text-stone-800">{t('sentSuccessTitle')}</h2>
-                    <p className="text-stone-600 mt-3 mb-6 max-w-xs mx-auto">
-                        {t('sentSuccessDesc')}
-                    </p>
                 </div>)}
             </div>
             <footer className="text-center py-6 text-stone-500 text-xs">
@@ -908,6 +915,20 @@ const App: React.FC = () => {
             10% { opacity: 1; }
             90% { opacity: 1; }
             100% { transform: translateY(-150px); opacity: 0; }
+        }
+        @keyframes shimmerSweep {
+          0%   { transform: translateX(-120%); opacity: .0; }
+          15%  { opacity: .35; }
+          50%  { opacity: .25; }
+          100% { transform: translateX(120%); opacity: 0; }
+        }
+        .shimmer-mask {
+          background:
+            linear-gradient(115deg, rgba(255,255,255,0) 0%,
+              rgba(255,255,255,0.75) 50%, rgba(255,255,255,0) 100%);
+          mix-blend-mode: soft-light;
+          animation: shimmerSweep 2.8s ease-in-out infinite;
+          mask-image: radial-gradient(120% 70% at 10% 50%, black 40%, transparent 60%);
         }
       `}</style>
     </div>);
