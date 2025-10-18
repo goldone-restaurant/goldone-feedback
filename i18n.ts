@@ -6,7 +6,7 @@ type Dict = Record<string, string>;
 export const dictionaries: Record<Lang, Dict> = {
     vi: {
         // --- Hero / Intro ---
-        heroTitle: "Gửi Trực Tiếp đến Ban Quản Lý & Chủ Nhà Hàng",
+        heroTitle: "Gửi Trực Tiếp đến Chủ nhà hàng & Tổng quản lý",
         heroDesc: "Chúng tôi cam kết mọi chia sẻ, dù là khen ngợi hay góp ý, đều được niêm phong và đọc kỹ bởi cấp quản lý cao nhất để nâng tầm trải nghiệm tại Nhà Hàng Goldone.",
         ctaSealAndSend: "Niêm Phong & Gửi Ý Kiến",
         stepOf: "Bước {{n}} / 2",
