@@ -819,7 +819,38 @@ const App: React.FC = () => {
                                         // 🌍 Khác → Email
                                         <FormField label={t('email')}>
                                             <div className="flex items-center border border-stone-300 rounded-lg focus-within:ring-2 focus-within:ring-emerald-500 transition bg-white">
-                                                <i className="fa-solid fa-envelope text-emerald-500 ml-3"></i>
+                                                {/* Gmail SVG inline */}
+                                                <svg
+                                                    viewBox="0 0 512 512"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-5 h-5 ml-3 shrink-0"
+                                                    aria-hidden="true"
+                                                    focusable="false"
+                                                >
+                                                    <g id="_x31_12-gmail_x2C__email_x2C__mail">
+                                                        <g>
+                                                            <g>
+                                                                <g>
+                                                                    <rect x="77.045" y="76.565" width="357.904" height="358.87" fill="#F1F5F7"/>
+                                                                    <path
+                                                                        fill="#DCE6EA"
+                                                                        d="M256.002,293.738l178.947,141.697v-279.74L256.002,293.738z"
+                                                                    />
+                                                                    <path
+                                                                        fill="#F84437"
+                                                                        d="M449.861,76.565h-14.912L256.002,218.26L77.045,76.565H62.134
+                  c-24.693,0-44.737,20.094-44.737,44.858v269.152
+                  c0,24.759,20.044,44.859,44.737,44.859h14.911v-279.74l178.957,138.014
+                  l178.947-138.047v279.773h14.912
+                  c24.699,0,44.742-20.101,44.742-44.859V121.424
+                  C494.604,96.66,474.561,76.565,449.861,76.565z"
+                                                                    />
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+
                                                 <input
                                                     type="email"
                                                     name="email"
@@ -832,6 +863,7 @@ const App: React.FC = () => {
                                                 />
                                             </div>
                                         </FormField>
+
                                     )}
 
 
