@@ -690,7 +690,7 @@ const App: React.FC = () => {
                                         // 🇻🇳 Việt Nam → Phone
                                         <FormField label={t('phoneNumber')}>
                                             <div className="flex items-center border border-stone-300 rounded-lg focus-within:ring-2 focus-within:ring-orange-500 transition bg-white">
-                                                <span className="ml-3 text-orange-500 text-lg">📞</span>
+                                                <i className="fa-solid fa-phone text-orange-500 ml-3"></i>
                                                 <input
                                                     type="tel"
                                                     name="phoneNumber"
