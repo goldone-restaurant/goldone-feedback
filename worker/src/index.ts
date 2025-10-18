@@ -42,7 +42,18 @@ async function handle(request: Request, env: Env): Promise<Response> {
 	if (request.method === "GET" && isSurveyPage(url.pathname)) {
 		// ✅ NEW: nếu đã vào URL cảm ơn rồi thì bỏ qua redirect để tránh loop
 		if (url.searchParams.get("thanks") === "1") {
-			return proxyToOriginOrHello(request, env, sid);
+			const retry = url.searchParams.get("retry_after") || "";
+			const loc = new URL(url.origin);
+			loc.pathname = "/goldone-feedback/thankyou.html";
+			if (retry) loc.searchParams.set("retry_after", retry);
+
+			return new Response(null, {
+				status: 302,
+				headers: setSidCookie(sid, {
+					"Location": loc.toString(),
+					"Cache-Control": "no-store",
+				}),
+			});
 		}
 
 		try {
