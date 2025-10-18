@@ -5,7 +5,11 @@ export interface FeedbackData {
     recommend: boolean | null;
     comments: string;
     visitDate: string;
-    phoneNumber: string;
+
+    phoneNumber?: string;
+    wechatId?: string;
+    email?: string;
+
     receiptImage: File | null;
     foodComplaint: string;
     serviceComplaint: string;

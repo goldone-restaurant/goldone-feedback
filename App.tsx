@@ -27,6 +27,8 @@ const App: React.FC = () => {
         comments: '',
         visitDate: new Date().toISOString().split('T')[0],
         phoneNumber: '',
+        wechatId: '',
+        email: '',
         receiptImage: null,
         foodComplaint: '',
         serviceComplaint: '',
@@ -683,20 +685,53 @@ const App: React.FC = () => {
                                         {t('additionalInfo') || 'Thông tin bổ sung'}
                                     </h3>
 
-                                    {/* Số điện thoại */}
-                                    <FormField label={t('phoneNumber')}>
-                                        <input
-                                            type="tel"
-                                            name="phoneNumber"
-                                            value={formData.phoneNumber}
-                                            onChange={handleInputChange}
-                                            placeholder={
-                                                t('phonePlaceholder') ||
-                                                'Để chúng tôi có thể liên hệ lại'
-                                            }
-                                            className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                        />
-                                    </FormField>
+                                    {/* Liên hệ theo ngôn ngữ */}
+                                    {lang === 'vi' ? (
+                                        // 🇻🇳 Việt Nam → Phone
+                                        <FormField label={t('phoneNumber')}>
+                                            <input
+                                                type="tel"
+                                                name="phoneNumber"
+                                                value={formData.phoneNumber || ''}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                                                }
+                                                placeholder={t('phonePlaceholder')}
+                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                                inputMode="tel"
+                                                pattern="^[0-9+()\-.\s]{6,}$"
+                                            />
+                                        </FormField>
+                                    ) : lang === 'zh' ? (
+                                        // 🇨🇳 Trung Quốc → WeChat
+                                        <FormField label={t('wechat')}>
+                                            <input
+                                                type="text"
+                                                name="wechatId"
+                                                value={formData.wechatId || ''}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({ ...prev, wechatId: e.target.value }))
+                                                }
+                                                placeholder={t('wechatPlaceholder')}
+                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+                                            />
+                                        </FormField>
+                                    ) : (
+                                        // 🌍 Khác → Email
+                                        <FormField label={t('email')}>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={formData.email || ''}
+                                                onChange={(e) =>
+                                                    setFormData((prev) => ({ ...prev, email: e.target.value }))
+                                                }
+                                                placeholder={t('emailPlaceholder')}
+                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
+                                            />
+                                        </FormField>
+                                    )}
+
 
                                     {/* Đính kèm hóa đơn */}
                                     <FormField label={t('attachReceipt')}>

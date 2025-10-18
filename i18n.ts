@@ -26,6 +26,11 @@ export const dictionaries: Record<Lang, Dict> = {
         visitInfo: "Thông tin chuyến thăm",
         visitDate: "Ngày bạn ghé thăm",
         phoneNumber: "Số điện thoại",
+        phonePlaceholder: "Để chúng tôi có thể liên hệ lại",
+        wechat: "WeChat",
+        wechatPlaceholder: "Nhập ID WeChat của bạn",
+        email: "Email",
+        emailPlaceholder: "Nhập địa chỉ email của bạn",
         attachReceipt: "Đính kèm hóa đơn",
         uploadImage: "Tải ảnh lên",
         takePhoto: "Chụp ảnh",
@@ -53,9 +58,10 @@ export const dictionaries: Record<Lang, Dict> = {
         sendError: "Đã xảy ra lỗi khi gửi phản hồi. Vui lòng thử lại.",
 
         additionalInfo: "Thông tin bổ sung",
-        phonePlaceholder: "Để chúng tôi có thể liên hệ lại",
         previewImage: "Nhấn để xem lớn",
         delete: "Xóa ảnh",
+
+
 
         sendFeedback: "Gửi phản hồi",
         processing: "Đang xử lý...",
@@ -87,6 +93,11 @@ export const dictionaries: Record<Lang, Dict> = {
         visitInfo: "Visit information",
         visitDate: "Your visit date",
         phoneNumber: "Phone number",
+        phonePlaceholder: "So we can contact you if needed",
+        wechat: "WeChat",
+        wechatPlaceholder: "Enter your WeChat ID",
+        email: "Email",
+        emailPlaceholder: "Enter your email address",
         attachReceipt: "Attach receipt",
         uploadImage: "Upload image",
         takePhoto: "Take photo",
@@ -108,7 +119,6 @@ export const dictionaries: Record<Lang, Dict> = {
         sendError: "Something went wrong. Please try again.",
 
         additionalInfo: "Additional information",
-        phonePlaceholder: "So we can contact you if needed",
         previewImage: "Click to view larger",
         delete: "Delete",
 
@@ -143,6 +153,11 @@ export const dictionaries: Record<Lang, Dict> = {
         visitInfo: "来访信息",
         visitDate: "来访日期",
         phoneNumber: "电话号码",
+        phonePlaceholder: "便于我们与您联系",
+        wechat: "微信",
+        wechatPlaceholder: "请输入您的微信号",
+        email: "邮箱",
+        emailPlaceholder: "请输入您的邮箱地址",
         attachReceipt: "附件发票",
         uploadImage: "上传图片",
         takePhoto: "拍照",
@@ -165,7 +180,6 @@ export const dictionaries: Record<Lang, Dict> = {
 
 
         additionalInfo: "附加信息",
-        phonePlaceholder: "以便我们在需要时联系您",
         previewImage: "点击查看大图",
         delete: "删除",
 
@@ -200,6 +214,11 @@ export const dictionaries: Record<Lang, Dict> = {
         visitInfo: "来店情報",
         visitDate: "来店日",
         phoneNumber: "電話番号",
+        phonePlaceholder: "必要に応じてご連絡できるように",
+        wechat: "WeChat",
+        wechatPlaceholder: "WeChat ID を入力",
+        email: "メール",
+        emailPlaceholder: "メールアドレスを入力してください",
         attachReceipt: "レシート添付",
         uploadImage: "画像をアップロード",
         takePhoto: "写真を撮る",
@@ -221,7 +240,6 @@ export const dictionaries: Record<Lang, Dict> = {
         sendError: "送信に失敗しました。再試行してください。",
 
         additionalInfo: "追加情報",
-        phonePlaceholder: "必要な場合にご連絡できるように",
         previewImage: "クリックして拡大表示",
         delete: "削除",
 
@@ -257,6 +275,11 @@ export const dictionaries: Record<Lang, Dict> = {
         visitInfo: "방문 정보",
         visitDate: "방문 날짜",
         phoneNumber: "전화번호",
+        phonePlaceholder: "필요 시 연락드릴 수 있도록",
+        wechat: "WeChat",
+        wechatPlaceholder: "WeChat ID를 입력하세요",
+        email: "이메일",
+        emailPlaceholder: "이메일 주소를 입력하세요",
         attachReceipt: "영수증 첨부",
         uploadImage: "이미지 업로드",
         takePhoto: "사진 촬영",
@@ -278,7 +301,6 @@ export const dictionaries: Record<Lang, Dict> = {
         sendError: "전송 오류가 발생했습니다. 다시 시도해주세요.",
 
         additionalInfo: "추가 정보",
-        phonePlaceholder: "필요 시 연락드릴 수 있도록",
         previewImage: "클릭하여 크게 보기",
         delete: "삭제",
 
