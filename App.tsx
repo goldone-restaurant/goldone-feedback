@@ -689,18 +689,21 @@ const App: React.FC = () => {
                                     {lang === 'vi' ? (
                                         // 🇻🇳 Việt Nam → Phone
                                         <FormField label={t('phoneNumber')}>
-                                            <input
-                                                type="tel"
-                                                name="phoneNumber"
-                                                value={formData.phoneNumber || ''}
-                                                onChange={(e) =>
-                                                    setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
-                                                }
-                                                placeholder={t('phonePlaceholder')}
-                                                className="w-full p-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                                                inputMode="tel"
-                                                pattern="^[0-9+()\-.\s]{6,}$"
-                                            />
+                                            <div className="flex items-center border border-stone-300 rounded-lg focus-within:ring-2 focus-within:ring-orange-500 transition bg-white">
+                                                <span className="ml-3 text-orange-500 text-lg">📞</span>
+                                                <input
+                                                    type="tel"
+                                                    name="phoneNumber"
+                                                    value={formData.phoneNumber || ''}
+                                                    onChange={(e) =>
+                                                        setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                                                    }
+                                                    placeholder={t('phonePlaceholder')}
+                                                    className="flex-1 p-3 bg-transparent focus:outline-none"
+                                                    inputMode="tel"
+                                                    pattern="^[0-9+()\\-\\.\\s]{6,}$"
+                                                />
+                                            </div>
                                         </FormField>
                                     ) : lang === 'zh' ? (
                                         // 🇨🇳 Trung Quốc → WeChat
