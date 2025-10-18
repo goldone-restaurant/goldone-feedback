@@ -38,7 +38,7 @@ export const dictionaries: Record<Lang, Dict> = {
         back: "Quay lại",
         next: "Tiếp tục",
         sentSuccessTitle: "Đã gửi thành công!",
-        sentSuccessDesc: "Ban quản lý & chủ nhà hàng đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Goldone ngày một tốt hơn!",
+        sentSuccessDesc: "Chủ nhà hàng & Tổng quản lý đã nhận được ý kiến niêm phong của bạn. Cảm ơn bạn đã giúp Nhà hàng GOLD ONE ngày một tốt hơn!",
 
         // --- Auto detected labels ---
         currentBranch: "Chi nhánh hiện tại:",
