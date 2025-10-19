@@ -850,7 +850,6 @@ const App: React.FC = () => {
                                                         </g>
                                                     </g>
                                                 </svg>
-
                                                 <input
                                                     type="email"
                                                     name="email"
