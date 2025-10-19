@@ -865,6 +865,7 @@ const App: React.FC = () => {
 
                                     )}
 
+
                                     {/* Đính kèm hóa đơn */}
                                     <FormField label={t('attachReceipt')}>
                                         <div className="flex gap-4">
