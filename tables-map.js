@@ -19,7 +19,6 @@ export const TABLES_MAP = {
     "226": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 26, "tableName": "LUXURIOUS", "tableType": "bàn dài" },
     "227": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 27, "tableName": "PARIS", "tableType": "bàn dài" },
     "228": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 28, "tableName": "CANADA", "tableType": "bàn dài" },
-
     "229": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 29, "tableName": "JAPAN", "tableType": "bàn dài" },
     "230": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 30, "tableName": "VIP 3", "tableType": "bàn dài" },
     "231": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 31, "tableName": "VIP 15", "tableType": "bàn dài" },
