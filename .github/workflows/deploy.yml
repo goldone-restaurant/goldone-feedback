@@ -17,134 +17,33 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV: production
-
     steps:
       - uses: actions/checkout@v4
 
-      # ==== Fallback context: luôn chạy sớm để có dữ liệu cho báo lỗi ====
-      - name: Init notify context (early)
-        id: ctx_build
-        if: ${{ always() }}
-        run: |
-          BRANCH="${GITHUB_REF#refs/heads/}"
-          REPO="${{ github.repository }}"
-          SHA="${{ github.sha }}"
-          SHA_SHORT="${SHA:0:7}"
-          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
-          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
-          ACTOR="${{ github.actor }}"
-          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
-          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
-          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
-          AVATAR_URL="https://github.com/${ACTOR}.png?size=96"
-          {
-            echo "repo=$REPO"
-            echo "branch=$BRANCH"
-            echo "sha_short=$SHA_SHORT"
-            echo "run_url=$RUN_URL"
-            echo "commit_url=$COMMIT_URL"
-            echo "triggered_by=$ACTOR"
-            echo "author_name=$AUTHOR_NAME"
-            echo "author_email=$AUTHOR_EMAIL"
-            echo "commit_msg=$COMMIT_MSG"
-            echo "avatar_url=$AVATAR_URL"
-          } >> "$GITHUB_OUTPUT"
+      - name: Install jq (for JSON payload)
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Start timer
-        id: t0
-        run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
-
-      - name: Install jq & tools
-        run: sudo apt-get update && sudo apt-get install -y jq moreutils
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"   # cache mặc định; PM thực tế sẽ được detect bên dưới
+          cache: 'npm'
 
-      # ---- Detect package manager theo lockfile (pnpm/yarn/npm) ----
-      - name: Detect package manager
-        id: pkg
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "mgr=pnpm" >> $GITHUB_OUTPUT
-          elif [ -f yarn.lock ]; then
-            echo "mgr=yarn" >> $GITHUB_OUTPUT
-          else
-            echo "mgr=npm" >> $GITHUB_OUTPUT
-          fi
-          echo "Detected PM: $(cat $GITHUB_OUTPUT)"
+      - run: npm ci
 
-      # Setup pnpm nếu cần + enable corepack (cho yarn/pnpm)
-      - name: Setup pnpm (if needed)
-        if: steps.pkg.outputs.mgr == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Enable corepack
-        run: corepack enable
-
-      # ---- Install deps đúng theo PM ----
-      - name: Install dependencies
-        run: |
-          if [ "${{ steps.pkg.outputs.mgr }}" = "pnpm" ]; then
-            pnpm install --frozen-lockfile
-          elif [ "${{ steps.pkg.outputs.mgr }}" = "yarn" ]; then
-            yarn install --frozen-lockfile
-          else
-            if [ -f package-lock.json ]; then
-              npm ci
-            else
-              npm install
-            fi
-          fi
-
-      # Build (có inject key build-time), kèm fallback npx vite build
-      - name: Build
+      # (A) Inject env trực tiếp vào tiến trình build:
+      - run: npm run build
         env:
           GEMINI_API_KEY: ${{ secrets.API_KEY }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: |
-          if [ "${{ steps.pkg.outputs.mgr }}" = "pnpm" ]; then
-            pnpm run -s build || pnpm exec vite build
-          elif [ "${{ steps.pkg.outputs.mgr }}" = "yarn" ]; then
-            yarn build || yarn vite build
-          else
-            npm run -s build || npx vite build
-          fi
 
-      # SPA fix (an toàn)
-      - name: Copy 404.html (SPA)
-        run: |
-          if [ -f dist/index.html ]; then
-            cp dist/index.html dist/404.html
-          else
-            echo "dist/index.html not found, skip 404 copy"
-          fi
+      # SPA fix: refresh không 404
+      - run: cp dist/index.html dist/404.html
 
-      - name: Count & size dist
-        id: distinfo
-        run: |
-          if [ -d dist ]; then
-            FILES=$(find dist -type f | wc -l)
-            SIZE=$(du -sh dist | awk '{print $1}')
-          else
-            FILES=0
-            SIZE="0"
-          fi
-          echo "files=$FILES" >> $GITHUB_OUTPUT
-          echo "size=$SIZE" >> $GITHUB_OUTPUT
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
-      # ====== METADATA GIÀU HƠN (nếu build đi qua đây) ======
+      # ====== THU THẬP METADATA (để thông báo lỗi build nếu có) ======
       - name: Collect build metadata
         id: meta_build
         shell: bash
@@ -159,8 +58,7 @@ jobs:
           SHA_SHORT="${SHA:0:7}"
           COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
           RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
-          AVATAR_URL="https://github.com/${{ github.actor }}.png?size=96"
-          CHANGES="$(git log --pretty=format:'- %s' ${{ github.event.before }}..${{ github.sha }} | head -n 10)"
+
           {
             echo "author_name=$AUTHOR_NAME"
             echo "author_email=$AUTHOR_EMAIL"
@@ -171,124 +69,34 @@ jobs:
             echo "sha_short=$SHA_SHORT"
             echo "commit_url=$COMMIT_URL"
             echo "run_url=$RUN_URL"
-            echo "avatar_url=$AVATAR_URL"
-            echo "changes<<EOF"
-            echo "${CHANGES}"
-            echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Duration
-        id: t1
-        run: |
-          START=${{ steps.t0.outputs.epoch }}
-          END=$(date +%s)
-          echo "seconds=$((END-START))" >> $GITHUB_OUTPUT
-
-      - name: Job Summary (Build)
-        if: ${{ always() }}
-        run: |
-          {
-            echo "## 🛠️ Build Summary"
-            echo "- **Repo**: \`${{ steps.meta_build.outputs.repo || steps.ctx_build.outputs.repo }}\`"
-            echo "- **Branch**: \`${{ steps.meta_build.outputs.branch || steps.ctx_build.outputs.branch }}\`"
-            echo "- **Commit**: \`${{ steps.meta_build.outputs.sha_short || steps.ctx_build.outputs.sha_short }}\` – ${{ steps.meta_build.outputs.commit_msg || steps.ctx_build.outputs.commit_msg }}"
-            echo "- **By**: \`${{ steps.meta_build.outputs.triggered_by || steps.ctx_build.outputs.triggered_by }}\`"
-            if [ -n "${{ steps.distinfo.outputs.files }}" ]; then
-              echo "- **Dist**: \`${{ steps.distinfo.outputs.files }}\` files • \`${{ steps.distinfo.outputs.size }}\`"
-            fi
-            if [ -n "${{ steps.t1.outputs.seconds }}" ]; then
-              echo "- **Duration**: \`${{ steps.t1.outputs.seconds }}s\`"
-            fi
-            if [ -n "${{ steps.meta_build.outputs.changes }}" ]; then
-              echo ""
-              echo "### Changes (top 10)"
-              echo '```'
-              echo "${{ steps.meta_build.outputs.changes }}"
-              echo '```'
-            fi
-          } >> $GITHUB_STEP_SUMMARY
-
-      # ====== Notify MM: BUILD SUCCESS ======
-      - name: Notify Mattermost (build success)
-        if: success()
-        env:
-          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
-        run: |
-          TITLE="✅ Build thành công (GitHub Pages)"
-          COLOR="#2ecc71"
-          EMOJI=":hammer_and_wrench:"
-          NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-          jq -n \
-            --arg title "$TITLE" \
-            --arg channel "$MM_CHANNEL" \
-            --arg emoji "$EMOJI" \
-            --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_build.outputs.repo || steps.ctx_build.outputs.repo }}" \
-            --arg branch "${{ steps.meta_build.outputs.branch || steps.ctx_build.outputs.branch }}" \
-            --arg sha "${{ steps.meta_build.outputs.sha_short || steps.ctx_build.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_build.outputs.commit_url || steps.ctx_build.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_build.outputs.run_url || steps.ctx_build.outputs.run_url }}" \
-            --arg author "${{ (steps.meta_build.outputs.author_name || steps.ctx_build.outputs.author_name) }} <${{ (steps.meta_build.outputs.author_email || steps.ctx_build.outputs.author_email) }}>" \
-            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by || steps.ctx_build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg || steps.ctx_build.outputs.commit_msg }}" \
-            --arg dist_size "${{ steps.distinfo.outputs.size }}" \
-            --arg dist_files "${{ steps.distinfo.outputs.files }}" \
-            --arg duration "${{ steps.t1.outputs.seconds }}s" \
-            --arg avatar "${{ steps.meta_build.outputs.avatar_url || steps.ctx_build.outputs.avatar_url }}" \
-          '{
-            username: "GoldOne CI/CD",
-            icon_emoji: ":octocat:",
-            channel: ($channel // empty),
-            attachments: [{
-              fallback: $title,
-              color: $color,
-              pretext: ($emoji + " " + $title),
-              thumb_url: $avatar,
-              fields: [
-                { title: "Repo", short: true, value: $repo },
-                { title: "Branch", short: true, value: $branch },
-                { title: "Commit", short: false, value: ("`\($sha)` – " + $commit_msg) },
-                { title: "Tác giả commit", short: true, value: $author },
-                { title: "Người build", short: true, value: $triggered_by },
-                { title: "Dist", short: true, value: ($dist_files + " files • " + $dist_size) },
-                { title: "Duration", short: true, value: $duration },
-                { title: "Link Commit", short: false, value: $commit_url },
-                { title: "Run Logs", short: false, value: $run_url }
-              ],
-              footer: "GoldOne Frontend • Build",
-              ts: (now | floor)
-            }]
-          }' > payload.json
-          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
-
-      # ====== Notify MM: BUILD FAILED (FALLBACK-CERTAINTY) ======
+      # ====== THÔNG BÁO THẤT BẠI (BUILD) ======
       - name: Notify Mattermost (build failed)
-        if: failure()
+        if: ${{ failure() }}
         env:
           WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
-          # đảm bảo có jq kể cả khi fail trước bước cài
-          sudo apt-get update -y && sudo apt-get install -y jq || true
           TITLE="❌ Build thất bại (GitHub Pages)"
           COLOR="#e74c3c"
           EMOJI=":x:"
-          NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
           jq -n \
             --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_build.outputs.repo }}* build *THẤT BẠI*. Vào link Run để xem logs." \
             --arg channel "$MM_CHANNEL" \
-            --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.ctx_build.outputs.repo }}" \
-            --arg branch "${{ steps.ctx_build.outputs.branch }}" \
-            --arg sha "${{ steps.ctx_build.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.ctx_build.outputs.commit_url }}" \
-            --arg run_url "${{ steps.ctx_build.outputs.run_url }}" \
-            --arg author "${{ steps.ctx_build.outputs.author_name }} <${{ steps.ctx_build.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.ctx_build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.ctx_build.outputs.commit_msg }}" \
-            --arg avatar "${{ steps.ctx_build.outputs.avatar_url }}" \
+            --arg repo "${{ steps.meta_build.outputs.repo }}" \
+            --arg branch "${{ steps.meta_build.outputs.branch }}" \
+            --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
+            --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
+            --arg when "$NOW_ISO" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":octocat:",
@@ -296,21 +104,23 @@ jobs:
             attachments: [{
               fallback: $title,
               color: $color,
-              pretext: ($emoji + " " + $title),
-              thumb_url: $avatar,
+              pretext: $title,
+              text: $text,
               fields: [
                 { title: "Repo", short: true, value: $repo },
                 { title: "Branch", short: true, value: $branch },
                 { title: "Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
                 { title: "Tác giả commit", short: true, value: $author },
                 { title: "Người build", short: true, value: $triggered_by },
+                { title: "Thời điểm (UTC)", short: true, value: $when },
                 { title: "Link Commit", short: false, value: $commit_url },
-                { title: "Run Logs", short: false, value: $run_url }
+                { title: "Link Run", short: false, value: $run_url }
               ],
-              footer: "GoldOne Frontend • Build",
+              footer: "GoldOne Frontend • Mattermost",
               ts: (now | floor)
             }]
           }' > payload.json
+
           curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
 
   deploy:
@@ -319,47 +129,14 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Init notify context (early)
-        id: ctx_deploy
-        if: ${{ always() }}
-        run: |
-          BRANCH="${GITHUB_REF#refs/heads/}"
-          REPO="${{ github.repository }}"
-          SHA="${{ github.sha }}"
-          SHA_SHORT="${SHA:0:7}"
-          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
-          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
-          ACTOR="${{ github.actor }}"
-          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
-          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
-          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
-          AVATAR_URL="https://github.com/${ACTOR}.png?size=96"
-          {
-            echo "repo=$REPO"
-            echo "branch=$BRANCH"
-            echo "sha_short=$SHA_SHORT"
-            echo "run_url=$RUN_URL"
-            echo "commit_url=$COMMIT_URL"
-            echo "triggered_by=$ACTOR"
-            echo "author_name=$AUTHOR_NAME"
-            echo "author_email=$AUTHOR_EMAIL"
-            echo "commit_msg=$COMMIT_MSG"
-            echo "avatar_url=$AVATAR_URL"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Start timer
-        id: d0
-        run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
-
       - id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Install jq
+      - name: Install jq (for JSON payload)
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # ====== METADATA DEPLOY (đầy đủ) ======
+      # ====== THU THẬP METADATA (deploy) ======
       - name: Collect deploy metadata
         id: meta_deploy
         shell: bash
@@ -375,7 +152,7 @@ jobs:
           COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
           RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
           PAGE_URL="${{ steps.deployment.outputs.page_url }}"
-          AVATAR_URL="https://github.com/${{ github.actor }}.png?size=96"
+
           {
             echo "author_name=$AUTHOR_NAME"
             echo "author_email=$AUTHOR_EMAIL"
@@ -387,32 +164,11 @@ jobs:
             echo "commit_url=$COMMIT_URL"
             echo "run_url=$RUN_URL"
             echo "page_url=$PAGE_URL"
-            echo "avatar_url=$AVATAR_URL"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Duration
-        id: d1
-        run: |
-          START=${{ steps.d0.outputs.epoch }}
-          END=$(date +%s)
-          echo "seconds=$((END-START))" >> $GITHUB_OUTPUT
-
-      - name: Job Summary (Deploy)
-        if: ${{ always() }}
-        run: |
-          {
-            echo "## 🚀 Deploy Summary"
-            echo "- **Repo**: \`${{ steps.meta_deploy.outputs.repo || steps.ctx_deploy.outputs.repo }}\`"
-            echo "- **Branch**: \`${{ steps.meta_deploy.outputs.branch || steps.ctx_deploy.outputs.branch }}\`"
-            echo "- **Commit**: \`${{ steps.meta_deploy.outputs.sha_short || steps.ctx_deploy.outputs.sha_short }}\` – ${{ steps.meta_deploy.outputs.commit_msg || steps.ctx_deploy.outputs.commit_msg }}"
-            echo "- **Page URL**: ${{ steps.meta_deploy.outputs.page_url }}"
-            echo "- **By**: \`${{ steps.meta_deploy.outputs.triggered_by || steps.ctx_deploy.outputs.triggered_by }}\`"
-            echo "- **Duration**: \`${{ steps.d1.outputs.seconds }}s\`"
-          } >> $GITHUB_STEP_SUMMARY
-
-      # ====== Notify MM: DEPLOY SUCCESS ======
+      # ====== THÔNG BÁO THÀNH CÔNG (DEPLOY) ======
       - name: Notify Mattermost (deploy success)
-        if: success()
+        if: ${{ success() }}
         env:
           WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
@@ -420,23 +176,23 @@ jobs:
           TITLE="✅ Deploy GitHub Pages thành công"
           COLOR="#2ecc71"
           EMOJI=":rocket:"
-          NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
           jq -n \
             --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_deploy.outputs.repo }}* đã *deploy thành công* lên GitHub Pages." \
             --arg channel "$MM_CHANNEL" \
-            --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_deploy.outputs.repo || steps.ctx_deploy.outputs.repo }}" \
-            --arg branch "${{ steps.meta_deploy.outputs.branch || steps.ctx_deploy.outputs.branch }}" \
-            --arg sha "${{ steps.meta_deploy.outputs.sha_short || steps.ctx_deploy.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url || steps.ctx_deploy.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_deploy.outputs.run_url || steps.ctx_deploy.outputs.run_url }}" \
-            --arg author "${{ (steps.meta_deploy.outputs.author_name || steps.ctx_deploy.outputs.author_name) }} <${{ (steps.meta_deploy.outputs.author_email || steps.ctx_deploy.outputs.author_email) }}>" \
-            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by || steps.ctx_deploy.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg || steps.ctx_deploy.outputs.commit_msg }}" \
+            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
+            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
             --arg page_url "${{ steps.deployment.outputs.page_url || steps.meta_deploy.outputs.page_url }}" \
-            --arg duration "${{ steps.d1.outputs.seconds }}s" \
-            --arg avatar "${{ steps.meta_deploy.outputs.avatar_url || steps.ctx_deploy.outputs.avatar_url }}" \
+            --arg when "$NOW_ISO" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":globe_with_meridians:",
@@ -444,51 +200,52 @@ jobs:
             attachments: [{
               fallback: $title,
               color: $color,
-              pretext: ($emoji + " " + $title),
-              thumb_url: $avatar,
+              pretext: $title,
+              text: $text,
               fields: [
                 { title: "Repo", short: true, value: $repo },
                 { title: "Branch", short: true, value: $branch },
                 { title: "Commit", short: false, value: ("`\($sha)` – " + $commit_msg) },
                 { title: "Tác giả commit", short: true, value: $author },
-                { title: "Người deploy", short: true, value: $triggered_by },
+                { title: "Người build", short: true, value: $triggered_by },
                 { title: "Page URL", short: false, value: ($page_url // "N/A") },
                 { title: "Link Commit", short: false, value: $commit_url },
-                { title: "Run Logs", short: false, value: $run_url },
-                { title: "Duration", short: true, value: $duration }
+                { title: "Link Run", short: false, value: $run_url },
+                { title: "Thời điểm (UTC)", short: true, value: $when }
               ],
-              footer: "GoldOne Frontend • Deploy",
+              footer: "GoldOne Frontend • Mattermost",
               ts: (now | floor)
             }]
           }' > payload.json
+
           curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
 
-      # ====== Notify MM: DEPLOY FAILED (FALLBACK-CERTAINTY) ======
+      # ====== THÔNG BÁO THẤT BẠI (DEPLOY) ======
       - name: Notify Mattermost (deploy failed)
-        if: failure()
+        if: ${{ failure() }}
         env:
           WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
-          sudo apt-get update -y && sudo apt-get install -y jq || true
           TITLE="❌ Deploy GitHub Pages thất bại"
           COLOR="#e74c3c"
           EMOJI=":fire:"
-          NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
           jq -n \
             --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_deploy.outputs.repo }}* deploy *THẤT BẠI*. Vào link Run để xem logs." \
             --arg channel "$MM_CHANNEL" \
-            --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.ctx_deploy.outputs.repo }}" \
-            --arg branch "${{ steps.ctx_deploy.outputs.branch }}" \
-            --arg sha "${{ steps.ctx_deploy.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.ctx_deploy.outputs.commit_url }}" \
-            --arg run_url "${{ steps.ctx_deploy.outputs.run_url }}" \
-            --arg author "${{ steps.ctx_deploy.outputs.author_name }} <${{ steps.ctx_deploy.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.ctx_deploy.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.ctx_deploy.outputs.commit_msg }}" \
-            --arg avatar "${{ steps.ctx_deploy.outputs.avatar_url }}" \
+            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
+            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
+            --arg when "$NOW_ISO" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":warning:",
@@ -496,19 +253,21 @@ jobs:
             attachments: [{
               fallback: $title,
               color: $color,
-              pretext: ($emoji + " " + $title),
-              thumb_url: $avatar,
+              pretext: $title,
+              text: $text,
               fields: [
                 { title: "Repo", short: true, value: $repo },
                 { title: "Branch", short: true, value: $branch },
                 { title: "Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
                 { title: "Tác giả commit", short: true, value: $author },
-                { title: "Người deploy", short: true, value: $triggered_by },
+                { title: "Người build", short: true, value: $triggered_by },
+                { title: "Thời điểm (UTC)", short: true, value: $when },
                 { title: "Link Commit", short: false, value: $commit_url },
-                { title: "Run Logs", short: false, value: $run_url }
+                { title: "Link Run", short: false, value: $run_url }
               ],
-              footer: "GoldOne Frontend • Deploy",
+              footer: "GoldOne Frontend • Mattermost",
               ts: (now | floor)
             }]
           }' > payload.json
+
           curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
