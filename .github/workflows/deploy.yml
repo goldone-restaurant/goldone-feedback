@@ -23,6 +23,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ==== Fallback context: luôn chạy sớm để có dữ liệu cho báo lỗi ====
+      - name: Init notify context (early)
+        id: ctx_build
+        if: ${{ always() }}
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          REPO="${{ github.repository }}"
+          SHA="${{ github.sha }}"
+          SHA_SHORT="${SHA:0:7}"
+          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
+          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
+          ACTOR="${{ github.actor }}"
+          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
+          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
+          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
+          AVATAR_URL="https://github.com/${ACTOR}.png?size=96"
+          {
+            echo "repo=$REPO"
+            echo "branch=$BRANCH"
+            echo "sha_short=$SHA_SHORT"
+            echo "run_url=$RUN_URL"
+            echo "commit_url=$COMMIT_URL"
+            echo "triggered_by=$ACTOR"
+            echo "author_name=$AUTHOR_NAME"
+            echo "author_email=$AUTHOR_EMAIL"
+            echo "commit_msg=$COMMIT_MSG"
+            echo "avatar_url=$AVATAR_URL"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Start timer
         id: t0
         run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
@@ -63,7 +92,7 @@ jobs:
         with:
           path: ./dist
 
-      # ====== METADATA ======
+      # ====== METADATA GIÀU HƠN (nếu build đi qua đây) ======
       - name: Collect build metadata
         id: meta_build
         shell: bash
@@ -79,7 +108,6 @@ jobs:
           COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
           RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
           AVATAR_URL="https://github.com/${{ github.actor }}.png?size=96"
-          # changes (top 10)
           CHANGES="$(git log --pretty=format:'- %s' ${{ github.event.before }}..${{ github.sha }} | head -n 10)"
           {
             echo "author_name=$AUTHOR_NAME"
@@ -105,20 +133,27 @@ jobs:
           echo "seconds=$((END-START))" >> $GITHUB_OUTPUT
 
       - name: Job Summary (Build)
+        if: ${{ always() }}
         run: |
           {
             echo "## 🛠️ Build Summary"
-            echo "- **Repo**: \`${{ steps.meta_build.outputs.repo }}\`"
-            echo "- **Branch**: \`${{ steps.meta_build.outputs.branch }}\`"
-            echo "- **Commit**: \`${{ steps.meta_build.outputs.sha_short }}\` – ${{ steps.meta_build.outputs.commit_msg }}"
-            echo "- **By**: \`${{ steps.meta_build.outputs.triggered_by }}\`"
-            echo "- **Dist**: \`${{ steps.distinfo.outputs.files }}\` files • \`${{ steps.distinfo.outputs.size }}\`"
-            echo "- **Duration**: \`${{ steps.t1.outputs.seconds }}s\`"
-            echo ""
-            echo "### Changes (top 10)"
-            echo '```'
-            echo "${{ steps.meta_build.outputs.changes }}"
-            echo '```'
+            echo "- **Repo**: \`${{ steps.meta_build.outputs.repo || steps.ctx_build.outputs.repo }}\`"
+            echo "- **Branch**: \`${{ steps.meta_build.outputs.branch || steps.ctx_build.outputs.branch }}\`"
+            echo "- **Commit**: \`${{ steps.meta_build.outputs.sha_short || steps.ctx_build.outputs.sha_short }}\` – ${{ steps.meta_build.outputs.commit_msg || steps.ctx_build.outputs.commit_msg }}"
+            echo "- **By**: \`${{ steps.meta_build.outputs.triggered_by || steps.ctx_build.outputs.triggered_by }}\`"
+            if [ -n "${{ steps.distinfo.outputs.files }}" ]; then
+              echo "- **Dist**: \`${{ steps.distinfo.outputs.files }}\` files • \`${{ steps.distinfo.outputs.size }}\`"
+            fi
+            if [ -n "${{ steps.t1.outputs.seconds }}" ]; then
+              echo "- **Duration**: \`${{ steps.t1.outputs.seconds }}s\`"
+            fi
+            if [ -n "${{ steps.meta_build.outputs.changes }}" ]; then
+              echo ""
+              echo "### Changes (top 10)"
+              echo '```'
+              echo "${{ steps.meta_build.outputs.changes }}"
+              echo '```'
+            fi
           } >> $GITHUB_STEP_SUMMARY
 
       # ====== Notify MM: BUILD SUCCESS ======
@@ -137,18 +172,18 @@ jobs:
             --arg channel "$MM_CHANNEL" \
             --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_build.outputs.repo }}" \
-            --arg branch "${{ steps.meta_build.outputs.branch }}" \
-            --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
-            --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
+            --arg repo "${{ steps.meta_build.outputs.repo || steps.ctx_build.outputs.repo }}" \
+            --arg branch "${{ steps.meta_build.outputs.branch || steps.ctx_build.outputs.branch }}" \
+            --arg sha "${{ steps.meta_build.outputs.sha_short || steps.ctx_build.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_build.outputs.commit_url || steps.ctx_build.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_build.outputs.run_url || steps.ctx_build.outputs.run_url }}" \
+            --arg author "${{ (steps.meta_build.outputs.author_name || steps.ctx_build.outputs.author_name) }} <${{ (steps.meta_build.outputs.author_email || steps.ctx_build.outputs.author_email) }}>" \
+            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by || steps.ctx_build.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg || steps.ctx_build.outputs.commit_msg }}" \
             --arg dist_size "${{ steps.distinfo.outputs.size }}" \
             --arg dist_files "${{ steps.distinfo.outputs.files }}" \
             --arg duration "${{ steps.t1.outputs.seconds }}s" \
-            --arg avatar "${{ steps.meta_build.outputs.avatar_url }}" \
+            --arg avatar "${{ steps.meta_build.outputs.avatar_url || steps.ctx_build.outputs.avatar_url }}" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":octocat:",
@@ -175,13 +210,15 @@ jobs:
           }' > payload.json
           curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
 
-      # ====== Notify MM: BUILD FAILED ======
+      # ====== Notify MM: BUILD FAILED (FALLBACK-CERTAINTY) ======
       - name: Notify Mattermost (build failed)
         if: failure()
         env:
           WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
+          # đảm bảo có jq kể cả khi fail trước bước cài
+          sudo apt-get update -y && sudo apt-get install -y jq || true
           TITLE="❌ Build thất bại (GitHub Pages)"
           COLOR="#e74c3c"
           EMOJI=":x:"
@@ -191,14 +228,15 @@ jobs:
             --arg channel "$MM_CHANNEL" \
             --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_build.outputs.repo }}" \
-            --arg branch "${{ steps.meta_build.outputs.branch }}" \
-            --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
-            --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
+            --arg repo "${{ steps.ctx_build.outputs.repo }}" \
+            --arg branch "${{ steps.ctx_build.outputs.branch }}" \
+            --arg sha "${{ steps.ctx_build.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.ctx_build.outputs.commit_url }}" \
+            --arg run_url "${{ steps.ctx_build.outputs.run_url }}" \
+            --arg author "${{ steps.ctx_build.outputs.author_name }} <${{ steps.ctx_build.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.ctx_build.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.ctx_build.outputs.commit_msg }}" \
+            --arg avatar "${{ steps.ctx_build.outputs.avatar_url }}" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":octocat:",
@@ -207,6 +245,7 @@ jobs:
               fallback: $title,
               color: $color,
               pretext: ($emoji + " " + $title),
+              thumb_url: $avatar,
               fields: [
                 { title: "Repo", short: true, value: $repo },
                 { title: "Branch", short: true, value: $branch },
@@ -230,6 +269,34 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: Init notify context (early)
+        id: ctx_deploy
+        if: ${{ always() }}
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          REPO="${{ github.repository }}"
+          SHA="${{ github.sha }}"
+          SHA_SHORT="${SHA:0:7}"
+          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
+          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
+          ACTOR="${{ github.actor }}"
+          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
+          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
+          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
+          AVATAR_URL="https://github.com/${ACTOR}.png?size=96"
+          {
+            echo "repo=$REPO"
+            echo "branch=$BRANCH"
+            echo "sha_short=$SHA_SHORT"
+            echo "run_url=$RUN_URL"
+            echo "commit_url=$COMMIT_URL"
+            echo "triggered_by=$ACTOR"
+            echo "author_name=$AUTHOR_NAME"
+            echo "author_email=$AUTHOR_EMAIL"
+            echo "commit_msg=$COMMIT_MSG"
+            echo "avatar_url=$AVATAR_URL"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Start timer
         id: d0
         run: echo "epoch=$(date +%s)" >> $GITHUB_OUTPUT
@@ -240,7 +307,7 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # ====== METADATA DEPLOY ======
+      # ====== METADATA DEPLOY (đầy đủ) ======
       - name: Collect deploy metadata
         id: meta_deploy
         shell: bash
@@ -279,14 +346,15 @@ jobs:
           echo "seconds=$((END-START))" >> $GITHUB_OUTPUT
 
       - name: Job Summary (Deploy)
+        if: ${{ always() }}
         run: |
           {
             echo "## 🚀 Deploy Summary"
-            echo "- **Repo**: \`${{ steps.meta_deploy.outputs.repo }}\`"
-            echo "- **Branch**: \`${{ steps.meta_deploy.outputs.branch }}\`"
-            echo "- **Commit**: \`${{ steps.meta_deploy.outputs.sha_short }}\` – ${{ steps.meta_deploy.outputs.commit_msg }}"
+            echo "- **Repo**: \`${{ steps.meta_deploy.outputs.repo || steps.ctx_deploy.outputs.repo }}\`"
+            echo "- **Branch**: \`${{ steps.meta_deploy.outputs.branch || steps.ctx_deploy.outputs.branch }}\`"
+            echo "- **Commit**: \`${{ steps.meta_deploy.outputs.sha_short || steps.ctx_deploy.outputs.sha_short }}\` – ${{ steps.meta_deploy.outputs.commit_msg || steps.ctx_deploy.outputs.commit_msg }}"
             echo "- **Page URL**: ${{ steps.meta_deploy.outputs.page_url }}"
-            echo "- **By**: \`${{ steps.meta_deploy.outputs.triggered_by }}\`"
+            echo "- **By**: \`${{ steps.meta_deploy.outputs.triggered_by || steps.ctx_deploy.outputs.triggered_by }}\`"
             echo "- **Duration**: \`${{ steps.d1.outputs.seconds }}s\`"
           } >> $GITHUB_STEP_SUMMARY
 
@@ -306,17 +374,17 @@ jobs:
             --arg channel "$MM_CHANNEL" \
             --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
-            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
-            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
-            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
+            --arg repo "${{ steps.meta_deploy.outputs.repo || steps.ctx_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.meta_deploy.outputs.branch || steps.ctx_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.meta_deploy.outputs.sha_short || steps.ctx_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url || steps.ctx_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_deploy.outputs.run_url || steps.ctx_deploy.outputs.run_url }}" \
+            --arg author "${{ (steps.meta_deploy.outputs.author_name || steps.ctx_deploy.outputs.author_name) }} <${{ (steps.meta_deploy.outputs.author_email || steps.ctx_deploy.outputs.author_email) }}>" \
+            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by || steps.ctx_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg || steps.ctx_deploy.outputs.commit_msg }}" \
             --arg page_url "${{ steps.deployment.outputs.page_url || steps.meta_deploy.outputs.page_url }}" \
             --arg duration "${{ steps.d1.outputs.seconds }}s" \
-            --arg avatar "${{ steps.meta_deploy.outputs.avatar_url }}" \
+            --arg avatar "${{ steps.meta_deploy.outputs.avatar_url || steps.ctx_deploy.outputs.avatar_url }}" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":globe_with_meridians:",
@@ -343,13 +411,14 @@ jobs:
           }' > payload.json
           curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
 
-      # ====== Notify MM: DEPLOY FAILED ======
+      # ====== Notify MM: DEPLOY FAILED (FALLBACK-CERTAINTY) ======
       - name: Notify Mattermost (deploy failed)
         if: failure()
         env:
           WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
+          sudo apt-get update -y && sudo apt-get install -y jq || true
           TITLE="❌ Deploy GitHub Pages thất bại"
           COLOR="#e74c3c"
           EMOJI=":fire:"
@@ -359,14 +428,15 @@ jobs:
             --arg channel "$MM_CHANNEL" \
             --arg emoji "$EMOJI" \
             --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
-            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
-            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
-            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
+            --arg repo "${{ steps.ctx_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.ctx_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.ctx_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.ctx_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.ctx_deploy.outputs.run_url }}" \
+            --arg author "${{ steps.ctx_deploy.outputs.author_name }} <${{ steps.ctx_deploy.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.ctx_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.ctx_deploy.outputs.commit_msg }}" \
+            --arg avatar "${{ steps.ctx_deploy.outputs.avatar_url }}" \
           '{
             username: "GoldOne CI/CD",
             icon_emoji: ":warning:",
@@ -375,6 +445,7 @@ jobs:
               fallback: $title,
               color: $color,
               pretext: ($emoji + " " + $title),
+              thumb_url: $avatar,
               fields: [
                 { title: "Repo", short: true, value: $repo },
                 { title: "Branch", short: true, value: $branch },
