@@ -63,27 +63,79 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: "npm"   # cache mặc định; PM thực tế sẽ được detect bên dưới
 
-      - name: npm ci
-        run: npm ci
+      # ---- Detect package manager theo lockfile (pnpm/yarn/npm) ----
+      - name: Detect package manager
+        id: pkg
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "mgr=pnpm" >> $GITHUB_OUTPUT
+          elif [ -f yarn.lock ]; then
+            echo "mgr=yarn" >> $GITHUB_OUTPUT
+          else
+            echo "mgr=npm" >> $GITHUB_OUTPUT
+          fi
+          echo "Detected PM: $(cat $GITHUB_OUTPUT)"
 
-      # Build (có inject key build-time nếu cần)
+      # Setup pnpm nếu cần + enable corepack (cho yarn/pnpm)
+      - name: Setup pnpm (if needed)
+        if: steps.pkg.outputs.mgr == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Enable corepack
+        run: corepack enable
+
+      # ---- Install deps đúng theo PM ----
+      - name: Install dependencies
+        run: |
+          if [ "${{ steps.pkg.outputs.mgr }}" = "pnpm" ]; then
+            pnpm install --frozen-lockfile
+          elif [ "${{ steps.pkg.outputs.mgr }}" = "yarn" ]; then
+            yarn install --frozen-lockfile
+          else
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+          fi
+
+      # Build (có inject key build-time), kèm fallback npx vite build
       - name: Build
         env:
           GEMINI_API_KEY: ${{ secrets.API_KEY }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: npm run build
+        run: |
+          if [ "${{ steps.pkg.outputs.mgr }}" = "pnpm" ]; then
+            pnpm run -s build || pnpm exec vite build
+          elif [ "${{ steps.pkg.outputs.mgr }}" = "yarn" ]; then
+            yarn build || yarn vite build
+          else
+            npm run -s build || npx vite build
+          fi
 
-      # SPA fix
-      - name: Copy 404.html
-        run: cp dist/index.html dist/404.html
+      # SPA fix (an toàn)
+      - name: Copy 404.html (SPA)
+        run: |
+          if [ -f dist/index.html ]; then
+            cp dist/index.html dist/404.html
+          else
+            echo "dist/index.html not found, skip 404 copy"
+          fi
 
       - name: Count & size dist
         id: distinfo
         run: |
-          FILES=$(find dist -type f | wc -l)
-          SIZE=$(du -sh dist | awk '{print $1}')
+          if [ -d dist ]; then
+            FILES=$(find dist -type f | wc -l)
+            SIZE=$(du -sh dist | awk '{print $1}')
+          else
+            FILES=0
+            SIZE="0"
+          fi
           echo "files=$FILES" >> $GITHUB_OUTPUT
           echo "size=$SIZE" >> $GITHUB_OUTPUT
 
