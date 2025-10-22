@@ -20,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install jq (for JSON payload)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -27,7 +30,7 @@ jobs:
 
       - run: npm ci
 
-      # (A) Cách inject env trực tiếp vào tiến trình build:
+      # (A) Inject env trực tiếp vào tiến trình build:
       - run: npm run build
         env:
           GEMINI_API_KEY: ${{ secrets.API_KEY }}
@@ -40,6 +43,86 @@ jobs:
         with:
           path: ./dist
 
+      # ====== THU THẬP METADATA (để thông báo lỗi build nếu có) ======
+      - name: Collect build metadata
+        id: meta_build
+        shell: bash
+        run: |
+          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
+          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
+          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
+          TRIGGERED_BY="${{ github.event.pusher.name || github.actor }}"
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          REPO="${{ github.repository }}"
+          SHA="${{ github.sha }}"
+          SHA_SHORT="${SHA:0:7}"
+          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
+          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
+
+          {
+            echo "author_name=$AUTHOR_NAME"
+            echo "author_email=$AUTHOR_EMAIL"
+            echo "commit_msg=$COMMIT_MSG"
+            echo "triggered_by=$TRIGGERED_BY"
+            echo "branch=$BRANCH"
+            echo "repo=$REPO"
+            echo "sha_short=$SHA_SHORT"
+            echo "commit_url=$COMMIT_URL"
+            echo "run_url=$RUN_URL"
+          } >> "$GITHUB_OUTPUT"
+
+      # ====== THÔNG BÁO THẤT BẠI (BUILD) ======
+      - name: Notify Mattermost (build failed)
+        if: ${{ failure() }}
+        env:
+          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
+        run: |
+          TITLE="❌ Build thất bại (GitHub Pages)"
+          COLOR="#e74c3c"
+          EMOJI=":x:"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          jq -n \
+            --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_build.outputs.repo }}* build *THẤT BẠI*. Vào link Run để xem logs." \
+            --arg channel "$MM_CHANNEL" \
+            --arg color "$COLOR" \
+            --arg repo "${{ steps.meta_build.outputs.repo }}" \
+            --arg branch "${{ steps.meta_build.outputs.branch }}" \
+            --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
+            --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
+            --arg when "$NOW_ISO" \
+          '{
+            username: "GoldOne CI/CD",
+            icon_emoji: ":octocat:",
+            channel: ($channel // empty),
+            attachments: [{
+              fallback: $title,
+              color: $color,
+              pretext: $title,
+              text: $text,
+              fields: [
+                { title: "Repo", short: true, value: $repo },
+                { title: "Branch", short: true, value: $branch },
+                { title: "Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
+                { title: "Tác giả commit", short: true, value: $author },
+                { title: "Người build", short: true, value: $triggered_by },
+                { title: "Thời điểm (UTC)", short: true, value: $when },
+                { title: "Link Commit", short: false, value: $commit_url },
+                { title: "Link Run", short: false, value: $run_url }
+              ],
+              footer: "GoldOne Frontend • Mattermost",
+              ts: (now | floor)
+            }]
+          }' > payload.json
+
+          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -49,3 +132,142 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Install jq (for JSON payload)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      # ====== THU THẬP METADATA (deploy) ======
+      - name: Collect deploy metadata
+        id: meta_deploy
+        shell: bash
+        run: |
+          AUTHOR_NAME="${{ github.event.head_commit.author.name || '' }}"
+          AUTHOR_EMAIL="${{ github.event.head_commit.author.email || '' }}"
+          COMMIT_MSG="${{ github.event.head_commit.message || 'Manual dispatch / No head_commit' }}"
+          TRIGGERED_BY="${{ github.event.pusher.name || github.actor }}"
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          REPO="${{ github.repository }}"
+          SHA="${{ github.sha }}"
+          SHA_SHORT="${SHA:0:7}"
+          COMMIT_URL="${{ github.server_url }}/${REPO}/commit/${SHA}"
+          RUN_URL="${{ github.server_url }}/${REPO}/actions/runs/${{ github.run_id }}"
+          PAGE_URL="${{ steps.deployment.outputs.page_url }}"
+
+          {
+            echo "author_name=$AUTHOR_NAME"
+            echo "author_email=$AUTHOR_EMAIL"
+            echo "commit_msg=$COMMIT_MSG"
+            echo "triggered_by=$TRIGGERED_BY"
+            echo "branch=$BRANCH"
+            echo "repo=$REPO"
+            echo "sha_short=$SHA_SHORT"
+            echo "commit_url=$COMMIT_URL"
+            echo "run_url=$RUN_URL"
+            echo "page_url=$PAGE_URL"
+          } >> "$GITHUB_OUTPUT"
+
+      # ====== THÔNG BÁO THÀNH CÔNG (DEPLOY) ======
+      - name: Notify Mattermost (deploy success)
+        if: ${{ success() }}
+        env:
+          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
+        run: |
+          TITLE="✅ Deploy GitHub Pages thành công"
+          COLOR="#2ecc71"
+          EMOJI=":rocket:"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          jq -n \
+            --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_deploy.outputs.repo }}* đã *deploy thành công* lên GitHub Pages." \
+            --arg channel "$MM_CHANNEL" \
+            --arg color "$COLOR" \
+            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
+            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
+            --arg page_url "${{ steps.deployment.outputs.page_url || steps.meta_deploy.outputs.page_url }}" \
+            --arg when "$NOW_ISO" \
+          '{
+            username: "GoldOne CI/CD",
+            icon_emoji: ":globe_with_meridians:",
+            channel: ($channel // empty),
+            attachments: [{
+              fallback: $title,
+              color: $color,
+              pretext: $title,
+              text: $text,
+              fields: [
+                { title: "Repo", short: true, value: $repo },
+                { title: "Branch", short: true, value: $branch },
+                { title: "Commit", short: false, value: ("`\($sha)` – " + $commit_msg) },
+                { title: "Tác giả commit", short: true, value: $author },
+                { title: "Người build", short: true, value: $triggered_by },
+                { title: "Page URL", short: false, value: ($page_url // "N/A") },
+                { title: "Link Commit", short: false, value: $commit_url },
+                { title: "Link Run", short: false, value: $run_url },
+                { title: "Thời điểm (UTC)", short: true, value: $when }
+              ],
+              footer: "GoldOne Frontend • Mattermost",
+              ts: (now | floor)
+            }]
+          }' > payload.json
+
+          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
+
+      # ====== THÔNG BÁO THẤT BẠI (DEPLOY) ======
+      - name: Notify Mattermost (deploy failed)
+        if: ${{ failure() }}
+        env:
+          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
+        run: |
+          TITLE="❌ Deploy GitHub Pages thất bại"
+          COLOR="#e74c3c"
+          EMOJI=":fire:"
+          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          jq -n \
+            --arg title "$TITLE" \
+            --arg text "$EMOJI *${{ steps.meta_deploy.outputs.repo }}* deploy *THẤT BẠI*. Vào link Run để xem logs." \
+            --arg channel "$MM_CHANNEL" \
+            --arg color "$COLOR" \
+            --arg repo "${{ steps.meta_deploy.outputs.repo }}" \
+            --arg branch "${{ steps.meta_deploy.outputs.branch }}" \
+            --arg sha "${{ steps.meta_deploy.outputs.sha_short }}" \
+            --arg commit_url "${{ steps.meta_deploy.outputs.commit_url }}" \
+            --arg run_url "${{ steps.meta_deploy.outputs.run_url }}" \
+            --arg author "${{ steps.meta_deploy.outputs.author_name }} <${{ steps.meta_deploy.outputs.author_email }}>" \
+            --arg triggered_by "${{ steps.meta_deploy.outputs.triggered_by }}" \
+            --arg commit_msg "${{ steps.meta_deploy.outputs.commit_msg }}" \
+            --arg when "$NOW_ISO" \
+          '{
+            username: "GoldOne CI/CD",
+            icon_emoji: ":warning:",
+            channel: ($channel // empty),
+            attachments: [{
+              fallback: $title,
+              color: $color,
+              pretext: $title,
+              text: $text,
+              fields: [
+                { title: "Repo", short: true, value: $repo },
+                { title: "Branch", short: true, value: $branch },
+                { title: "Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
+                { title: "Tác giả commit", short: true, value: $author },
+                { title: "Người build", short: true, value: $triggered_by },
+                { title: "Thời điểm (UTC)", short: true, value: $when },
+                { title: "Link Commit", short: false, value: $commit_url },
+                { title: "Link Run", short: false, value: $run_url }
+              ],
+              footer: "GoldOne Frontend • Mattermost",
+              ts: (now | floor)
+            }]
+          }' > payload.json
+
+          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
