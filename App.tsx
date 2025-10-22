@@ -568,6 +568,7 @@ const App: React.FC = () => {
                                     />
                                 </FormField>
 
+
                                 {formData.ambiance > 0 && formData.ambiance <= 2 && (
                                     <div className="animate-form-item">
                                         <FormField label={t('ambianceNegativePrompt')}>
