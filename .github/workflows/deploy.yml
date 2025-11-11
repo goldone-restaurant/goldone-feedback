@@ -14,10 +14,16 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+env:
+  # ====== BOT-HOOK CHAT (thay Mattermost) ======
+  BOT_HOOK_URL: ${{ secrets.BOT_HOOK_URL || 'https://bot-hook.goldone.vn/api/send' }}
+  BOT_HOOK_TOKEN: ${{ secrets.BOT_HOOK_TOKEN || 'abc123token' }}
+  BOT_SENDER: ${{ secrets.BOT_SENDER || 'admin' }}
+  BOT_TARGET: ${{ secrets.BOT_TARGET || '4c0c31fbffda42f7a4e0343e3342248d' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Xuất metadata để job 'deploy' có thể dùng
     outputs:
       author_name: ${{ steps.meta_build.outputs.author_name }}
       author_email: ${{ steps.meta_build.outputs.author_email }}
@@ -80,62 +86,42 @@ jobs:
             echo "run_url=$RUN_URL"
           } >> "$GITHUB_OUTPUT"
 
-      # ====== THÔNG BÁO THẤT BẠI (BUILD) ======
-      - name: Notify Mattermost (build failed)
+      # ====== THÔNG BÁO THẤT BẠI (BUILD) - BOT-HOOK ======
+      - name: Notify Chat (build failed via bot-hook)
         if: ${{ failure() }}
-        env:
-          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
-          TITLE="❌ Build thất bại (GitHub Pages)"
-          COLOR="#e74c3c"
-          EMOJI=":x:"
-          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-
-          jq -n \
-            --arg title "$TITLE" \
-            --arg text "$EMOJI *${{ steps.meta_build.outputs.repo }}* build *THẤT BẠI*. Vào link Run để xem logs." \
-            --arg channel "$MM_CHANNEL" \
-            --arg color "$COLOR" \
-            --arg repo "${{ steps.meta_build.outputs.repo }}" \
-            --arg branch "${{ steps.meta_build.outputs.branch }}" \
-            --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
-            --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
-            --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
-            --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
-            --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
-            --arg when "$NOW_ISO" \
-          '{
-            username: "GoldOne CI/CD",
-            icon_emoji: ":octocat:",
-            channel: ($channel // empty),
-            attachments: [{
-              fallback: $title,
-              color: $color,
-              pretext: $title,
-              text: $text,
-              fields: [
-                # V---- ĐÃ THÊM ICON ----V
-                { title: "📦 Repo", short: true, value: $repo },
-                { title: "🌿 Branch", short: true, value: $branch },
-                { title: "📝 Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
-                { title: "👤 Tác giả commit", short: true, value: $author },
-                { title: "🧑‍💻 Người build", short: true, value: $triggered_by },
-                { title: "⏰ Thời điểm (UTC)", short: true, value: $when },
-                { title: "🔗 Link Commit", short: false, value: $commit_url },
-                { title: "🏃 Link Run", short: false, value: $run_url }
-                # ^---- ĐÃ THÊM ICON ----^
-              ],
-              footer: "GoldOne Frontend • Mattermost",
-              ts: (now | floor)
-            }]
-          }' > payload.json
-
-          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
+          jq -n --arg sender "${{ env.BOT_SENDER }}" \
+                --arg target "${{ env.BOT_TARGET }}" \
+                --arg repo "${{ steps.meta_build.outputs.repo }}" \
+                --arg branch "${{ steps.meta_build.outputs.branch }}" \
+                --arg sha "${{ steps.meta_build.outputs.sha_short }}" \
+                --arg commit_msg "${{ steps.meta_build.outputs.commit_msg }}" \
+                --arg author "${{ steps.meta_build.outputs.author_name }} <${{ steps.meta_build.outputs.author_email }}>" \
+                --arg triggered_by "${{ steps.meta_build.outputs.triggered_by }}" \
+                --arg run_url "${{ steps.meta_build.outputs.run_url }}" \
+                --arg commit_url "${{ steps.meta_build.outputs.commit_url }}" \
+                --arg push "❌ Build thất bại: ${{ steps.meta_build.outputs.repo }} (${{ steps.meta_build.outputs.branch }})" \
+                '{
+                  sender: $sender,
+                  target: $target,
+                  message:
+                    ("❌ Build *THẤT BẠI* **" + $repo + "** (GitHub Pages)\n" +
+                     "• Branch: " + $branch + "\n" +
+                     "• Commit: `" + $sha + "` – " + $commit_msg + "\n" +
+                     "• Tác giả: " + $author + "\n" +
+                     "• Người build: " + $triggered_by + "\n" +
+                     "🔗 Run Logs: " + $run_url + "\n" +
+                     "🔗 Commit: " + $commit_url),
+                  push: $push
+                }' > chat_build_failed.json
+          
+          curl -sS -X POST "${{ env.BOT_HOOK_URL }}" \
+               -H "Authorization: Bearer ${{ env.BOT_HOOK_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               --data @chat_build_failed.json
 
   deploy:
-    needs: build # Dùng metadata từ job 'build'
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -147,114 +133,72 @@ jobs:
       - name: Install jq (for JSON payload)
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # (Không cần 'Collect metadata' nữa)
-
-      # ====== THÔNG BÁO THÀNH CÔNG (DEPLOY) ======
-      - name: Notify Mattermost (deploy success)
+      # ====== THÔNG BÁO THÀNH CÔNG (DEPLOY) - BOT-HOOK ======
+      - name: Notify Chat (deploy success via bot-hook)
         if: ${{ success() }}
-        env:
-          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
-          TITLE="✅ Deploy GitHub Pages thành công"
-          COLOR="#2ecc71"
-          EMOJI=":rocket:"
-          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          jq -n --arg sender "${{ env.BOT_SENDER }}" \
+                --arg target "${{ env.BOT_TARGET }}" \
+                --arg repo "${{ needs.build.outputs.repo }}" \
+                --arg branch "${{ needs.build.outputs.branch }}" \
+                --arg sha "${{ needs.build.outputs.sha_short }}" \
+                --arg commit_msg "${{ needs.build.outputs.commit_msg }}" \
+                --arg author "${{ needs.build.outputs.author_name }} <${{ needs.build.outputs.author_email }}>" \
+                --arg triggered_by "${{ needs.build.outputs.triggered_by }}" \
+                --arg page_url "${{ steps.deployment.outputs.page_url }}" \
+                --arg run_url "${{ needs.build.outputs.run_url }}" \
+                --arg commit_url "${{ needs.build.outputs.commit_url }}" \
+                --arg push "🚀 Deploy thành công: ${{ needs.build.outputs.repo }} (${{ needs.build.outputs.branch }})" \
+                '{
+                  sender: $sender,
+                  target: $target,
+                  message:
+                    ("✅ Deploy thành công **" + $repo + "** lên GitHub Pages\n" +
+                     "• Branch: " + $branch + "\n" +
+                     "• Commit: `" + $sha + "` – " + $commit_msg + "\n" +
+                     "• Tác giả: " + $author + "\n" +
+                     "• Người build: " + $triggered_by + "\n" +
+                     "🌐 Page URL: " + $page_url + "\n" +
+                     "🔗 Run Logs: " + $run_url + "\n" +
+                     "🔗 Commit: " + $commit_url),
+                  push: $push
+                }' > chat_deploy_success.json
+          
+          curl -sS -X POST "${{ env.BOT_HOOK_URL }}" \
+               -H "Authorization: Bearer ${{ env.BOT_HOOK_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               --data @chat_deploy_success.json
 
-          jq -n \
-            --arg title "$TITLE" \
-            --arg text "$EMOJI *${{ needs.build.outputs.repo }}* đã *deploy thành công* lên GitHub Pages." \
-            --arg channel "$MM_CHANNEL" \
-            --arg color "$COLOR" \
-            --arg repo "${{ needs.build.outputs.repo }}" \
-            --arg branch "${{ needs.build.outputs.branch }}" \
-            --arg sha "${{ needs.build.outputs.sha_short }}" \
-            --arg commit_url "${{ needs.build.outputs.commit_url }}" \
-            --arg run_url "${{ needs.build.outputs.run_url }}" \
-            --arg author "${{ needs.build.outputs.author_name }} <${{ needs.build.outputs.author_email }}>" \
-            --arg triggered_by "${{ needs.build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ needs.build.outputs.commit_msg }}" \
-            --arg page_url "${{ steps.deployment.outputs.page_url }}" \
-            --arg when "$NOW_ISO" \
-          '{
-            username: "GoldOne CI/CD",
-            icon_emoji: ":globe_with_meridians:",
-            channel: ($channel // empty),
-            attachments: [{
-              fallback: $title,
-              color: $color,
-              pretext: $title,
-              text: $text,
-              fields: [
-                # V---- ĐÃ THÊM ICON ----V
-                { title: "📦 Repo", short: true, value: $repo },
-                { title: "🌿 Branch", short: true, value: $branch },
-                { title: "📝 Commit", short: false, value: ("`\($sha)` – " + $commit_msg) },
-                { title: "👤 Tác giả commit", short: true, value: $author },
-                { title: "🧑‍💻 Người build", short: true, value: $triggered_by },
-                { title: "🌐 Page URL", short: false, value: ($page_url // "N/A") },
-                { title: "🔗 Link Commit", short: false, value: $commit_url },
-                { title: "🏃 Link Run", short: false, value: $run_url },
-                { title: "⏰ Thời điểm (UTC)", short: true, value: $when }
-                # ^---- ĐÃ THÊM ICON ----^
-              ],
-              footer: "GoldOne Frontend • Mattermost",
-              ts: (now | floor)
-            }]
-          }' > payload.json
-
-          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
-
-      # ====== THÔNG BÁO THẤT BẠI (DEPLOY) ======
-      - name: Notify Mattermost (deploy failed)
+      # ====== THÔNG BÁO THẤT BẠI (DEPLOY) - BOT-HOOK ======
+      - name: Notify Chat (deploy failed via bot-hook)
         if: ${{ failure() }}
-        env:
-          WEBHOOK: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          MM_CHANNEL: ${{ secrets.MM_CHANNEL }}
         run: |
-          TITLE="❌ Deploy GitHub Pages thất bại"
-          COLOR="#e74c3c"
-          EMOJI=":fire:"
-          NOW_ISO="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-
-          jq -n \
-            --arg title "$TITLE" \
-            --arg text "$EMOJI *${{ needs.build.outputs.repo }}* deploy *THẤT BẠI*. Vào link Run để xem logs." \
-            --arg channel "$MM_CHANNEL" \
-            --arg color "$COLOR" \
-            --arg repo "${{ needs.build.outputs.repo }}" \
-            --arg branch "${{ needs.build.outputs.branch }}" \
-            --arg sha "${{ needs.build.outputs.sha_short }}" \
-            --arg commit_url "${{ needs.build.outputs.commit_url }}" \
-            --arg run_url "${{ needs.build.outputs.run_url }}" \
-            --arg author "${{ needs.build.outputs.author_name }} <${{ needs.build.outputs.author_email }}>" \
-            --arg triggered_by "${{ needs.build.outputs.triggered_by }}" \
-            --arg commit_msg "${{ needs.build.outputs.commit_msg }}" \
-            --arg when "$NOW_ISO" \
-          '{
-            username: "GoldOne CI/CD",
-            icon_emoji: ":warning:",
-            channel: ($channel // empty),
-            attachments: [{
-              fallback: $title,
-              color: $color,
-              pretext: $title,
-              text: $text,
-              fields: [
-                # V---- ĐÃ THÊM ICON ----V
-                { title: "📦 Repo", short: true, value: $repo },
-                { title: "🌿 Branch", short: true, value: $branch },
-                { title: "📝 Commit", short: true, value: ("`\($sha)` – " + $commit_msg) },
-                { title: "👤 TácTác giả commit", short: true, value: $author },
-                { title: "🧑‍💻 Người build", short: true, value: $triggered_by },
-                { title: "⏰ Thời điểm (UTC)", short: true, value: $when },
-                { title: "🔗 Link Commit", short: false, value: $commit_url },
-                { title: "🏃 Link Run", short: false, value: $run_url }
-                # ^---- ĐÃ THÊM ICON ----^
-              ],
-              footer: "GoldOne Frontend • Mattermost",
-              ts: (now | floor)
-            }]
-          }' > payload.json
-
-          curl -sS -H "Content-Type: application/json" -X POST "$WEBHOOK" -d @payload.json
+          jq -n --arg sender "${{ env.BOT_SENDER }}" \
+                --arg target "${{ env.BOT_TARGET }}" \
+                --arg repo "${{ needs.build.outputs.repo }}" \
+                --arg branch "${{ needs.build.outputs.branch }}" \
+                --arg sha "${{ needs.build.outputs.sha_short }}" \
+                --arg commit_msg "${{ needs.build.outputs.commit_msg }}" \
+                --arg author "${{ needs.build.outputs.author_name }} <${{ needs.build.outputs.author_email }}>" \
+                --arg triggered_by "${{ needs.build.outputs.triggered_by }}" \
+                --arg run_url "${{ needs.build.outputs.run_url }}" \
+                --arg commit_url "${{ needs.build.outputs.commit_url }}" \
+                --arg push "🔥 Deploy thất bại: ${{ needs.build.outputs.repo }} (${{ needs.build.outputs.branch }})" \
+                '{
+                  sender: $sender,
+                  target: $target,
+                  message:
+                    ("❌ Deploy *THẤT BẠI* **" + $repo + "** (GitHub Pages)\n" +
+                     "• Branch: " + $branch + "\n" +
+                     "• Commit: `" + $sha + "` – " + $commit_msg + "\n" +
+                     "• Tác giả: " + $author + "\n" +
+                     "• Người build: " + $triggered_by + "\n" +
+                     "🔗 Run Logs: " + $run_url + "\n" +
+                     "🔗 Commit: " + $commit_url),
+                  push: $push
+                }' > chat_deploy_failed.json
+          
+          curl -sS -X POST "${{ env.BOT_HOOK_URL }}" \
+               -H "Authorization: Bearer ${{ env.BOT_HOOK_TOKEN }}" \
+               -H "Content-Type: application/json" \
+               --data @chat_deploy_failed.json
