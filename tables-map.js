@@ -40,6 +40,7 @@ export const TABLES_MAP = {
     "247": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 47, "tableName": "HOKKAIDO", "tableType": "bàn dài" },
     "248": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 48, "tableName": "KYOTO", "tableType": "bàn dài" },
     "249": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 49, "tableName": "MEXICO", "tableType": "bàn dài" },
+    "250": { "branchId": 2, "branchName": "Gold One 2", "branchAddress": "41-41A-43 Nguyễn Thị Diệu, Phường 6, Quận 3", "tableId": 50, "tableName": "WORLD", "tableType": "bàn dài" },
 
     "311": { "branchId": 3, "branchName": "Gold One 3", "branchAddress": "Số 10, Đường Alexander De Rhodes, Quận 1", "tableId": 1,  "tableName": "OISHI",       "tableType": "bàn tròn" },
     "312": { "branchId": 3, "branchName": "Gold One 3", "branchAddress": "Số 10, Đường Alexander De Rhodes, Quận 1", "tableId": 2,  "tableName": "HAKKI",       "tableType": "bàn tròn" },
